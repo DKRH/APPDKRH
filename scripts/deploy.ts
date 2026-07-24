@@ -40,11 +40,12 @@ After=network.target
 Type=simple
 User=root
 WorkingDirectory=${DEPLOY.appDir}
-ExecStart=${DEPLOY.appDir}/server.exe
+ExecStart=${DEPLOY.appDir}/server
 Restart=always
 RestartSec=5
+EnvironmentFile=${DEPLOY.appDir}/.env
 Environment=NODE_ENV=production
-Environment=PORT=3000
+Environment=PORT=2600
 
 [Install]
 WantedBy=multi-user.target
