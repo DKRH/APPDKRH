@@ -1,4 +1,7 @@
 import { auth } from "@/lib/auth"; // your better-auth instance
+import { loadEnv } from "@/lib/env";
+
+loadEnv();
 
 async function seed() {
 	const email =

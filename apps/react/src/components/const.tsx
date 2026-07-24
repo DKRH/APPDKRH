@@ -1,4 +1,4 @@
-const API = "http://localhost:2600";
+const API = import.meta.env.VITE_API_URL;
 
 export function getAPIURL(path: string='') {
     return `${API}${path}`;
