@@ -1,0 +1,36 @@
+{
+	"name": "dkrh",
+	"private": true,
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"scripts": {
+    	"db:init": "bun run apps/hono/src/test/initdb.ts",
+		"addback": "cd apps/hono && bun add",
+		"addfront": "cd apps/react && bun add",
+
+		"dev": "concurrently -k -n FRONT,BACK \"bun run runfront\" \"bun run runback\"",
+		"runfront": "cd apps/react && bun run dev",
+		"runback": "cd apps/hono && bun run dev",
+		"run:webapi": "cd apps/netwebapi && dotnet watch run",
+		"run:laravel": "cd apps/laravel && dotnet watch run",
+
+		"build:front": "cd apps/react && bun run build",
+		"build:back": "cd apps/hono && bun build src/index.ts --compile --outfile ../../dist/server",
+		"build:server": "bun run build:front && bun run build:back && bun scripts/build.ts",
+
+		"build:wpf": "cd apps/wpf && dotnet publish -c Release --self-contained true -p:PublishSingleFile=true",
+		"build:desktop": "bun run build:wpf && bun scripts/build_desktop.ts",
+
+		"deploy": "bun scripts/deploy.ts",
+		"deploy:server": "bun run build:server && bun run deploy",
+		
+		"db:generate": "bun --cwd apps/hono drizzle-kit generate",
+		"db:migrate": "cd apps/hono && bun x drizzle-kit migrate",
+		"db:push": "bun --cwd apps/hono drizzle-kit push"
+	},
+	"devDependencies": {
+		"concurrently": "^10.0.3"
+	}
+}

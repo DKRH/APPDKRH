@@ -1,0 +1,25 @@
+{
+  "name": "app_internal",
+  "scripts": {
+    "dev": "bun run --hot src/index.ts",
+    "start": "bun src/index.ts",
+    "db:generate": "bun x drizzle-kit generate",
+    "db:migrate": "bun x drizzle-kit migrate",
+    "db:push": "bun x drizzle-kit push",
+    "db:pull": "bun x drizzle-kit pull",
+    "db:studio": "bun x drizzle-kit studio"
+  },
+  "dependencies": {
+    "@better-auth/cli": "^1.4.21",
+    "better-auth": "^1.6.16",
+    "chokidar": "^5.0.0",
+    "drizzle-orm": "^0.45.2",
+    "easy-keyvalues": "^1.2.8",
+    "hono": "^4.12.25"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "better-sqlite3": "^12.10.0",
+    "drizzle-kit": "^0.30.6"
+  }
+}

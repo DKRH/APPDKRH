@@ -1,0 +1,17 @@
+text
+textarea
+password
+email
+number
+currency
+percent
+date
+datetime
+time
+dropdown (searchable)
+checkbox
+switch
+color
+file
+image
+autocomplete
