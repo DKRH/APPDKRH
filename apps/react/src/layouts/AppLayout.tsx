@@ -13,15 +13,16 @@ export default function AppLayout() {
 
   return (
     <div className="
-      min-h-screen
+      h-screen
       flex
       flex-col
       bg-zinc-950
       text-white
+      overflow-hidden
     ">
       {/* Navbar */}
       <nav className="
-        h-14
+        h-10
         bg-zinc-900
         border-b
         border-zinc-800
@@ -55,7 +56,11 @@ export default function AppLayout() {
       {/* Page Content */}
       <main className="
         flex-1
+        flex
+        flex-col
+        overflow-hidden
         p-4
+        min-h-0
       ">
         <Outlet />
       </main>

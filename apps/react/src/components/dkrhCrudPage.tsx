@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DkrhCrudModal } from "@/components/dkrhCrudModal";
 import { DkrhDeleteModal } from "@/components/dkrhDeleteModal";
 import { apiFetch, getAPIURL } from "@/components/const";
@@ -20,7 +20,7 @@ export function DkrhCrudPage({
 }: any) {
 
 	const LIMIT = 50;
-
+	const tableRef = useRef<HTMLDivElement>(null);
 	const [rows, setRows] = useState<any[]>([]);
 	const [editing, setEditing] = useState<any>(null);
 	const [deleteTarget, setDeleteTarget] = useState<any>(null);
@@ -127,7 +127,7 @@ export function DkrhCrudPage({
 
 	}, []);
 
-	useEffect(() => {
+	/*useEffect(() => {
 
 		function onScroll() {
 
@@ -158,16 +158,40 @@ export function DkrhCrudPage({
 				onScroll
 			);
 
-	}, [search, loading, offset]);
+	}, [search, loading, offset]);*/
+
+	useEffect(() => {
+		const container = tableRef.current;
+
+		if (!container) return;
+
+		function onScroll() {
+			const nearBottom =
+				container!.scrollTop +
+				container!.clientHeight >=
+				container!.scrollHeight - 300;
+
+			if (nearBottom && !loading && hasMore) {
+				loadData(search, false);
+			}
+		}
+
+		container.addEventListener("scroll", onScroll);
+
+		return () =>
+			container.removeEventListener("scroll", onScroll);
+	}, [search, loading, hasMore]);
 
 	return (
 
 		<div
 			className="
-				min-h-screen
+				h-full
+				flex
+				flex-col
 				bg-zinc-950
 				text-zinc-100
-				p-6
+				overflow-hidden
 			"
 		>
 
@@ -176,13 +200,12 @@ export function DkrhCrudPage({
 					flex
 					items-center
 					justify-between
-					mb-6
 				"
 			>
 
 				<h1
 					className="
-						text-3xl
+						text-1xl
 						font-bold
 					"
 				>
@@ -207,114 +230,81 @@ export function DkrhCrudPage({
 
 			</div>
 
+			<div className="mb-4">
+
+				<input
+					type="text"
+
+					placeholder={
+						searchPlaceholder
+					}
+
+					value={search}
+
+					onChange={(e) => {
+
+						const value =
+							e.target.value;
+
+						setSearch(value);
+
+						loadData(
+							value,
+							true
+						);
+					}}
+
+					className="
+						w-full
+						bg-zinc-900
+						border
+						border-zinc-700
+						rounded-lg
+						px-4
+						py-3
+						text-zinc-100
+
+    outline-none
+    focus:border-blue-500
+					"
+				/>
+
+			</div>
+
 			<div
+    			ref={tableRef}
 				className="
+					flex-1
 					overflow-auto
 					border
 					border-zinc-800
 					rounded-lg
+					min-h-0
 				"
 			>
-
-				<div className="mb-4">
-
-					<input
-						type="text"
-
-						placeholder={
-							searchPlaceholder
-						}
-
-						value={search}
-
-						onChange={(e) => {
-
-							const value =
-								e.target.value;
-
-							setSearch(value);
-
-							loadData(
-								value,
-								true
-							);
-						}}
-
+					<table
 						className="
 							w-full
-							bg-zinc-900
-							border
-							border-zinc-700
-							rounded-lg
-							px-4
-							py-3
-							text-zinc-100
-						"
-					/>
-
-				</div>
-
-				<table
-					className="
-						w-full
-						text-sm
-					"
-				>
-
-					<thead
-						className="
-							bg-zinc-900
+							min-w-max
+							text-sm
 						"
 					>
 
-						<tr>
+						<thead
+							className="
+								sticky
+        						top-0
+								z-30
+								bg-zinc-900
+							"
+						>
 
-							{columns.map(
-								(c: any) => (
-
-								<th
-									key={c.key}
-
-									className="
-										p-3
-										text-left
-									"
-								>
-									{c.label}
-								</th>
-							))}
-
-							<th
-								className="
-									p-3
-									text-left
-								"
-							>
-								Actions
-							</th>
-
-						</tr>
-
-					</thead>
-
-					<tbody>
-
-						{rows.map((row) => (
-
-							<tr
-								key={row.id}
-
-								className="
-									border-t
-									border-zinc-800
-									hover:bg-zinc-900
-								"
-							>
+							<tr>
 
 								{columns.map(
 									(c: any) => (
 
-									<td
+									<th
 										key={c.key}
 
 										className="
@@ -322,106 +312,157 @@ export function DkrhCrudPage({
 											text-left
 										"
 									>
-
-										{(() => {
-											if (c.render)
-												return c.render(row[c.key], row);
-
-											if (c.show) {
-												const field = fields.find(
-													(f: any) => f.key === c.key
-												);
-
-												if (field) {
-													const list = lookups[c.key] ?? [];
-													
-													const item = list.find(
-														(x: any) =>
-															x[field.valueField ?? "id"] === row[c.key]
-													);
-
-													console.log("item:", item);
-													console.log("show:", c.show);
-													return item?.[c.show] ?? "";
-												}
-											}
-
-											return row[c.key];
-										})()}
-
-									</td>
+										{c.label}
+									</th>
 								))}
 
-								<td
+								<th
 									className="
+										sticky
+										top-0
+										right-0
+										bg-zinc-900
 										p-3
 										text-left
+										z-40
 									"
 								>
-
-									<div
-										className="
-											flex
-											gap-2
-										"
-									>
-
-										<button
-											onClick={() =>
-												setEditing(row)
-											}
-
-											className="
-												bg-yellow-600
-												hover:bg-yellow-500
-												px-3
-												py-1
-												rounded
-											"
-										>
-											Edit
-										</button>
-
-										<button
-											onClick={() =>
-												setDeleteTarget(row)
-											}
-
-											className="
-												bg-red-700
-												hover:bg-red-600
-												px-3
-												py-1
-												rounded
-											"
-										>
-											Delete
-										</button>
-
-									</div>
-
-								</td>
+									Actions
+								</th>
 
 							</tr>
 
-						))}
+						</thead>
 
-					</tbody>
+						<tbody>
 
-				</table>
+							{rows.map((row) => (
 
-				{loading && (
+								<tr
+									key={row.id}
 
-					<div
-						className="
-							text-center
-							p-6
-							text-zinc-400
-						"
-					>
-						Loading...
-					</div>
-				)}
+									className="
+										border-t
+										border-zinc-800
+										hover:bg-zinc-900
+									"
+								>
+
+									{columns.map(
+										(c: any) => (
+
+										<td
+											key={c.key}
+
+											className="
+												p-3
+												text-left
+											"
+										>
+
+											{(() => {
+												if (c.render)
+													return c.render(row[c.key], row);
+
+												if (c.show) {
+													const field = fields.find(
+														(f: any) => f.key === c.key
+													);
+
+													if (field) {
+														const list = lookups[c.key] ?? [];
+														
+														const item = list.find(
+															(x: any) =>
+																x[field.valueField ?? "id"] === row[c.key]
+														);
+
+														console.log("item:", item);
+														console.log("show:", c.show);
+														return item?.[c.show] ?? "";
+													}
+												}
+
+												return row[c.key];
+											})()}
+
+										</td>
+									))}
+
+									<td
+										className="
+											sticky
+											right-0
+											bg-zinc-950
+											p-3
+											text-left
+											z-20
+										"
+									>
+
+										<div
+											className="
+												flex
+												gap-2
+											"
+										>
+
+											<button
+												onClick={() =>
+													setEditing(row)
+												}
+
+												className="
+													bg-yellow-600
+													hover:bg-yellow-500
+													px-3
+													py-1
+													rounded
+												"
+											>
+												Edit
+											</button>
+
+											<button
+												onClick={() =>
+													setDeleteTarget(row)
+												}
+
+												className="
+													bg-red-700
+													hover:bg-red-600
+													px-3
+													py-1
+													rounded
+												"
+											>
+												Delete
+											</button>
+
+										</div>
+
+									</td>
+
+								</tr>
+
+							))}
+
+						</tbody>
+
+					</table>
+
+					{loading && (
+
+						<div
+							className="
+								text-center
+								p-6
+								text-zinc-400
+							"
+						>
+							Loading...
+						</div>
+					)}
 
 			</div>
 

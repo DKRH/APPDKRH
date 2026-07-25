@@ -23,6 +23,11 @@ export const appPages = [
         to: "/passbank",
     },
     {
+        name: "Weapon Data",
+        icon: KeyRound,
+        to: "/i-weapon",
+    },
+    {
         name: "Note",
         icon: NotebookPen,
         to: "/note",
