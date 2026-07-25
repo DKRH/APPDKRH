@@ -10,7 +10,8 @@ export default defineConfig(({ mode }) => {
   const root = path.resolve(__dirname, "../..");
 
   // Load environment variables from the monorepo root
-  loadEnv(mode, root, "VITE_");
+  const env = loadEnv(mode, root, "VITE_");
+  console.log("VITE_API_URL =", env.VITE_API_URL);
 
   return {
     envDir: root,

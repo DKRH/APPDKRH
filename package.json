@@ -16,7 +16,7 @@
 		"run:webapi": "cd apps/netwebapi && dotnet watch run",
 		"run:laravel": "cd apps/laravel && dotnet watch run",
 
-		"build:front": "cd apps/react && bun run build",
+		"build:front": "cd apps/react && bun run build --mode production",
 		"build:back": "cd apps/hono && bun build src/index.ts --compile --outfile ../../dist/server",
 		"build:server": "bun run build:front && bun run build:back && bun scripts/build.ts",
 

@@ -3,3 +3,6 @@ node_modules/
 dist/
 dist_desktop/
 .env
+.env.development
+.env.production
+dkrh.db

@@ -6,7 +6,6 @@ import {
 import {
 	useNavigate,
 } from "react-router-dom";
-import { backendurl } from "@/config";
 import { authClient } from "@/lib/auth";
 
 export default function RegisterPage() {

@@ -1,6 +1,5 @@
 import { useState,useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { backendurl } from "@/config";
 import { authClient } from "@/lib/auth";
 
 export default function LoginPage() {
