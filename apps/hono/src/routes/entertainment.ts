@@ -12,6 +12,9 @@ app.get("/", async (c) => {
 			hEntertainmentTracker.typeId,
 			hEntertainmentTracker.entryTitle,
 			hEntertainmentTracker.lastMark,
+			hEntertainmentTracker.statusDL,
+			hEntertainmentTracker.statusPublication,
+			hEntertainmentTracker.linkDL,
 		],
 	});
 });

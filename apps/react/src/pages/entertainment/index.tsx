@@ -22,6 +22,14 @@ export default function EntertainmentPage() {
                     key: "lastMark",
                     label: "Last Read"
                 },
+                {
+                    key: "linkDL",
+                    label: "Link DL"
+                },
+                {
+                    key: "statusDL",
+                    label: "Last DL"
+                },
             ]}
             fields={[
 				{
@@ -39,6 +47,14 @@ export default function EntertainmentPage() {
                 {
                     key: "lastMark",
                     label: "Last Read"
+                },
+                {
+                    key: "linkDL",
+                    label: "Link DL"
+                },
+                {
+                    key: "statusDL",
+                    label: "Last DL"
                 },
             ]}
         />
