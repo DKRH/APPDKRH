@@ -6,7 +6,7 @@
 		"packages/*"
 	],
 	"scripts": {
-    	"db:init": "bun run apps/hono/src/test/initdb.ts",
+    	"db:init": "cd apps/hono && bun run src/test/initdb.ts",
 		"addback": "cd apps/hono && bun add",
 		"addfront": "cd apps/react && bun add",
 

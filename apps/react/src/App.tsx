@@ -26,6 +26,7 @@ import IWeaponPage from './pages/i-weapon/iWeapon';
 import IWeaponClassPage from './pages/i-weapon/iWeaponClass';
 import IWeaponCaliberPage from './pages/i-weapon/iWeaponCaliber';
 import IWeaponOriginPage from './pages/i-weapon/iWeaponOrigin';
+import WifiQr from './pages/qrcodegen';
 
 
 function App() {
@@ -42,6 +43,8 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/weapons" element={<Weapons />} />
           <Route path="/passbank" element={<PassbankPage />} />
+
+          <Route path="/qrcode" element={<WifiQr />} />
 
           <Route element={<MenuBarLayout />}>
             <Route path="/entertainment" element={<EntertainmentPage />} />

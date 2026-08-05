@@ -10,6 +10,8 @@ import iWeaponCaliber from "./routes/i-weapon-caliber";
 import iWeaponClass from "./routes/i-weapon-class";
 import iWeaponOrigin from "./routes/i-weapon-origin";
 
+import qrcodegen from "./routes/qrcodegen";
+
 export const protectedApi = new Hono();
 
 protectedApi.route("/weapons", weapon);
@@ -22,3 +24,5 @@ protectedApi.route("/i-weapon", iWeapon);
 protectedApi.route("/i-weapon-caliber", iWeaponCaliber);
 protectedApi.route("/i-weapon-class", iWeaponClass);
 protectedApi.route("/i-weapon-origin", iWeaponOrigin);
+
+protectedApi.route("/qrcode", qrcodegen);

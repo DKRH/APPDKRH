@@ -23,6 +23,7 @@ const dbPath = dbpath
     ? (isAbsolute(dbpath) ? dbpath : resolve(baseDir, dbpath))
     : resolve(baseDir, "dkrh.db");
 
+console.log("xx:", baseDir);
 console.log("xx:", process.cwd());
 console.log("5) dbPath:", dbPath);
 console.log("6) ENV:", appenv);
