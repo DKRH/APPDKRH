@@ -3,7 +3,7 @@ import { serveStatic } from "hono/bun";
 import auth from "./routeAuth/auth";
 import { authMiddleware } from "./middleware/auth";
 import { cors } from "hono/cors";
-import { protectedApi } from "./routes";
+import { createProtectedApi } from "./routes";
 import { dirname, resolve } from "node:path";
 
 const baseDir =
@@ -15,6 +15,7 @@ const indexFile = Bun.file(resolve(baseDir, "index.html"));
 
 const app = new Hono();
 
+const protectedApi = await createProtectedApi();
 protectedApi.use("*", authMiddleware);
 
 app.use(

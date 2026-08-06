@@ -1,28 +1,34 @@
 import { Hono } from "hono";
-import weapon from "./routes/weapon";
-import passbank from "./routes/passbank";
+import { relative } from "node:path";
+import { pathToFileURL } from "node:url";
 
-import entertainment from "./routes/entertainment";
-import entertainmentTypes from "./routes/entertainment-types";
+export async function createProtectedApi() {
+    const app = new Hono();
 
-import iWeapon from "./routes/i-weapon";
-import iWeaponCaliber from "./routes/i-weapon-caliber";
-import iWeaponClass from "./routes/i-weapon-class";
-import iWeaponOrigin from "./routes/i-weapon-origin";
+    const routesDir = `${import.meta.dir}/routes`;
+    const glob = new Bun.Glob("**/*.{ts,js}");
 
-import qrcodegen from "./routes/qrcodegen";
+    for await (const file of glob.scan({
+        cwd: routesDir,
+        absolute: true,
+    })) {
+        if (file.endsWith(".d.ts")) continue;
 
-export const protectedApi = new Hono();
+        const mod = await import(pathToFileURL(file).href);
 
-protectedApi.route("/weapons", weapon);
-protectedApi.route("/passbank", passbank);
+        if (!mod.default) continue;
 
-protectedApi.route("/entertainment", entertainment);
-protectedApi.route("/entertainment-types", entertainmentTypes);
+        let route = relative(routesDir, file)
+            .replace(/\.(ts|js)$/, "")
+            .replace(/\\/g, "/")
+            .replace(/\/index$/, "");
 
-protectedApi.route("/i-weapon", iWeapon);
-protectedApi.route("/i-weapon-caliber", iWeaponCaliber);
-protectedApi.route("/i-weapon-class", iWeaponClass);
-protectedApi.route("/i-weapon-origin", iWeaponOrigin);
+        if (route === "index") route = "";
 
-protectedApi.route("/qrcode", qrcodegen);
+        app.route(`/${route}`, mod.default);
+
+        console.log(`✓ /${route}`);
+    }
+
+    return app;
+}
