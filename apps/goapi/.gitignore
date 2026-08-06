@@ -1,0 +1,58 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binaries
+*.test
+
+# Coverage
+*.out
+coverage.out
+coverage.html
+
+# Build output
+bin/
+dist/
+build/
+
+# Go workspace
+go.work.sum
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Temporary
+tmp/
+temp/
+.cache/
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Air (hot reload)
+.air/
+.air.toml.local
+
+# Generated Swagger docs (if generated during build)
+docs/swagger.json
+docs/swagger.yaml
+
+# SQLite
+*.db
+*.sqlite
+*.sqlite3

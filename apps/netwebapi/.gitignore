@@ -1,0 +1,73 @@
+# Build
+bin/
+obj/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+
+# VS Code
+.vscode/
+
+# Rider
+.idea/
+
+# NuGet
+packages/
+*.nupkg
+
+# Logs
+*.log
+logs/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# App settings (keep examples)
+appsettings.Development.json
+appsettings.Local.json
+
+# Publish output
+publish/
+
+# Test results
+TestResults/
+*.trx
+coverage/
+coverage.xml
+
+# BenchmarkDotNet
+BenchmarkDotNet.Artifacts/
+
+# Generated files
+Generated/
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ReSharper
+_ReSharper*/
+*.DotSettings.user
+
+# Temporary
+tmp/
+temp/
+
+# SQLite
+*.db
+*.sqlite
+*.sqlite3
+
+# Certificates
+*.pfx
+*.snk
