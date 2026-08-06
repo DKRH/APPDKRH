@@ -1,0 +1,78 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# uv
+.python-version
+
+# Build
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.hypothesis/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploaded files
+uploads/
+media/
+
+# Temporary
+tmp/
+temp/
+.cache/
+
+# uvicorn
+uvicorn.log
+
+# Coverage
+coverage.xml
+
+# Node (if frontend exists)
+node_modules/
+
+# uv
+.venv/
+.python-version
