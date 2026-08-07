@@ -21,7 +21,7 @@ protectedApi.use("*", authMiddleware);
 app.use(
   "*",
   cors({
-    origin: "http://localhost:2601",
+    origin: "http://localhost:2600",
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -43,7 +43,4 @@ app.notFound(async (c) => {
   return c.html(await indexFile.text());
 });
 
-export default {
-	port: 2600,
-	fetch: app.fetch
-};
+export default app;

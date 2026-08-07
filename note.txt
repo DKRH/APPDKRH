@@ -1,4 +1,20 @@
 BUN + NODE
-Dotnet
 UV
 Go + Air
+
+Hono
+b passbank
+c weapons
+d todos
+e notes
+e labels 
+f urlshortener 
+g textstorage 
+h readingmarker 
+gacha 
+erp 
+
+
+Go-Gin
+
+FastAPI

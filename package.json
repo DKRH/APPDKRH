@@ -10,26 +10,23 @@
 		"addback": "cd apps/hono && bun add",
 		"addfront": "cd apps/react && bun add",
 
-		"dev": "concurrently -k -n FRONT,BACK \"bun run run:react\" \"bun run run:hono\"",
+		"dev": "concurrently -k -n FRONT,BACK \"bun run dev:react\" \"bun run dev:hono\"",
 
-		"run:react": "cd apps/react && bun run dev",
-		"run:hono": "cd apps/hono && bun run dev",
-		"run:goapi": "cd apps/goapi && air",
-		"run:fast": "cd apps/fast && uv run uvicorn app.main:app --reload",
-		"run:webapi": "cd apps/netwebapi && dotnet watch run",
+		"dev:react": "cd apps/react && bun run dev",
+		"dev:hono": "cd apps/hono && bun run dev",
+		"dev:goapi": "cd apps/goapi && air",
+		"dev:fast": "cd apps/fast && uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 2603",
 
 		"init:react": "cd apps/react && bun install",
 		"init:hono": "cd apps/hono && bun install",
 		"init:goapi": "cd apps/goapi && go mod tidy",
 		"init:fast": "cd apps/fast && uv sync",
-		"init:webapi": "cd apps/netwebapi && dotnet restore",
 
 		"build:front": "cd apps/react && bun run build --mode production",
 		"build:back": "cd apps/hono && bun build src/index.ts --compile --outfile ../../dist/server",
 		"build:server": "bun run build:front && bun run build:back && bun scripts/build.ts",
 		"build:goapi": "cd apps/goapi && go build -o dist/goapi",
 		"build:fast": "cd apps/fast && uv run python -m nuitka --onefile --standalone app/main.py",
-		"build:webapi": "cd apps/netwebapi && dotnet publish -c Release --self-contained true -p:PublishSingleFile=true",
 
 		"build:wpf": "cd apps/wpf && dotnet publish -c Release --self-contained true -p:PublishSingleFile=true",
 		"build:desktop": "bun run build:wpf && bun scripts/build_desktop.ts",
