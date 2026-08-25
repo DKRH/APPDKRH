@@ -1,34 +1,33 @@
 import { Hono } from "hono";
-import { relative } from "node:path";
+import { relative, dirname } from "node:path";
 import { pathToFileURL } from "node:url";
 
 export async function createProtectedApi() {
-    const app = new Hono();
+  const app = new Hono();
 
-    const routesDir = `${import.meta.dir}/routes`;
-    const glob = new Bun.Glob("**/*.{ts,js}");
+  const modulesDir = `${import.meta.dir}/modules`;
 
-    for await (const file of glob.scan({
-        cwd: routesDir,
-        absolute: true,
-    })) {
-        if (file.endsWith(".d.ts")) continue;
+  const glob = new Bun.Glob("**/route.{ts,js}");
 
-        const mod = await import(pathToFileURL(file).href);
+  for await (const file of glob.scan({
+    cwd: modulesDir,
+    absolute: true,
+  })) {
+    if (file.endsWith(".d.ts")) continue;
 
-        if (!mod.default) continue;
+    const mod = await import(pathToFileURL(file).href);
 
-        let route = relative(routesDir, file)
-            .replace(/\.(ts|js)$/, "")
-            .replace(/\\/g, "/")
-            .replace(/\/index$/, "");
+    if (!mod.default) continue;
 
-        if (route === "index") route = "";
+    const route = relative(
+      modulesDir,
+      dirname(file),
+    ).replace(/\\/g, "/");
 
-        app.route(`/${route}`, mod.default);
+    app.route(`/${route}`, mod.default);
 
-        console.log(`✓ /${route}`);
-    }
+    console.log(`✓ /${route}`);
+  }
 
-    return app;
+  return app;
 }

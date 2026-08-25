@@ -6,12 +6,12 @@ import { cors } from "hono/cors";
 import { createProtectedApi } from "./routes";
 import { dirname, resolve } from "node:path";
 
-const baseDir =
-  process.env.APP_ENV === "development"
+const isDevelopment =
+  process.env.APP_ENV === "development";
+
+const baseDir = isDevelopment
     ? resolve(process.cwd(), "../..") // monorepo root
     : dirname(process.execPath);      // compiled executable directory
-
-const indexFile = Bun.file(resolve(baseDir, "index.html"));
 
 const app = new Hono();
 
@@ -31,16 +31,25 @@ app.use(
 app.route("/api/auth", auth);
 app.route("/api", protectedApi);
 
-// Static files
-app.use("/*", serveStatic({ root: baseDir }));
+if (!isDevelopment) {
+  const indexFile = Bun.file(
+    resolve(baseDir, "index.html"),
+  );
 
-// SPA fallback
-app.notFound(async (c) => {
-  if (c.req.path.startsWith("/api")) {
-    return c.text("Not Found", 404);
-  }
+  app.use("*", serveStatic({
+    root: baseDir,
+  }));
 
-  return c.html(await indexFile.text());
-});
+  app.notFound(async (c) => {
+    if (c.req.path.startsWith("/api")) {
+      return c.text("Not Found", 404);
+    }
 
-export default app;
+    return c.html(await indexFile.text());
+  });
+}
+
+export default {
+  port: Number(process.env.HONO_PORT ?? 2601),
+  fetch: app.fetch,
+};

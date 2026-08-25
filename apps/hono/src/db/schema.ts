@@ -232,7 +232,6 @@ export const eUrlShortener = sqliteTable("e_url_shortener", {
 	shortenURL: text("shorten_url").notNull(),
 
 	isLocked: boolean("is_locked").default(false).notNull(),
-	isExpire: boolean("is_expire").default(false).notNull(),
 
 	password: text("password"),
 	expireDateUTC: timestamp("expire_date"),

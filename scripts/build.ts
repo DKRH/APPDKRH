@@ -8,4 +8,11 @@ cpSync(
   }
 );
 
+cpSync(
+  "apps/hono/dist",
+  "dist",
+  {
+    recursive: true,
+  }
+);
 //cpSync("apps/hono/.env", "dist/.env");

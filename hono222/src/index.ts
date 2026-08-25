@@ -54,6 +54,6 @@ app.notFound(async (c) => {
 });
 
 export default {
-	port: 6969,
+	port: Number(process.env.HONO_PORT ?? 2601),
 	fetch: app.fetch
 };
