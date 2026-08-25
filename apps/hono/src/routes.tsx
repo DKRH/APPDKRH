@@ -15,7 +15,13 @@ export async function createProtectedApi() {
   })) {
     if (file.endsWith(".d.ts")) continue;
 
-    const mod = await import(pathToFileURL(file).href);
+    const importUrl = pathToFileURL(file).href;
+
+    const mod = await import(
+      process.env.APP_ENV === "development"
+        ? `${importUrl}?t=${Date.now()}`
+        : importUrl
+    );
 
     if (!mod.default) continue;
 
