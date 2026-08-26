@@ -1,7 +1,16 @@
-import { db } from "@/db";
-import { and, eq, isNull, like, or } from "drizzle-orm";
+import { db } from "@dkrh/db";
+import { and, eq, isNull, like, or,
+  type AnyColumn,
+  type AnyTable, } from "drizzle-orm";
+import type { Context } from "hono";
 
-function stripAuditFields(data: any) {
+type InferRow<TTable extends AnyTable<any>> = TTable["$inferSelect"];
+
+type InferInsert<TTable extends AnyTable<any>> = TTable["$inferInsert"];
+
+function stripAuditFieldss<T extends Record<string, unknown>>(
+  data: T,
+) {
   const {
     id,
     createdAt,
@@ -16,10 +25,12 @@ function stripAuditFields(data: any) {
   return clean;
 }
 
-export async function auditedInsert(
-    c: any,
-    table: any,
-    data: any,
+export async function auditedInsert<
+  TTable extends AnyTable<any>,
+>(
+  c: Context,
+  table: TTable,
+  data: InferInsert<TTable>,
 ) {
   const userId = c.get("userId");
   const result = await db
@@ -35,12 +46,14 @@ export async function auditedInsert(
 
   return c.json(result[0]);
 }
-export async function auditedUpdate(
-    c: any,
-  table: any,
-  idColumn: any,
+export async function auditedUpdate<
+  TTable extends AnyTable<any>,
+>(
+  c: Context,
+  table: TTable,
+  idColumn: AnyColumn,
   id: string,
-  data: any,
+  data: Partial<InferInsert<TTable>>,
 ) {
   const userId = c.get("userId");
   const result = await db
@@ -55,10 +68,12 @@ export async function auditedUpdate(
 
   return c.json(result[0]);
 }
-export async function auditedDelete(
-    c: any,
-  table: any,
-  idColumn: any,
+export async function auditedDelete<
+  TTable extends AnyTable<any>,
+>(
+  c: Context,
+  table: TTable,
+  idColumn: AnyColumn,
   id: string,
 ) {
   const userId = c.get("userId");
@@ -73,10 +88,12 @@ export async function auditedDelete(
 
   return c.json(result[0]);
 }
-export async function auditedRestore(
-    c: any,
-  table: any,
-  idColumn: any,
+export async function auditedRestore<
+  TTable extends AnyTable<any>,
+>(
+  c: Context,
+  table: TTable,
+  idColumn: AnyColumn,
   id: string,
 ) {
   const result = await db
@@ -90,10 +107,12 @@ export async function auditedRestore(
 
   return c.json(result[0]);
 }
-export async function auditedDeleteForever(
-    c: any,
-  table: any,
-  idColumn: any,
+export async function auditedDeleteForever<
+  TTable extends AnyTable<any>,
+>(
+  c: Context,
+  table: TTable,
+  idColumn: AnyColumn,
   id: string,
 ) {
   await db
@@ -104,10 +123,12 @@ export async function auditedDeleteForever(
     success: true,
   });
 }
-export async function auditedFindById(
-    c: any,
-  table: any,
-  idColumn: any,
+export async function auditedFindById<
+  TTable extends AnyTable<any>,
+>(
+  c: Context,
+  table: TTable,
+  idColumn: AnyColumn,
   id: string,
 ) {
   const rows = await db
@@ -118,13 +139,23 @@ export async function auditedFindById(
 
   return c.json(rows[0]) ?? null;
 }
-export async function auditedList({
-    c,
-    table,
-    searchableColumns = [],
-    offset = 0,
-    limit = 50,
-}: any) {
+
+type AuditedListOptions<TTable extends AnyTable<any>> = {
+  c: Context;
+  table: TTable;
+  searchableColumns?: AnyColumn[];
+  offset?: number;
+  limit?: number;
+};
+export async function auditedList<
+  TTable extends AnyTable<any>,
+>({
+  c,
+  table,
+  searchableColumns = [],
+  offset = 0,
+  limit = 50,
+}: AuditedListOptions<TTable>) {
 	const search = c.req.query("search") || "";
 	const offsetc = Number(c.req.query("offset") || offset);
 	const limitc = Number(c.req.query("limit") || limit);

@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { b_passbank } from "@/db/schema";
+import { b_passbank } from "@dkrh/db/schema";
 import * as audit  from "@/db/audit";
 
 const app = new Hono();

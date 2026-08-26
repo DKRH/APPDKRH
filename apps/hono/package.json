@@ -1,5 +1,10 @@
 {
-  "name": "app_internal",
+  "name": "@dkrh/hono",
+   "private": true,
+   "type": "module",
+   "exports": {
+     "./types": "./src/types.ts"
+   },
   "scripts": {
     "dev": "bun run --hot src/index.ts",
     "start": "bun src/index.ts",
@@ -10,18 +15,17 @@
     "db:studio": "bun x drizzle-kit studio"
   },
   "dependencies": {
+    "@dkrh/db": "workspace:*",
+    "@dkrh/types": "workspace:*",
     "@better-auth/cli": "^1.4.21",
     "better-auth": "^1.6.16",
     "chokidar": "^5.0.0",
     "dotenv": "^17.4.2",
-    "drizzle-orm": "^0.45.2",
     "easy-keyvalues": "^1.2.8",
     "hono": "^4.12.25",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
-    "@types/bun": "latest",
-    "better-sqlite3": "^12.10.0",
-    "drizzle-kit": "^0.30.6"
+    "@types/bun": "latest"
   }
 }

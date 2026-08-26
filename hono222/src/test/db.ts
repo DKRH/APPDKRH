@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { b_passbank } from "@/db/schema";
+import { b_passbank } from "@dkrh/db/schema";
 
 const websites = [
   "Google",

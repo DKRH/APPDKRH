@@ -1,4 +1,4 @@
-import { eUrlShortener } from "@/db/schema";
+import { eUrlShortener } from "@dkrh/db/schema";
 import * as audit from "@/db/audit";
 import { type Context } from "hono";
 import * as repo from "./repo";

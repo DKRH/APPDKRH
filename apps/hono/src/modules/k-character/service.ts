@@ -1,4 +1,4 @@
-import { kMCharacters } from "@/db/schema";
+import { kMCharacters } from "@dkrh/db/schema";
 import * as audit from "@/db/audit";
 import { type Context } from "hono";
 

@@ -1,4 +1,4 @@
-import { hEntertainmentTracker } from "@/db/schema";
+import { hEntertainmentTracker } from "@dkrh/db/schema";
 import * as audit from "@/db/audit";
 import { type Context } from "hono";
 

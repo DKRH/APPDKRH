@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import { db } from "@/db";
-import { eUrlShortener } from "@/db/schema";
+import { db } from "@dkrh/db";
+import { eUrlShortener } from "@dkrh/db/schema";
 
 const table1 = eUrlShortener;
 

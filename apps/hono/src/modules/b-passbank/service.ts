@@ -1,6 +1,11 @@
-import { b_passbank } from "@/db/schema";
+import { b_passbank } from "@dkrh/db/schema";
 import * as audit from "@/db/audit";
 import { type Context } from "hono";
+import type {
+  BPassbank,
+  NewBPassbank,
+  UpdateBPassbank,
+} from "@dkrh/types";
 
 const table1 = b_passbank;
 
@@ -17,7 +22,7 @@ export async function getAll(c: Context) {
 }
 
 export async function createData(c: Context) {
-  const body = await c.req.json();
+  const body = await c.req.json<NewBPassbank>();
 
   return await audit.auditedInsert(c, table1, {
     ...body,
@@ -36,7 +41,7 @@ export async function editData(c: Context) {
     );
   }
 
-  const body = await c.req.json();
+  const body = await c.req.json<Partial<NewBPassbank>>();
 
   return await audit.auditedUpdate(c, table1, table1.id, id, {
     ...body,

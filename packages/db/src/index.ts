@@ -1,7 +1,7 @@
-import Database from "bun:sqlite";
+//import Database from "bun:sqlite";
 import { drizzle } from "drizzle-orm/bun-sqlite";
 import { dirname, join, isAbsolute, resolve } from "node:path";
-import { loadEnv } from "@/lib/env";
+import { loadEnv } from "./env";
 
 loadEnv();
 

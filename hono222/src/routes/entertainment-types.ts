@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { hEntertainmentTrackerType } from "@/db/schema";
+import { hEntertainmentTrackerType } from "@dkrh/db/schema";
 import * as audit  from "@/db/audit";
 
 const app = new Hono();

@@ -6,40 +6,35 @@
 		"packages/*"
 	],
 	"scripts": {
-    	"db:init": "cd apps/hono && bun run src/test/initdb.ts",
+		"db:init": "cd apps/hono && bun run src/test/initdb.ts",
 		"addback": "cd apps/hono && bun add",
 		"addfront": "cd apps/react && bun add",
-
 		"dev": "concurrently -k -n FRONT,BACK \"bun run react:dev\" \"bun run hono:dev\"",
 		"build:server": "bun run react:build && bun run hono:build && bun scripts/build.ts",
-
+		"sv:dev": "cd apps/svelte && bun run dev",
 		"react:dev": "cd apps/react && bun run dev",
 		"react:init": "cd apps/react && bun install",
 		"react:build": "cd apps/react && bun run build --mode production",
-
-		"hono:dev": "cd apps/hono && bun run dev",
+		"hono:dev": "cd apps/hono && APP_ENV=development bun run dev",
 		"hono:init": "cd apps/hono && bun install",
 		"hono:build": "cd apps/hono && bun build src/index.ts --compile --outfile ./dist/server_hono",
 		"hono:generate": "bun --cwd apps/hono drizzle-kit generate",
 		"hono:migrate": "cd apps/hono && bun x drizzle-kit migrate",
 		"hono:push": "bun --cwd apps/hono drizzle-kit push",
-
 		"goapi:dev": "cd apps/goapi && air",
 		"goapi:init": "cd apps/goapi && go mod tidy",
 		"goapi:build": "cd apps/goapi && go build -o dist/server_goapi",
 		"goapi:migrate": "cd apps/goapi && go run cmd/migrate/main.go",
-
 		"fast:dev": "cd apps/fast && uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 2603",
 		"fast:init": "cd apps/fast && uv sync",
 		"fast:build": "cd apps/fast && uv run python -m nuitka --onefile --standalone app/main.py",
-
 		"build:wpf": "cd apps/wpf && dotnet publish -c Release --self-contained true -p:PublishSingleFile=true",
 		"build:desktop": "bun run build:wpf && bun scripts/build_desktop.ts",
-
 		"deploy": "bun scripts/deploy.ts",
 		"deploy:server": "bun run build:server && bun run deploy"
 	},
 	"devDependencies": {
+		"@types/bun": "^1.4.0",
 		"concurrently": "^10.0.3"
 	}
 }

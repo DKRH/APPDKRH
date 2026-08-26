@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { iWeaponClasses } from "@/db/schema";
+import { iWeaponClasses } from "@dkrh/db/schema";
 import * as audit  from "@/db/audit";
 
 const app = new Hono();
