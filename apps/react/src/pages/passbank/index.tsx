@@ -5,7 +5,7 @@ export default function PassbankPage() {
 	return (
 		<DkrhCrudPage
 			title="Passbank"
-			apiBase="/api/passbank"
+			apiBase="/api/b-passbank"
 			searchPlaceholder="Search passwords..."
 			deleteLabelColumn="title"
 			columns={[

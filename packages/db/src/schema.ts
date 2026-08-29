@@ -34,7 +34,9 @@ const auditColumns = {
 
 // AUTHENTICATION
 export const a_user = pgTable("a_user", {
-  id: text("id").primaryKey(),
+  id: uuid("id")
+    .primaryKey()
+    .defaultRandom(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified")
@@ -48,7 +50,9 @@ export const a_user = pgTable("a_user", {
 export const a_session = pgTable(
   "a_session",
   {
-    id: text("id").primaryKey(),
+  id: uuid("id")
+    .primaryKey()
+    .defaultRandom(),
 
     expiresAt: timestamp("expires_at").notNull(),
 
@@ -62,7 +66,7 @@ export const a_session = pgTable(
 
     userAgent: text("user_agent"),
 
-    userId: text("user_id")
+    userId: uuid("user_id")
       .notNull()
       .references(() => a_user.id, {
         onDelete: "cascade",
@@ -75,13 +79,15 @@ export const a_session = pgTable(
 export const a_account = pgTable(
   "a_account",
   {
-    id: text("id").primaryKey(),
+  id: uuid("id")
+    .primaryKey()
+    .defaultRandom(),
 
     accountId: text("account_id").notNull(),
 
     providerId: text("provider_id").notNull(),
 
-    userId: text("user_id")
+    userId: uuid("user_id")
       .notNull()
       .references(() => a_user.id, {
         onDelete: "cascade",
@@ -116,7 +122,9 @@ export const a_account = pgTable(
 export const a_verification = pgTable(
   "a_verification",
   {
-    id: text("id").primaryKey(),
+  id: uuid("id")
+    .primaryKey()
+    .defaultRandom(),
 
     identifier: text("identifier").notNull(),
 
@@ -238,7 +246,7 @@ export const a1_user_role = pgTable(
       .primaryKey()
       .defaultRandom(),
 
-    userId: text("user_id")
+    userId: uuid("user_id")
       .notNull()
       .references(() => a_user.id, {
         onDelete: "cascade",
@@ -254,7 +262,7 @@ export const a1_user_role = pgTable(
       .notNull()
       .defaultNow(),
 
-    createdBy: text("created_by")
+    createdBy: uuid("created_by")
       .references(() => a_user.id),
   },
   (table) => [
@@ -349,8 +357,73 @@ export const hEntertainmentTracker = pgTable("g_entertainment_tracker", {
 	lastMark: text("last_mark"),
 });
 
+export const kMCharacters = pgTable("k_m_characters", {
+	...auditColumns,
 
+	name: text("name").notNull(),
+	weapon: text("weapon"),
+	releaseVersion: text("release_version"),
+	universeId: uuid("universe_id")
+		.notNull()
+		.references(() => kMUniverses.id),
 
+	attributeId: uuid("attribute_id")
+		.notNull()
+		.references(() => kMAttributes.id),
+});
+export const kMAttributes = pgTable("k_m_attributes", {
+	...auditColumns,
+	name: text("name").notNull(),
+	desc: text("desc"),
+});
+export const kMRoles = pgTable("k_m_roles", {
+	...auditColumns,
+	name: text("name").notNull(),
+	desc: text("desc"),
+});
+export const kMUniverses = pgTable("k_m_universes", {
+	...auditColumns,
+	name: text("name").notNull(),
+	desc: text("desc"),
+});/*
+export const kJCharacterRole = pgTable(
+	"k_j_character_role",
+	{
+		...auditColumns,
+		characterId: uuid("character_id")
+			.notNull()
+			.references(() => kMCharacters.id),
+		roleId: uuid("role_id")
+			.notNull()
+			.references(() => kMRoles.id),
+	},
+	(table) => ({
+		uniqueCharacterRole: uniqueIndex("uq_character_role").on(
+			table.characterId,
+			table.roleId,
+		),
+	}),
+);
+export const kMCombatSkillTypes = pgTable("k_m_combat_skill_types", {
+	...auditColumns,
+	code: text("code").notNull(), // basic, heavy, skill, ultimate
+	name: text("name").notNull(), // display name: Basic Attack, Ultimate, etc.
+	desc: text("desc"),
+});
+export const kDCombatSkills = pgTable("k_d_combat_skills", {
+	...auditColumns,
+
+	characterId: uuid("character_id")
+		.notNull()
+		.references(() => kMCharacters.id),
+
+	skillTypeId: uuid("skill_type_id")
+		.notNull()
+		.references(() => kMCombatSkillTypes.id),
+
+	name: text("name").notNull(),
+	desc: text("desc").notNull(),
+});*/
 /*
 export const c_weapons = sqliteTable("c_weapons", {
 	...auditColumns,
@@ -482,23 +555,6 @@ export const iWeaponRefs = sqliteTable("i_weapon_refs", {
 		.references(() => iWeapons.id),
 });
 
-export const kMAttributes = sqliteTable("k_m_attributes", {
-	...auditColumns,
-	name: text("name").notNull(),
-	desc: text("desc"),
-});
-
-export const kMRoles = sqliteTable("k_m_roles", {
-	...auditColumns,
-	name: text("name").notNull(),
-	desc: text("desc"),
-});
-
-export const kMUniverses = sqliteTable("k_m_universes", {
-	...auditColumns,
-	name: text("name").notNull(),
-	desc: text("desc"),
-});
 
 export const kMWeapons = sqliteTable("k_m_weapons", {
 	...auditColumns,
@@ -506,42 +562,7 @@ export const kMWeapons = sqliteTable("k_m_weapons", {
 	desc: text("desc"),
 });
 
-export const kMCharacters = sqliteTable("k_m_characters", {
-	...auditColumns,
 
-	name: text("name").notNull(),
-
-	weaponId: uuid("wp_id").references(() => kMWeapons.id),
-
-	universeId: uuid("universe_id")
-		.notNull()
-		.references(() => kMUniverses.id),
-
-	attributeId: uuid("attribute_id")
-		.notNull()
-		.references(() => kMAttributes.id),
-});
-
-export const kJCharacterRole = sqliteTable(
-	"k_j_character_role",
-	{
-		...auditColumns,
-
-		characterId: uuid("character_id")
-			.notNull()
-			.references(() => kMCharacters.id),
-
-		roleId: uuid("role_id")
-			.notNull()
-			.references(() => kMRoles.id),
-	},
-	(table) => ({
-		uniqueCharacterRole: uniqueIndex("uq_character_role").on(
-			table.characterId,
-			table.roleId,
-		),
-	}),
-);
 
 export const kDImages = sqliteTable("k_d_images", {
 	...auditColumns,

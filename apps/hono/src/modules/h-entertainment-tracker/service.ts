@@ -1,4 +1,4 @@
-import { hEntertainmentTracker } from "@dkrh/db/schema";
+import { hEntertainmentTracker,hEntertainmentTrackerType } from "@dkrh/db/schema";
 import * as audit from "@/db/audit";
 import { type Context } from "hono";
 
@@ -9,12 +9,19 @@ export async function getAll(c: Context) {
     c,
     table: table1,
     searchableColumns: [
-			table1.typeId,
 			table1.entryTitle,
 			table1.lastMark,
 			table1.statusDL,
 			table1.statusPublication,
 			table1.linkDL,
+    ],
+    searchableRelations: [
+      {
+        column: table1.typeId,
+        table: hEntertainmentTrackerType,
+        foreignColumn: hEntertainmentTrackerType.id,
+        searchColumn: hEntertainmentTrackerType.name,
+      },
     ],
   });
 }

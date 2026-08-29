@@ -28,9 +28,32 @@ export async function apiFetch(
     headers.set("Content-Type", "application/json");
   }
 
-  return fetch(`${API_URL}${path}`, {
+  /*return fetch(`${API_URL}${path}`, {
     ...options,
     headers,
     credentials: "include",
-  });
+  });*/
+
+  const response = await fetch(
+		`${API_URL}${path}`,
+		{
+			credentials: "include",
+      headers,
+			...options,
+		}
+	);
+
+	if (!response.ok) {
+		const data =
+			await response
+				.json()
+				.catch(() => null);
+
+		throw new Error(
+			data?.message ??
+			"Request failed"
+		);
+	}
+
+	return response;
 }

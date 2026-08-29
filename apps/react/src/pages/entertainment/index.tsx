@@ -5,7 +5,7 @@ export default function EntertainmentPage() {
     return (
         <DkrhCrudPage
             title="Entertainment"
-            apiBase="/api/entertainment"
+            apiBase="/api/h-entertainment-tracker"
             searchPlaceholder="Search entertainment..."
             deleteLabelColumn="entryTitle"
             columns={[

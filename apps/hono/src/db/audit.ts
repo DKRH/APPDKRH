@@ -8,7 +8,7 @@ type InferRow<TTable extends AnyTable<any>> = TTable["$inferSelect"];
 
 type InferInsert<TTable extends AnyTable<any>> = TTable["$inferInsert"];
 
-function stripAuditFieldss<T extends Record<string, unknown>>(
+function stripAuditFields<T extends Record<string, unknown>>(
   data: T,
 ) {
   const {
@@ -139,11 +139,17 @@ export async function auditedFindById<
 
   return c.json(rows[0]) ?? null;
 }
-
+type SearchableRelation = {
+	column: AnyColumn;
+	foreignColumn: AnyColumn;
+	searchColumn: AnyColumn;
+	table: AnyTable<any>;
+};
 type AuditedListOptions<TTable extends AnyTable<any>> = {
   c: Context;
   table: TTable;
   searchableColumns?: AnyColumn[];
+	searchableRelations?: SearchableRelation[];
   offset?: number;
   limit?: number;
 };
@@ -153,6 +159,7 @@ export async function auditedList<
   c,
   table,
   searchableColumns = [],
+	searchableRelations = [],
   offset = 0,
   limit = 50,
 }: AuditedListOptions<TTable>) {
@@ -164,19 +171,47 @@ export async function auditedList<
       (col: any) =>
         like(col, `%${search}%`)
     );
+  const relationSearchConditions =
+	search
+		? searchableRelations.map(
+			(relation) =>
+				like(
+					relation.searchColumn,
+					`%${search}%`
+				)
+		)
+		: [];
   const whereClause =
   searchConditions.length > 0
     ? and(
         isNull(table.deletedAt),
-        or(...searchConditions)
+        or(
+          ...searchConditions,
+          ...relationSearchConditions
+        )
       )
     : isNull(table.deletedAt);
 
-  const data = db
+  let query: any = db
     .select()
-    .from(table)
+    .from(table);
+
+  for (
+    const relation of searchableRelations
+  ) {
+    query = query.leftJoin(
+      relation.table,
+      eq(
+        relation.column,
+        relation.foreignColumn
+      )
+    );
+  }
+
+  const data = query
     .where(whereClause)
     .offset(offsetc)
     .limit(limitc);
+
     return c.json(await data);
 }

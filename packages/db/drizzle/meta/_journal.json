@@ -1,26 +1,12 @@
 {
   "version": "7",
-  "dialect": "sqlite",
+  "dialect": "postgresql",
   "entries": [
     {
       "idx": 0,
-      "version": "6",
-      "when": 1781161424766,
-      "tag": "0000_rich_trauma",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1783400199108,
-      "tag": "0001_pale_freak",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1784599983738,
-      "tag": "0002_aromatic_spectrum",
+      "version": "7",
+      "when": 1787989162303,
+      "tag": "0000_organic_molten_man",
       "breakpoints": true
     }
   ]

@@ -5,7 +5,7 @@ export default function EntertainmentTypePage() {
     return (
         <DkrhCrudPage
             title="Entertainment Types"
-            apiBase="/api/entertainment-types"
+            apiBase="/api/h-entertainment-tracker-type"
             searchPlaceholder="Search entertainment types..."
             deleteLabelColumn="name"
             columns={[
