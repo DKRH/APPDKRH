@@ -32,7 +32,7 @@
 >
 	<div
 		class="
-			bg-zinc-900
+			bg-white
 			border
 			border-zinc-700
 			rounded-lg
@@ -53,7 +53,7 @@
 
 		<p
 			class="
-				text-zinc-300
+				text-zinc-900
 			"
 		>
 			Are you sure you want to delete
@@ -73,9 +73,9 @@
 
 				class="
 					bg-zinc-700
-					px-4
-					py-2
-					rounded
+					px-2
+					py-1
+					text-white
 				"
 			>
 				Cancel
@@ -87,9 +87,9 @@
 				class="
 					bg-red-700
 					hover:bg-red-600
-					px-4
-					py-2
-					rounded
+					px-2
+					py-1
+					text-white
 				"
 			>
 				Delete

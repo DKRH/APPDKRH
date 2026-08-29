@@ -25,6 +25,7 @@
 	"dependencies": {
 		"@dkrh/hono": "workspace:*",
 		"@dkrh/types": "workspace:*",
-		"hono": "^4.13.5"
+		"hono": "^4.13.5",
+		"lucide-svelte": "^1.0.1"
 	}
 }

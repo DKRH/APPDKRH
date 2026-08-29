@@ -6,6 +6,11 @@
 	import DkrhCrudModal
 		from "./DkrhCrudModal.svelte";
 
+	import {
+		Pencil,
+		Trash2,
+	} from "lucide-svelte";
+
 	import DkrhDeleteModal
 		from "./DkrhDeleteModal.svelte";
 
@@ -537,12 +542,12 @@
 										bg-yellow-600
 										hover:bg-yellow-500
 										px-2
-										py-1
+										py-2
 										text-white
 										cursor-pointer
 									"
 								>
-									Edit
+									<Pencil size={16} />
 								</button>
 
 								<button
@@ -554,12 +559,12 @@
 										bg-red-700
 										hover:bg-red-600
 										px-2
-										py-1
+										py-2
 										text-white
 										cursor-pointer
 									"
 								>
-									Delete
+									<Trash2 size={16} />
 								</button>
 							</div>
 						</td>
