@@ -6,7 +6,9 @@
      "./types": "./src/types.ts"
    },
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
+    "dev:routes": "bun run scripts/watch-routes.ts",
+    "dev:server": "bun --hot src/index.ts",
+    "dev": "bun --parallel dev:routes dev:server",
     "start": "bun src/index.ts",
     "db:generate": "bun x drizzle-kit generate",
     "db:migrate": "bun x drizzle-kit migrate",

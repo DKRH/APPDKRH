@@ -1,49 +1,62 @@
 import {
-	sqliteTable,
-	text,
-	integer,
-	real,
-  	index,
-		uniqueIndex,
-} from "drizzle-orm/sqlite-core";
-import { boolean, decimal, timestamp, uuid, uuidkey, varchar } from "./drizzle-sqlite-helper";
-import { randomUUID, } from "crypto";
+  pgTable,
+  text,
+  integer,
+  boolean,
+  timestamp,
+  uuid,
+  index,
+  uniqueIndex,
+  varchar,
+} from "drizzle-orm/pg-core";
 
-export const a_user = sqliteTable("a_user", {
+const auditColumns = {
+  id: uuid("id")
+    .primaryKey()
+    .defaultRandom(),
+
+  createdAt: timestamp("created_at")
+    .notNull()
+    .defaultNow(),
+
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .$onUpdate(() => new Date()),
+
+  deletedAt: timestamp("deleted_at"),
+
+  createdBy: text("created_by"),
+
+  updatedBy: text("updated_by"),
+
+  deletedBy: text("deleted_by"),
+};
+
+// AUTHENTICATION
+export const a_user = pgTable("a_user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
-  emailVerified: integer("email_verified", {
-    mode: "boolean",
-  })
+  emailVerified: boolean("email_verified")
     .default(false)
     .notNull(),
   image: text("image"),
-  createdAt: integer("created_at", {
-    mode: "timestamp",
-  }).notNull(),
-  updatedAt: integer("updated_at", {
-    mode: "timestamp",
-  }).notNull(),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
 });
-export const a_session = sqliteTable(
+
+export const a_session = pgTable(
   "a_session",
   {
     id: text("id").primaryKey(),
 
-    expiresAt: integer("expires_at", {
-      mode: "timestamp",
-    }).notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
 
     token: text("token").notNull().unique(),
 
-    createdAt: integer("created_at", {
-      mode: "timestamp",
-    }).notNull(),
+    createdAt: timestamp("created_at").notNull(),
 
-    updatedAt: integer("updated_at", {
-      mode: "timestamp",
-    }).notNull(),
+    updatedAt: timestamp("updated_at").notNull(),
 
     ipAddress: text("ip_address"),
 
@@ -56,12 +69,10 @@ export const a_session = sqliteTable(
       }),
   },
   (table) => [
-    index("session_userId_idx").on(
-      table.userId,
-    ),
-],
+    index("session_userId_idx").on(table.userId),
+  ],
 );
-export const a_account = sqliteTable(
+export const a_account = pgTable(
   "a_account",
   {
     id: text("id").primaryKey(),
@@ -77,42 +88,32 @@ export const a_account = sqliteTable(
       }),
 
     accessToken: text("access_token"),
+
     refreshToken: text("refresh_token"),
+
     idToken: text("id_token"),
 
-    accessTokenExpiresAt: integer(
+    accessTokenExpiresAt: timestamp(
       "access_token_expires_at",
-      {
-        mode: "timestamp",
-      },
     ),
 
-    refreshTokenExpiresAt: integer(
+    refreshTokenExpiresAt: timestamp(
       "refresh_token_expires_at",
-      {
-        mode: "timestamp",
-      },
     ),
 
     scope: text("scope"),
 
     password: text("password"),
 
-    createdAt: integer("created_at", {
-      mode: "timestamp",
-    }).notNull(),
+    createdAt: timestamp("created_at").notNull(),
 
-    updatedAt: integer("updated_at", {
-      mode: "timestamp",
-    }).notNull(),
+    updatedAt: timestamp("updated_at").notNull(),
   },
   (table) => [
-    index("account_userId_idx").on(
-      table.userId,
-    ),
+    index("account_userId_idx").on(table.userId),
   ],
 );
-export const a_verification = sqliteTable(
+export const a_verification = pgTable(
   "a_verification",
   {
     id: text("id").primaryKey(),
@@ -121,44 +122,236 @@ export const a_verification = sqliteTable(
 
     value: text("value").notNull(),
 
-    expiresAt: integer("expires_at", {
-      mode: "timestamp",
-    }).notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
 
-    createdAt: integer("created_at", {
-      mode: "timestamp",
-    }).notNull(),
+    createdAt: timestamp("created_at").notNull(),
 
-    updatedAt: integer("updated_at", {
-      mode: "timestamp",
-    }).notNull(),
+    updatedAt: timestamp("updated_at").notNull(),
   },
   (table) => [
-    index("verification_identifier_idx").on(table.identifier),
+    index("verification_identifier_idx")
+      .on(table.identifier),
   ],
 );
 
-const auditColumns = {
-	id: uuidkey("id"),
-	createdAt: timestamp("created_at").notNull()
-		.$defaultFn(() => new Date() ), 
-	updatedAt: timestamp("updated_at").notNull()
-		.$defaultFn(() => new Date() )
-		.$onUpdate(() => new Date() ), 
-	deletedAt: timestamp("deleted_at"), 
-	createdBy: text("created_by"), 
-	updatedBy: text("updated_by"), 
-	deletedBy: text("deleted_by")
-};
+// AUTHORIZATION
+export const a1_system = pgTable("a1_system", {
+  ...auditColumns,
+  code: varchar("code", { length: 100 })
+    .notNull()
+    .unique(),
+  name: varchar("name", { length: 255 })
+    .notNull(),
+  description: text("description"),
+  isActive: boolean("is_active")
+    .notNull()
+    .default(true),
+});
+export const a1_role = pgTable(
+  "a1_role",
+  {
+    ...auditColumns,
 
-export const b_passbank = sqliteTable("b_passbank", {
-	...auditColumns,
-	title: text().notNull(),
-	username: text(),
-	password: text(),
-	note: text(),
+    code: varchar("code", { length: 100 })
+      .notNull()
+      .unique(),
+
+    name: varchar("name", { length: 255 })
+      .notNull(),
+
+    description: text("description"),
+
+    isActive: boolean("is_active")
+      .notNull()
+      .default(true),
+  },
+);
+export const a1_permission = pgTable(
+  "a1_permission",
+  {
+    ...auditColumns,
+
+    systemId: uuid("system_id")
+      .notNull()
+      .references(() => a1_system.id, {
+        onDelete: "cascade",
+      }),
+
+    code: varchar("code", { length: 150 })
+      .notNull(),
+
+    name: varchar("name", { length: 255 })
+      .notNull(),
+
+    description: text("description"),
+
+    isActive: boolean("is_active")
+      .notNull()
+      .default(true),
+  },
+  (table) => [
+    uniqueIndex("permission_system_code_unique")
+      .on(table.systemId, table.code),
+
+    index("permission_system_idx")
+      .on(table.systemId),
+  ],
+);
+export const a1_role_permission = pgTable(
+  "a1_role_permission",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .defaultRandom(),
+
+    roleId: uuid("role_id")
+      .notNull()
+      .references(() => a1_role.id, {
+        onDelete: "cascade",
+      }),
+
+    permissionId: uuid("permission_id")
+      .notNull()
+      .references(() => a1_permission.id, {
+        onDelete: "cascade",
+      }),
+
+    createdAt: timestamp("created_at")
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("role_permission_unique")
+      .on(table.roleId, table.permissionId),
+
+    index("role_permission_role_idx")
+      .on(table.roleId),
+
+    index("role_permission_permission_idx")
+      .on(table.permissionId),
+  ],
+);
+export const a1_user_role = pgTable(
+  "a1_user_role",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .defaultRandom(),
+
+    userId: text("user_id")
+      .notNull()
+      .references(() => a_user.id, {
+        onDelete: "cascade",
+      }),
+
+    roleId: uuid("role_id")
+      .notNull()
+      .references(() => a1_role.id, {
+        onDelete: "cascade",
+      }),
+
+    createdAt: timestamp("created_at")
+      .notNull()
+      .defaultNow(),
+
+    createdBy: text("created_by")
+      .references(() => a_user.id),
+  },
+  (table) => [
+    uniqueIndex("user_role_unique")
+      .on(table.userId, table.roleId),
+
+    index("user_role_user_idx")
+      .on(table.userId),
+
+    index("user_role_role_idx")
+      .on(table.roleId),
+  ],
+);
+
+export const b_passbank = pgTable("b_passbank", {
+    ...auditColumns,
+    title: text("title").notNull(),
+    username: text("username"),
+    password: text("password"),
+    note: text("note"),
 });
 
+export const cTodos = pgTable("c_todos", {
+	...auditColumns,
+	name: text().notNull(),
+	isComplete: boolean("is_complete").notNull().default(false),
+});
+export const dNotes = pgTable("d_notes", {
+	...auditColumns,
+	title: text().notNull(),
+	content: text(),
+	isPinned: boolean("is_pinned").notNull().default(false),
+	isArchived: boolean("is_archived").notNull().default(false),
+});
+export const dLabels = pgTable("d_labels", {
+	...auditColumns,
+	name: text().notNull(),
+});
+export const dJNoteLabels = pgTable("d_j_note_labels", {
+	...auditColumns,
+
+	noteId: uuid("note_id")
+		.notNull()
+		.references(() => dNotes.id),
+
+	labelId: uuid("label_id")
+		.notNull()
+		.references(() => dLabels.id),
+});
+export const eUrlShortener = pgTable("e_url_shortener", {
+	...auditColumns,
+
+	originalURL: text("original_url").notNull(),
+	shortenURL: text("shorten_url").notNull(),
+	isLocked: boolean("is_locked").default(false).notNull(),
+	password: text("password"),
+	expireDateUTC: timestamp("expire_date"),
+});
+export const fTextStorage = pgTable("f_text_storage", {
+	...auditColumns,
+
+	url: text("url").notNull(),
+	content: text("content").notNull(),
+	isLocked: boolean("is_locked").default(false).notNull(),
+	password: text("password"),
+	expireDateUTC: timestamp("expire_date"),
+});
+
+export const hEntertainmentTrackerType = pgTable(
+	"g_entertainment_tracker_type",
+	{
+		...auditColumns,
+		name: text("name").notNull(),
+		desc: text("desc"),
+	},
+);
+export const hEntertainmentTracker = pgTable("g_entertainment_tracker", {
+	...auditColumns,
+
+	typeId: uuid("type_id")
+		.notNull()
+		.references(() => hEntertainmentTrackerType.id),
+
+	franchiseTitle: text("franchise_title"),
+	entryTitle: text("entry_title").notNull(),
+	season: text("season"),
+	year: text("year"),
+
+	statusPublication: text("status_publication"),
+	statusDL: text("status_dl"),
+	linkDL: text("link_dl"),
+	lastMark: text("last_mark"),
+});
+
+
+
+/*
 export const c_weapons = sqliteTable("c_weapons", {
 	...auditColumns,
 	status: text("status").default("unreleased"), // active, pending, replacing, unreleased, released, legacy, etc
@@ -198,56 +391,6 @@ export const c_weapons = sqliteTable("c_weapons", {
 	checkHUDIcon: integer("check_hud_icon"),
 });
 
-export const dTodos = sqliteTable("b_todos", {
-	...auditColumns,
-	name: text().notNull(),
-	isComplete: boolean("is_complete").notNull().default(false),
-});
-export const dNotes = sqliteTable("c_notes", {
-	...auditColumns,
-	title: text().notNull(),
-	content: text(),
-	isPinned: boolean("is_pinned").notNull().default(false),
-	isArchived: boolean("is_archived").notNull().default(false),
-});
-export const dLabels = sqliteTable("c_labels", {
-	...auditColumns,
-	name: text().notNull(),
-});
-export const dJNoteLabels = sqliteTable("c_j_note_labels", {
-	...auditColumns,
-
-	noteId: uuid("note_id")
-		.notNull()
-		.references(() => dNotes.id),
-
-	labelId: uuid("label_id")
-		.notNull()
-		.references(() => dLabels.id),
-});
-export const eUrlShortener = sqliteTable("e_url_shortener", {
-	...auditColumns,
-
-	originalURL: text("original_url").notNull(),
-	shortenURL: text("shorten_url").notNull(),
-
-	isLocked: boolean("is_locked").default(false).notNull(),
-
-	password: text("password"),
-	expireDateUTC: timestamp("expire_date"),
-});
-export const fTextStorage = sqliteTable("f_text_storage", {
-	...auditColumns,
-
-	url: text("url").notNull(),
-	content: text("content").notNull(),
-
-	isLocked: boolean("is_locked").default(false).notNull(),
-	isExpire: boolean("is_expire").default(false).notNull(),
-
-	password: text("password"),
-	expireDateUTC: timestamp("expire_date"),
-});
 export const gGameWhitelist = sqliteTable("g_game_whitelist", {
 	...auditColumns,
 
@@ -283,31 +426,6 @@ export const gJGameWhitelistPlatform = sqliteTable("g_j_game_whitelist_platform"
 		),
 	]
 );
-export const hEntertainmentTrackerType = sqliteTable(
-	"g_entertainment_tracker_type",
-	{
-		...auditColumns,
-		name: text("name").notNull(),
-		desc: text("desc"),
-	},
-);
-export const hEntertainmentTracker = sqliteTable("g_entertainment_tracker", {
-	...auditColumns,
-
-	typeId: uuid("type_id")
-		.notNull()
-		.references(() => hEntertainmentTrackerType.id),
-
-	franchiseTitle: text("franchise_title"),
-	entryTitle: text("entry_title").notNull(),
-	season: text("season"),
-	year: text("year"),
-
-	statusPublication: text("status_publication"),
-	statusDL: text("status_dl"),
-	linkDL: text("link_dl"),
-	lastMark: text("last_mark"),
-});
 export const iWeaponOrigins = sqliteTable("i_weapon_origins", {
 	...auditColumns,
 
@@ -965,7 +1083,7 @@ export const oPostedPurchaseReceipts = sqliteTable("o_posted_purchase_receipts",
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
-
+*/
 
 
 

@@ -1,8 +1,12 @@
-//import Database from "bun:sqlite";
-import { drizzle } from "drizzle-orm/bun-sqlite";
-import { dirname, join, isAbsolute, resolve } from "node:path";
+import { SQL } from "bun";
+import { drizzle } from "drizzle-orm/bun-sql";
 import { loadEnv } from "./env";
+export {
+  type InferInsertModel,
+  type InferSelectModel,
+} from "drizzle-orm";
 
+export * from "./schema";
 loadEnv();
 
 console.log("1) execPath:", process.execPath);
@@ -10,22 +14,20 @@ console.log("2) cwd:", process.cwd());
 
 // 1. Grab your environment URL variable
 const appenv = process.env.APP_ENV;
-const dbpath = process.env.DB_PATH;
+const databaseUrl = process.env.HONO_DATABASE_URL;
 const apiUrl = process.env.BETTER_AUTH_URL;
 console.log("3) apiUrl:", apiUrl);
 console.log("4) import.meta.dir:", import.meta.dir);
+console.log("5) ENV:", appenv);
 
-const baseDir = appenv === "development"
-        ? resolve(process.cwd(), "../..")
-        : dirname(process.execPath);
+if (!databaseUrl) {
+  throw new Error(
+    "DATABASE_URL environment variable is required",
+  );
+}
 
-const dbPath = dbpath
-    ? (isAbsolute(dbpath) ? dbpath : resolve(baseDir, dbpath))
-    : resolve(baseDir, "dkrh.db");
+export const client = new SQL(databaseUrl);
 
-console.log("xx:", baseDir);
-console.log("xx:", process.cwd());
-console.log("5) dbPath:", dbPath);
-console.log("6) ENV:", appenv);
-
-export const db = drizzle(dbPath);
+export const db = drizzle({
+  client,
+});
