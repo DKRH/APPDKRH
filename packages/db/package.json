@@ -12,6 +12,7 @@
     "drizzle-orm": "^0.45.2"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.6.0",
     "@types/bun": "latest",
     "better-sqlite3": "^12.10.0",
     "drizzle-kit": "^0.30.6"

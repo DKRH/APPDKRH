@@ -1,5 +1,5 @@
 import { db } from "@dkrh/db";
-import { and, eq, isNull, like, or,
+import { and, eq, isNull, ilike, or,
   type AnyColumn,
   type AnyTable, } from "drizzle-orm";
 import type { Context } from "hono";
@@ -169,13 +169,13 @@ export async function auditedList<
   const searchConditions =
     searchableColumns.map(
       (col: any) =>
-        like(col, `%${search}%`)
+        ilike(col, `%${search}%`)
     );
   const relationSearchConditions =
 	search
 		? searchableRelations.map(
 			(relation) =>
-				like(
+				ilike(
 					relation.searchColumn,
 					`%${search}%`
 				)
@@ -208,10 +208,30 @@ export async function auditedList<
     );
   }
 
-  const data = query
+  const data = await query
     .where(whereClause)
     .offset(offsetc)
     .limit(limitc);
+  if (
+    searchableRelations.length === 0
+  ) {
+    return c.json(data);
+  }
 
-    return c.json(await data);
+  const tableName =
+    (
+		  table as any
+	  )[
+      Symbol.for(
+        "drizzle:Name"
+      )
+    ];
+
+  const result =
+    data.map(
+      (row: any) =>
+        row[tableName] ?? row
+    );
+
+  return c.json(result);
 }

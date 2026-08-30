@@ -7,8 +7,10 @@
 	],
 	"scripts": {
 		"db:init": "cd apps/hono && bun run src/test/initdb.ts",
-		"addback": "cd apps/hono && bun add",
-		"addfront": "cd apps/react && bun add",
+		"add:hono": "cd apps/hono && bun add",
+		"add:sv": "cd apps/svelte && bun add",
+		"add:db": "cd packages/db && bun add",
+
 		"dev": "concurrently -k -n FRONT,BACK \"bun run sv:dev\" \"bun run hono:dev\"",
 		"build:server": "bun run react:build && bun run hono:build && bun scripts/build.ts",
 		"sv:dev": "cd apps/svelte && bun run dev",

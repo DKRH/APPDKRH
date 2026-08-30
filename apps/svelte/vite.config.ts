@@ -7,5 +7,9 @@ export default defineConfig({
 	plugins: [
 		tailwindcss(),
     	sveltekit(),
-	]
+	],
+
+	server: {
+		port: 2600,
+	},
 });

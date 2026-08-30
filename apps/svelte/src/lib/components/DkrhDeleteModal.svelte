@@ -72,10 +72,13 @@
 				onclick={onCancel}
 
 				class="
+					flex-1
 					bg-zinc-700
+					hover:bg-zinc-600
 					px-2
 					py-1
 					text-white
+					cursor-pointer
 				"
 			>
 				Cancel
@@ -85,11 +88,13 @@
 				onclick={onConfirm}
 
 				class="
+					flex-1
 					bg-red-700
 					hover:bg-red-600
 					px-2
 					py-1
 					text-white
+					cursor-pointer
 				"
 			>
 				Delete

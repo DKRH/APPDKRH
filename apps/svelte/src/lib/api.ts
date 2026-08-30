@@ -10,6 +10,7 @@ export const api = hc<AppType>(
   },
 );*/
 
+import { createAuthClient } from "better-auth/svelte";
 const API_URL =
   import.meta.env.VITE_API_URL ??
   "http://localhost:2601";
@@ -57,3 +58,17 @@ export async function apiFetch(
 
 	return response;
 }
+
+export function getAPIURL( path: string = "", ) {
+	return `${API_URL}${path}`;
+}
+
+export const authClient =
+	createAuthClient({
+		baseURL: API_URL,
+
+		fetchOptions: {
+			credentials:
+				"include",
+		},
+	});

@@ -11,8 +11,10 @@
 		apiBase,
 
 		fields,
+		lookups = {},
 
 		onClose,
+		viewOnly = false,
 	}: {
 		title: string;
 
@@ -21,27 +23,200 @@
 		apiBase: string;
 
 		fields: any[];
+		lookups?: Record<string, any[]>;
 
 		onClose: () => void;
+		viewOnly?: Boolean,
 	} = $props();
 
 	let form = $state<any>({});
 
-    $effect(() => {
-        form = {
-            ...data,
-        };
-    });
-	let saving =
-		$state(false);
+	let dropdownOpen = $state<Record<string, boolean>>({});
+	let dropdownSearch = $state<Record<string, string>>({});
 
-	let error =
-		$state("");
+    $effect(() => {
+		const nextForm = {
+			...data,
+		};
+
+		const nextDropdownSearch:
+			Record<string, string> = {};
+
+		for (
+			const field of fields
+		) {
+
+			if (
+				field.type !== "dropdown"
+			) continue;
+
+			const selected =
+				(
+					lookups[
+						field.key
+					] ?? []
+				).find(
+					(item: any) =>
+						item[
+							field.valueField ?? "id"
+						] === nextForm[
+							field.key
+						]
+				);
+
+			if (selected) {
+
+				nextDropdownSearch[
+					field.key
+				] =
+					selected[
+						field.labelField ?? "name"
+					];
+
+			}
+		}
+
+		form = nextForm;
+
+		dropdownSearch =
+			nextDropdownSearch;
+	});
+
+	let saving = $state(false);
+	let error = $state("");
+	let errorTimeout: ReturnType<typeof setTimeout>;
+	function showError(
+		message: string
+	) {
+		error = message;
+
+		clearTimeout(
+			errorTimeout
+		);
+
+		errorTimeout =
+			setTimeout(() => {
+
+				error = "";
+
+			}, 5000);
+	}
+
+	function getFilteredOptions(field: any) {
+		const search =
+			(
+				dropdownSearch[
+					field.key
+				] ?? ""
+			)
+				.toLowerCase();
+
+		return (
+			lookups[
+				field.key
+			] ?? []
+		).filter((item: any) => {
+
+			const label =
+				String(
+					item[
+						field.labelField ?? "name"
+					] ?? ""
+				).toLowerCase();
+
+			return label.includes(
+				search
+			);
+		});
+	}
+	function selectFirstOption(
+		field: any
+	) {
+		const options =
+			getFilteredOptions(
+				field
+			);
+
+		const first =
+			options[0];
+
+		if (!first) {
+			return;
+		}
+
+		form[field.key] =
+			first[
+				field.valueField ??
+				"id"
+			];
+
+		dropdownSearch[field.key] =
+			first[
+				field.labelField ??
+				"name"
+			];
+
+		dropdownOpen[field.key] =
+			false;
+	}
 
 	async function submit() {
-		saving = true;
-
 		error = "";
+		for (
+			const field of fields
+		) {
+
+			if (
+				field.type !== "dropdown"
+			) {
+				continue;
+			}
+
+			if (
+				!form[
+					field.key
+				]
+			) {
+
+				const options =
+					getFilteredOptions(
+						field
+					);
+
+				if (
+					options.length > 0
+				) {
+
+					const first =
+						options[0];
+
+					form[
+						field.key
+					] =
+						first[
+							field.valueField ??
+							"id"
+						];
+
+					dropdownSearch[
+						field.key
+					] =
+						first[
+							field.labelField ??
+							"name"
+						];
+
+				}
+				else {
+
+					error =
+						`${field.label} is required.`;
+
+					return;
+				}
+			}
+		}
+		saving = true;
 
 		try {
 			const isEdit =
@@ -75,9 +250,10 @@
 			onClose();
 		}
 		catch (err: any) {
-			error =
+			showError(
 				err.message ??
-				"Failed to save.";
+				"Failed to save."
+			);
 		}
 		finally {
 			saving = false;
@@ -99,7 +275,7 @@
 >
 	<div
 		class="
-			bg-zinc-900
+			bg-white
 			border
 			border-zinc-700
 			rounded-lg
@@ -117,9 +293,11 @@
 				mb-4
 			"
 		>
-			{form.id
-				? `Edit ${title}`
-				: `Add ${title}`}
+			{viewOnly
+				? `View ${title}`
+				: form.id
+					? `Edit ${title}`
+					: `Add ${title}`}
 		</h2>
 
 		<div
@@ -142,7 +320,149 @@
 						{field.label}
 					</label>
 
-					{#if field.type === "textarea"}
+					{#if field.type === "dropdown"}
+						<div
+							class="
+								relative
+								z-50
+							"
+						>
+
+							<input
+								id={field.key}
+
+								type="text"
+
+								disabled={viewOnly}
+								onblur={() => {
+									if (!viewOnly) {
+										selectFirstOption(field);
+									}
+								}}
+								value={
+									dropdownSearch[
+										field.key
+									] ?? ""
+								}
+
+								onfocus={() =>
+									dropdownOpen[
+										field.key
+									] = true
+								}
+
+								oninput={(event) => {
+
+									dropdownSearch[
+										field.key
+									] =
+										event
+											.currentTarget
+											.value;
+
+									dropdownOpen[
+										field.key
+									] = true;
+
+								}}
+
+								class="
+									w-full
+									border
+									border-zinc-700
+									p-1
+									{viewOnly
+										? 'bg-zinc-400 text-black cursor-default'
+										: 'bg-zinc-100'}
+								"
+							/>
+
+							{#if
+								dropdownOpen[
+									field.key
+								] &&
+								!viewOnly
+							}
+
+								<div
+									class="
+										absolute
+										left-0
+										right-0
+										top-full
+										z-50
+										max-h-48
+										overflow-auto
+										bg-white
+										border
+										border-zinc-300
+									"
+								>
+
+									{#each
+										getFilteredOptions(field)
+										as item
+									}
+
+										<button
+											type="button"
+
+											onmousedown={(event) => {
+
+												event.preventDefault();
+
+												const value =
+													item[
+														field.valueField ??
+														"id"
+													];
+
+												const label =
+													item[
+														field.labelField ??
+														"name"
+													];
+
+												form[
+													field.key
+												] = value;
+
+												dropdownSearch[
+													field.key
+												] = label;
+
+												dropdownOpen[
+													field.key
+												] = false;
+											}}
+
+											class="
+												w-full
+												text-left
+												p-2
+												hover:bg-zinc-100
+												cursor-pointer
+											"
+										>
+
+											{
+												item[
+													field.labelField ??
+													"name"
+												]
+											}
+
+										</button>
+
+									{/each}
+
+								</div>
+
+							{/if}
+
+						</div>
+
+					{:else if field.type === "textarea"}
 
 						<textarea
                             id={field.key}
@@ -151,7 +471,7 @@
 									field.key
 								] ?? ""
 							}
-
+							disabled={viewOnly}
 							oninput={(event) =>
 								form[
 									field.key
@@ -163,11 +483,12 @@
 
 							class="
 								w-full
-								bg-zinc-950
+								{viewOnly
+									? 'bg-zinc-400 text-black cursor-default'
+									: 'bg-zinc-100'}
 								border
 								border-zinc-700
-								rounded
-								p-3
+								p-1
 							"
 						></textarea>
 
@@ -185,6 +506,7 @@
 									field.key
 								] ?? ""
 							}
+							disabled={viewOnly}
 
 							oninput={(event) =>
 								form[
@@ -196,12 +518,13 @@
 							}
 
 							class="
+								{viewOnly
+									? 'bg-zinc-400 text-black cursor-default'
+									: 'bg-zinc-100'}
 								w-full
-								bg-zinc-950
 								border
 								border-zinc-700
-								rounded
-								p-3
+								p-1
 							"
 						/>
 
@@ -212,23 +535,9 @@
 			{/each}
 		</div>
 
-		{#if error}
-
-			<div
-				class="
-					mt-4
-					text-red-400
-				"
-			>
-				{error}
-			</div>
-
-		{/if}
-
 		<div
 			class="
 				flex
-				justify-end
 				gap-2
 				mt-6
 			"
@@ -237,32 +546,63 @@
 				onclick={onClose}
 
 				class="
+					flex-1
 					bg-zinc-700
-					px-4
-					py-2
-					rounded
+					text-white
+					px-2
+					py-1
+					cursor-pointer
 				"
 			>
-				Cancel
+				
+				{viewOnly
+					? "Close"
+					: "Cancel"}
 			</button>
 
-			<button
-				onclick={submit}
+			{#if !viewOnly}
 
-				disabled={saving}
+				<button
+					onclick={submit}
 
-				class="
-					bg-blue-600
-					px-4
-					py-2
-					rounded
-					disabled:opacity-50
-				"
-			>
-				{saving
-					? "Saving..."
-					: "Save"}
-			</button>
+					disabled={saving}
+
+					class="
+						flex-1
+						bg-blue-600
+						text-white
+						px-2
+						py-1
+						cursor-pointer
+						disabled:opacity-50
+					"
+				>
+					{saving
+						? "Saving..."
+						: "Save"}
+				</button>
+			{/if}
 		</div>
 	</div>
+	{#if error}
+		<div
+			class="
+				fixed
+				top-4
+				right-4
+				z-[100]
+				bg-red-600
+				text-white
+				border
+				border-red-700
+				px-4
+				py-3
+				shadow-lg
+				max-w-sm
+			"
+		>
+			{error}
+		</div>
+
+	{/if}
 </div>

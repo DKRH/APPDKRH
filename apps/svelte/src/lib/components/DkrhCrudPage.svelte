@@ -9,6 +9,7 @@
 	import {
 		Pencil,
 		Trash2,
+		Eye,
 	} from "lucide-svelte";
 
 	import DkrhDeleteModal
@@ -56,6 +57,7 @@
 	let rows =
 		$state<any[]>([]);
 
+	let viewing = $state<any>(null);
 	let editing =
 		$state<any>(null);
 
@@ -118,6 +120,10 @@
 		);
 
 		lookups = result;
+		console.log(
+	"LOOKUPS LOADED:",
+	lookups
+);
 	}
 
 	/*
@@ -321,9 +327,11 @@
 								field.valueField ??
 									"id"
 							] ===
-							row[
-								column.key
-							]
+							String(
+								row[
+									column.key
+								]
+							)
 					);
 
 				return (
@@ -533,6 +541,24 @@
 							>
 								<button
 									onclick={() =>
+										viewing = {
+											...row
+										}
+									}
+
+									class="
+										bg-blue-500
+										hover:bg-blue-400
+										p-2
+										text-white
+										cursor-pointer
+									"
+									title="View"
+								>
+									<Eye size={16} />
+								</button>
+								<button
+									onclick={() =>
 										editing =
 											{
 												...row
@@ -605,6 +631,27 @@
 	</div>
 </div>
 
+{#if viewing}
+
+	<DkrhCrudModal
+
+		title={title}
+
+		data={viewing}
+
+		apiBase={apiBase}
+
+		fields={fields}
+
+		viewOnly={true}
+		lookups={lookups}
+		onClose={() => {
+			viewing = null;
+		}}
+	/>
+
+{/if}
+
 {#if editing}
 
 	<DkrhCrudModal
@@ -615,7 +662,7 @@
 		apiBase={apiBase}
 
 		{fields}
-
+		lookups={lookups}
 		onClose={
 			handleModalClose
 		}

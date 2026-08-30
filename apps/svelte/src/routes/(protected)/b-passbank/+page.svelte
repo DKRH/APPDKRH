@@ -1,6 +1,5 @@
 <script lang="ts">
-	import DkrhCrudPage
-		from "$lib/components/DkrhCrudPage.svelte";
+	import DkrhCrudPage from "$lib/components/DkrhCrudPage.svelte";
 
 	const columns = [
 		{

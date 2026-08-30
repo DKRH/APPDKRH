@@ -20,6 +20,25 @@ const app = new Hono();
 | Protected API
 |--------------------------------------------------------------------------
 */
+app.onError(
+	(err, c) => {
+
+		console.error(err);
+
+		return c.json(
+			{
+				success: false,
+
+				message:
+					err instanceof Error
+						? err.message
+						: "Internal server error",
+			},
+			500
+		);
+
+	}
+);
 const protectedApi = new Hono();
 
 // Register middleware FIRST
