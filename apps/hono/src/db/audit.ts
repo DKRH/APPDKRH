@@ -1,237 +1,287 @@
-import { db } from "@dkrh/db";
-import { and, eq, isNull, ilike, or,
-  type AnyColumn,
-  type AnyTable, } from "drizzle-orm";
-import type { Context } from "hono";
+import { db,and,
+	eq,
+	isNull,
+	ilike,
+	or,
+	type AnyColumn,
+	type PgTable, } from "@dkrh/db";
 
-type InferRow<TTable extends AnyTable<any>> = TTable["$inferSelect"];
+type InferRow<TTable extends PgTable<any>> =
+	TTable["$inferSelect"];
 
-type InferInsert<TTable extends AnyTable<any>> = TTable["$inferInsert"];
+type InferInsert<TTable extends PgTable<any>> =
+	TTable["$inferInsert"];
 
-function stripAuditFields<T extends Record<string, unknown>>(
-  data: T,
-) {
-  const {
-    id,
-    createdAt,
-    updatedAt,
-    deletedAt,
-    createdBy,
-    updatedBy,
-    deletedBy,
-    ...clean
-  } = data;
+function stripAuditFields<
+	T extends Record<string, unknown>,
+>(data: T) {
+	const {
+		id,
+		createdAt,
+		updatedAt,
+		deletedAt,
+		createdBy,
+		updatedBy,
+		deletedBy,
+		...clean
+	} = data;
 
-  return clean;
+	return clean;
 }
+
+/* =========================
+   INSERT
+========================= */
 
 export async function auditedInsert<
-  TTable extends AnyTable<any>,
+	TTable extends PgTable<any>,
 >(
-  c: Context,
-  table: TTable,
-  data: InferInsert<TTable>,
+	table: TTable,
+	data: InferInsert<TTable>,
+	userId: string,
 ) {
-  const userId = c.get("userId");
-  const result = await db
-    .insert(table)
-    .values({
-      ...stripAuditFields(data),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      createdBy: userId,
-      updatedBy: userId,
-    })
-    .returning();
+	const result = await db
+		.insert(table)
+		.values({
+			...stripAuditFields(data),
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			createdBy: userId,
+			updatedBy: userId,
+		})
+		.returning();
 
-  return c.json(result[0]);
+	return result[0];
 }
+
+/* =========================
+   UPDATE
+========================= */
+
 export async function auditedUpdate<
-  TTable extends AnyTable<any>,
+	TTable extends PgTable<any>,
 >(
-  c: Context,
-  table: TTable,
-  idColumn: AnyColumn,
-  id: string,
-  data: Partial<InferInsert<TTable>>,
+	table: TTable,
+	idColumn: AnyColumn,
+	id: string,
+	data: Partial<InferInsert<TTable>>,
+	userId: string,
 ) {
-  const userId = c.get("userId");
-  const result = await db
-    .update(table)
-    .set({
-      ...stripAuditFields(data),
-      updatedAt: new Date(),
-      updatedBy: userId,
-    })
-    .where(eq(idColumn, id))
-    .returning();
+	const result = await db
+		.update(table)
+		.set({
+			...stripAuditFields(data),
+			updatedAt: new Date(),
+			updatedBy: userId,
+		})
+		.where(eq(idColumn, id))
+		.returning();
 
-  return c.json(result[0]);
+	return result[0];
 }
+
+/* =========================
+   SOFT DELETE
+========================= */
+
 export async function auditedDelete<
-  TTable extends AnyTable<any>,
+	TTable extends PgTable<any>,
 >(
-  c: Context,
-  table: TTable,
-  idColumn: AnyColumn,
-  id: string,
+	table: TTable,
+	idColumn: AnyColumn,
+	id: string,
+	userId: string,
 ) {
-  const userId = c.get("userId");
-  const result = await db
-    .update(table)
-    .set({
-      deletedAt: new Date(),
-      deletedBy: userId,
-    })
-    .where(eq(idColumn, id))
-    .returning();
+	const result = await db
+		.update(table)
+		.set({
+			deletedAt: new Date(),
+			deletedBy: userId,
+			updatedAt: new Date(),
+			updatedBy: userId,
+		})
+		.where(eq(idColumn, id))
+		.returning();
 
-  return c.json(result[0]);
+	return result[0];
 }
+
+/* =========================
+   RESTORE
+========================= */
+
 export async function auditedRestore<
-  TTable extends AnyTable<any>,
+	TTable extends PgTable<any>,
 >(
-  c: Context,
-  table: TTable,
-  idColumn: AnyColumn,
-  id: string,
+	table: TTable,
+	idColumn: AnyColumn,
+	id: string,
+	userId: string,
 ) {
-  const result = await db
-    .update(table)
-    .set({
-      deletedAt: null,
-      deletedBy: null,
-    })
-    .where(eq(idColumn, id))
-    .returning();
+	const result = await db
+		.update(table)
+		.set({
+			deletedAt: null,
+			deletedBy: null,
+			updatedAt: new Date(),
+			updatedBy: userId,
+		})
+		.where(eq(idColumn, id))
+		.returning();
 
-  return c.json(result[0]);
+	return result[0];
 }
+
+/* =========================
+   DELETE FOREVER
+========================= */
+
 export async function auditedDeleteForever<
-  TTable extends AnyTable<any>,
+	TTable extends PgTable<any>,
 >(
-  c: Context,
-  table: TTable,
-  idColumn: AnyColumn,
-  id: string,
+	table: TTable,
+	idColumn: AnyColumn,
+	id: string,
 ) {
-  await db
-    .delete(table)
-    .where(eq(idColumn, id));
+	await db
+		.delete(table)
+		.where(eq(idColumn, id));
 
-  return c.json({
-    success: true,
-  });
+	return {
+		success: true,
+	};
 }
+
+/* =========================
+   FIND BY ID
+========================= */
+
 export async function auditedFindById<
-  TTable extends AnyTable<any>,
+	TTable extends PgTable<any>,
 >(
-  c: Context,
-  table: TTable,
-  idColumn: AnyColumn,
-  id: string,
+	table: TTable,
+	idColumn: AnyColumn,
+	id: string,
 ) {
-  const rows = await db
-    .select()
-    .from(table)
-    .where(eq(idColumn, id))
-    .limit(1);
+	const rows = await db
+		.select()
+		.from(table)
+		.where(eq(idColumn, id))
+		.limit(1);
 
-  return c.json(rows[0]) ?? null;
+	return rows[0] ?? null;
 }
+
+/* =========================
+   SEARCH RELATION
+========================= */
+
 type SearchableRelation = {
 	column: AnyColumn;
 	foreignColumn: AnyColumn;
 	searchColumn: AnyColumn;
-	table: AnyTable<any>;
+	table: PgTable<any>;
 };
-type AuditedListOptions<TTable extends AnyTable<any>> = {
-  c: Context;
-  table: TTable;
-  searchableColumns?: AnyColumn[];
+
+type AuditedListOptions<
+	TTable extends PgTable<any>,
+> = {
+	table: TTable;
+
+	search?: string;
+
+	searchableColumns?: AnyColumn[];
+
 	searchableRelations?: SearchableRelation[];
-  offset?: number;
-  limit?: number;
+
+	offset?: number;
+
+	limit?: number;
 };
+
+/* =========================
+   LIST
+========================= */
+
 export async function auditedList<
-  TTable extends AnyTable<any>,
+	TTable extends PgTable<any>,
 >({
-  c,
-  table,
-  searchableColumns = [],
+	table,
+	search = "",
+	searchableColumns = [],
 	searchableRelations = [],
-  offset = 0,
-  limit = 50,
+	offset = 0,
+	limit = 50,
 }: AuditedListOptions<TTable>) {
-	const search = c.req.query("search") || "";
-	const offsetc = Number(c.req.query("offset") || offset);
-	const limitc = Number(c.req.query("limit") || limit);
-  const searchConditions =
-    searchableColumns.map(
-      (col: any) =>
-        ilike(col, `%${search}%`)
-    );
-  const relationSearchConditions =
-	search
-		? searchableRelations.map(
-			(relation) =>
-				ilike(
-					relation.searchColumn,
-					`%${search}%`
+	const searchConditions =
+		searchableColumns.map((col) =>
+			ilike(
+				col,
+				`%${search}%`,
+			),
+		);
+
+	const relationSearchConditions =
+		search
+			? searchableRelations.map(
+					(relation) =>
+						ilike(
+							relation.searchColumn,
+							`%${search}%`,
+						),
 				)
-		)
-		: [];
-  const whereClause =
-  searchConditions.length > 0
-    ? and(
-        isNull(table.deletedAt),
-        or(
-          ...searchConditions,
-          ...relationSearchConditions
-        )
-      )
-    : isNull(table.deletedAt);
+			: [];
 
-  let query: any = db
-    .select()
-    .from(table);
+	const searchClause =
+		searchConditions.length > 0
+			? or(
+					...searchConditions,
+					...relationSearchConditions,
+				)
+			: undefined;
 
-  for (
-    const relation of searchableRelations
-  ) {
-    query = query.leftJoin(
-      relation.table,
-      eq(
-        relation.column,
-        relation.foreignColumn
-      )
-    );
-  }
+	const whereClause =
+		searchClause
+			? and(
+					isNull(table.deletedAt),
+					searchClause,
+				)
+			: isNull(table.deletedAt);
 
-  const data = await query
-    .where(whereClause)
-    .offset(offsetc)
-    .limit(limitc);
-  if (
-    searchableRelations.length === 0
-  ) {
-    return c.json(data);
-  }
+	let query: any = db
+		.select()
+		.from(table);
 
-  const tableName =
-    (
-		  table as any
-	  )[
-      Symbol.for(
-        "drizzle:Name"
-      )
-    ];
+	for (
+		const relation of searchableRelations
+	) {
+		query = query.leftJoin(
+			relation.table,
+			eq(
+				relation.column,
+				relation.foreignColumn,
+			),
+		);
+	}
 
-  const result =
-    data.map(
-      (row: any) =>
-        row[tableName] ?? row
-    );
+	const data = await query
+		.where(whereClause)
+		.offset(offset)
+		.limit(limit);
 
-  return c.json(result);
+	if (
+		searchableRelations.length === 0
+	) {
+		return data;
+	}
+
+	const tableName =
+		(table as any)[
+			Symbol.for("drizzle:Name")
+		];
+
+	return data.map(
+		(row: any) =>
+			row[tableName] ?? row,
+	);
 }

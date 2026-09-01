@@ -12,14 +12,8 @@ app.patch("/:id", service.editData);
 
 app.delete("/:id", service.deleteData);
 
-app.post(
-  "/:id/restore",
-  service.restoreData,
-);
+app.post("/:id/restore", service.restoreData,);
 
-app.delete(
-  "/:id/forever",
-  service.deleteDataForever,
-);
+app.delete("/:id/forever", service.deleteDataForever,);
 
 export default app;

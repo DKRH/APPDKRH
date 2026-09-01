@@ -1,174 +1,334 @@
-import { eUrlShortener } from "@dkrh/db/schema";
-import * as audit from "@/db/audit";
 import { type Context } from "hono";
+
+import type {
+	NewEUrlShortener,
+} from "@dkrh/types";
+
 import * as repo from "./repo";
 
-const table1 = eUrlShortener;
+/* =========================
+   GET ALL
+========================= */
 
-export async function getAll(c: Context) {
-  return await audit.auditedList({
-    c,
-    table: table1,
-    searchableColumns: [
-      table1.originalURL,
-      table1.shortenURL,
-      table1.isLocked,
-      table1.password,
-      table1.expireDateUTC,
-    ],
-  });
+export async function getAll(
+	c: Context,
+) {
+	const search =
+		c.req.query("search") ?? "";
+
+	const offset = Number(
+		c.req.query("offset") ?? 0,
+	);
+
+	const limit = Number(
+		c.req.query("limit") ?? 50,
+	);
+
+	const data =
+		await repo.getAll(
+			search,
+			offset,
+			limit,
+		);
+
+	return c.json(data);
 }
 
-function generateShortCode(length = 7) {
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+/* =========================
+   GENERATE SHORT CODE
+========================= */
 
-  const values = crypto.getRandomValues(
-    new Uint32Array(length),
-  );
+function generateShortCode(
+	length = 7,
+) {
+	const chars =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-  return Array.from(
-    values,
-    (value) => chars[value % chars.length],
-  ).join("");
-}
-export async function createData(c: Context) {
-  const body = await c.req.json();
+	const values =
+		crypto.getRandomValues(
+			new Uint32Array(length),
+		);
 
-  const shortCode = generateShortCode();
-
-  return await audit.auditedInsert(c, table1, {
-    originalURL: body.originalURL,
-    shortenURL: shortCode,
-    password: body.password ?? null,
-    expireDateUTC: body.expireDateUTC
-      ? new Date(body.expireDateUTC)
-      : null,
-    isLocked: false,
-  });
-}
-export async function editData(c: Context) {
-  const id = c.req.param("id");
-
-  if (!id) {
-    return c.json(
-      {
-        message: "ID is required",
-      },
-      400,
-    );
-  }
-
-  const body = await c.req.json();
-
-  return await audit.auditedUpdate(
-    c,
-    table1,
-    table1.id,
-    id,
-    {
-      originalURL: body.originalURL,
-      password: body.password ?? null,
-      expireDateUTC: body.expireDateUTC
-        ? new Date(body.expireDateUTC)
-        : null,
-      isLocked: body.isLocked ?? false,
-    },
-  );
-}
-export async function changeLock(c: Context) {
-  const id = c.req.param("id");
-
-  if (!id) {
-    return c.json(
-      {
-        message: "ID is required",
-      },
-      400,
-    );
-  }
-
-  const url = await repo.findByID(id);
-
-  if (!url) {
-    return c.json(
-      {
-        message: "Short URL not found",
-      },
-      404,
-    );
-  }
-
-  const newLockedState = !url.isLocked;
-
-  const updated = await repo.updateLock(
-    id,
-    newLockedState,
-  );
-
-  return c.json({
-    message: newLockedState
-      ? "Short URL locked"
-      : "Short URL unlocked",
-
-    data: updated,
-  });
+	return Array.from(
+		values,
+		(value) =>
+			chars[value % chars.length],
+	).join("");
 }
 
-export async function deleteData(c: Context) {
-  const id = c.req.param("id");
+/* =========================
+   CREATE
+========================= */
 
-  if (!id) {
-    return c.json(
-      {
-        message: "ID is required",
-      },
-      400,
-    );
-  }
+export async function createData(
+	c: Context,
+) {
+	const body =
+		await c.req.json<{
+			originalURL: string;
+			password?: string | null;
+			expireDateUTC?: string | null;
+		}>();
 
-  return await audit.auditedDelete(
-    c,
-    table1,
-    table1.id,
-    id,
-  );
+	const shortCode =
+		generateShortCode();
+
+	const userId =
+		c.get("userId");
+
+	const data =
+		await repo.create(
+			{
+				originalURL:
+					body.originalURL,
+
+				shortenURL:
+					shortCode,
+
+				password:
+					body.password ?? null,
+
+				expireDateUTC:
+					body.expireDateUTC
+						? new Date(
+								body.expireDateUTC,
+							)
+						: null,
+
+				isLocked: false,
+			},
+			userId,
+		);
+
+	return c.json(
+		data,
+		201,
+	);
 }
-export async function restoreData(c: Context) {
-  const id = c.req.param("id");
 
-  if (!id) {
-    return c.json(
-      {
-        message: "ID is required",
-      },
-      400,
-    );
-  }
+/* =========================
+   UPDATE
+========================= */
 
-  return await audit.auditedRestore(
-    c,
-    table1,
-    table1.id,
-    id,
-  );
+export async function editData(
+	c: Context,
+) {
+	const id =
+		c.req.param("id");
+
+	if (!id) {
+		return c.json(
+			{
+				message: "ID is required",
+			},
+			400,
+		);
+	}
+
+	const body =
+		await c.req.json<{
+			originalURL?: string;
+			password?: string | null;
+			expireDateUTC?: string | null;
+			isLocked?: boolean;
+		}>();
+
+	const userId =
+		c.get("userId");
+
+	const data =
+		await repo.update(
+			id,
+			{
+				originalURL:
+					body.originalURL,
+
+				password:
+					body.password ?? null,
+
+				expireDateUTC:
+					body.expireDateUTC
+						? new Date(
+								body.expireDateUTC,
+							)
+						: null,
+
+				isLocked:
+					body.isLocked ?? false,
+			},
+			userId,
+		);
+
+	if (!data) {
+		return c.json(
+			{
+				message:
+					"Short URL not found",
+			},
+			404,
+		);
+	}
+
+	return c.json(data);
 }
-export async function deleteDataForever(c: Context) {
-  const id = c.req.param("id");
 
-  if (!id) {
-    return c.json(
-      {
-        message: "ID is required",
-      },
-      400,
-    );
-  }
+/* =========================
+   CHANGE LOCK
+========================= */
 
-  return await audit.auditedDeleteForever(
-    c,
-    table1,
-    table1.id,
-    id,
-  );
+export async function changeLock(
+	c: Context,
+) {
+	const id =
+		c.req.param("id");
+
+	if (!id) {
+		return c.json(
+			{
+				message: "ID is required",
+			},
+			400,
+		);
+	}
+
+	const url =
+		await repo.findByID(id);
+
+	if (!url) {
+		return c.json(
+			{
+				message:
+					"Short URL not found",
+			},
+			404,
+		);
+	}
+
+	const newLockedState =
+		!url.isLocked;
+
+	const userId =
+		c.get("userId");
+
+	const updated =
+		await repo.updateLock(
+			id,
+			newLockedState,
+			userId,
+		);
+
+	return c.json({
+		message: newLockedState
+			? "Short URL locked"
+			: "Short URL unlocked",
+
+		data: updated,
+	});
+}
+
+/* =========================
+   DELETE
+========================= */
+
+export async function deleteData(
+	c: Context,
+) {
+	const id =
+		c.req.param("id");
+
+	if (!id) {
+		return c.json(
+			{
+				message: "ID is required",
+			},
+			400,
+		);
+	}
+
+	const userId =
+		c.get("userId");
+
+	const data =
+		await repo.remove(
+			id,
+			userId,
+		);
+
+	if (!data) {
+		return c.json(
+			{
+				message:
+					"Short URL not found",
+			},
+			404,
+		);
+	}
+
+	return c.json(data);
+}
+
+/* =========================
+   RESTORE
+========================= */
+
+export async function restoreData(
+	c: Context,
+) {
+	const id =
+		c.req.param("id");
+
+	if (!id) {
+		return c.json(
+			{
+				message: "ID is required",
+			},
+			400,
+		);
+	}
+
+	const userId =
+		c.get("userId");
+
+	const data =
+		await repo.restore(
+			id,
+			userId,
+		);
+
+	if (!data) {
+		return c.json(
+			{
+				message:
+					"Short URL not found",
+			},
+			404,
+		);
+	}
+
+	return c.json(data);
+}
+
+/* =========================
+   DELETE FOREVER
+========================= */
+
+export async function deleteDataForever(
+	c: Context,
+) {
+	const id =
+		c.req.param("id");
+
+	if (!id) {
+		return c.json(
+			{
+				message: "ID is required",
+			},
+			400,
+		);
+	}
+
+	const data =
+		await repo.deleteForever(id);
+
+	return c.json(data);
 }

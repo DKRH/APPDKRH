@@ -9,24 +9,7 @@
         "concurrently": "^10.0.3",
       },
     },
-    "apps/hono": {
-      "name": "@dkrh/hono",
-      "dependencies": {
-        "@better-auth/cli": "^1.4.21",
-        "@dkrh/db": "workspace:*",
-        "@dkrh/types": "workspace:*",
-        "better-auth": "^1.6.16",
-        "chokidar": "^5.0.0",
-        "dotenv": "^17.4.2",
-        "easy-keyvalues": "^1.2.8",
-        "hono": "^4.12.25",
-        "qrcode": "^1.5.4",
-      },
-      "devDependencies": {
-        "@types/bun": "latest",
-      },
-    },
-    "apps/react": {
+    "apps/_old_react (not use)": {
       "name": "front",
       "version": "0.0.0",
       "dependencies": {
@@ -55,6 +38,23 @@
         "typescript": "~6.0.2",
         "typescript-eslint": "^8.59.2",
         "vite": "^8.0.12",
+      },
+    },
+    "apps/hono": {
+      "name": "@dkrh/hono",
+      "dependencies": {
+        "@better-auth/cli": "^1.4.21",
+        "@dkrh/db": "workspace:*",
+        "@dkrh/types": "workspace:*",
+        "better-auth": "^1.6.16",
+        "chokidar": "^5.0.0",
+        "dotenv": "^17.4.2",
+        "easy-keyvalues": "^1.2.8",
+        "hono": "^4.12.25",
+        "qrcode": "^1.5.4",
+      },
+      "devDependencies": {
+        "@types/bun": "latest",
       },
     },
     "apps/svelte": {
@@ -630,7 +630,7 @@
 
     "flatted": ["flatted@3.4.2", "", {}, "sha512-PjDse7RzhcPkIJwy5t7KPWQSZ9cAbzQXcafsetQoD7sOJRQlGikNbx7yZp2OotDnJyrDcbyRq3Ttb18iYOqkxA=="],
 
-    "front": ["front@workspace:apps/react"],
+    "front": ["front@workspace:apps/_old_react (not use)"],
 
     "fs-constants": ["fs-constants@1.0.0", "", {}, "sha512-y6OAwoSIf7FyjMIv94u+b5rdheZEjzR63GTyZJm5qh4Bi+2YgwLCcI/fPFZkL5PSixOt6ZNKm+w+Hfp/Bciwow=="],
 

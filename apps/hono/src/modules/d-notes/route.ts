@@ -5,48 +5,48 @@ import * as service from "./service";
 const app = new Hono();
 
 app.get(
-  "/",
-  service.getAll,
+	"/",
+	service.getAll,
 );
 
 app.get(
-  "/:id",
-  service.getById,
+	"/:id",
+	service.getById,
 );
 
 app.post(
-  "/",
-  service.createData,
+	"/",
+	service.createData,
+);
+
+app.put(
+	"/:id",
+	service.editData,
 );
 
 app.patch(
-  "/:id",
-  service.editData,
+	"/:id/pinned",
+	service.togglePinned,
 );
 
 app.patch(
-  "/:id/pin",
-  service.togglePinned,
-);
-
-app.patch(
-  "/:id/archive",
-  service.toggleArchived,
+	"/:id/archived",
+	service.toggleArchived,
 );
 
 app.delete(
-  "/:id",
-  service.deleteData,
+	"/:id",
+	service.deleteData,
 );
 
-app.post(
-  "/:id/restore",
-  service.restoreData,
+app.put(
+	"/:id/restore",
+	service.restoreData,
 );
 
 app.delete(
-  "/:id/forever",
-  service.deleteDataForever,
+	"/:id/forever",
+	service.deleteDataForever,
 );
 
 export default app;

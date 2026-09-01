@@ -1,329 +1,357 @@
-import {
-  dNotes,
-  dLabels,
-  dJNoteLabels,
-} from "@dkrh/db/schema";
-
-import * as audit from "@/db/audit";
-
-import { db } from "@dkrh/db";
-
-import {
-  and,
-  eq,
-  isNull,
-} from "drizzle-orm";
-
-import { type Context } from "hono";
+import type { Context } from "hono";
 
 import type {
-  DNotes,
-  NewDNotes,
-  UpdateDNotes,
-  DNoteWithLabels,
-  NewDNoteWithLabels,
-  UpdateDNoteWithLabels,
+	NewDNotes,
 } from "@dkrh/types";
 
-const table1 = dNotes;
+import * as repo from "./repo";
 
-export async function getAll(c: Context) {
-  return await audit.auditedList({
-    c,
-    table: table1,
-    searchableColumns: [
-      table1.title,
-      table1.content,
-    ],
-  });
+/* =========================
+   GET ALL
+========================= */
+
+export async function getAll(
+	c: Context,
+) {
+	const search =
+		c.req.query("search") ?? "";
+
+	const offset = Number(
+		c.req.query("offset") ?? 0,
+	);
+
+	const limit = Number(
+		c.req.query("limit") ?? 50,
+	);
+
+	const data =
+		await repo.getAll(
+			search,
+			offset,
+			limit,
+		);
+
+	return c.json(data);
 }
 
-export async function getById(c: Context) {
-  const id = c.req.param("id");
+/* =========================
+   GET BY ID
+========================= */
 
-  if (!id) {
-    return c.json(
-      {
-        message: "ID is required",
-      },
-      400,
-    );
-  }
+export async function getById(
+	c: Context,
+) {
+	const id =
+		c.req.param("id");
 
-  const [note] = await db
-    .select()
-    .from(table1)
-    .where(
-      and(
-        eq(table1.id, id),
-        isNull(table1.deletedAt),
-      ),
-    )
-    .limit(1);
+	if (!id) {
+		return c.json(
+			{
+				message: "ID is required",
+			},
+			400,
+		);
+	}
 
-  if (!note) {
-    return c.json(
-      {
-        message: "Note not found",
-      },
-      404,
-    );
-  }
+	const data =
+		await repo.getById(id);
 
-  const labels = await db
-    .select({
-      id: dLabels.id,
-      name: dLabels.name,
-    })
-    .from(dJNoteLabels)
-    .innerJoin(
-      dLabels,
-      eq(
-        dJNoteLabels.labelId,
-        dLabels.id,
-      ),
-    )
-    .where(
-      and(
-        eq(dJNoteLabels.noteId, id),
-        isNull(dJNoteLabels.deletedAt),
-        isNull(dLabels.deletedAt),
-      ),
-    );
+	if (!data) {
+		return c.json(
+			{
+				message: "Note not found",
+			},
+			404,
+		);
+	}
 
-  return c.json({
-    ...note,
-    labels,
-  });
+	return c.json(data);
 }
 
-export async function createData(c: Context) {
-  const body = await c.req.json<
-    NewDNotes & {
-      labelIds?: string[];
-    }
-  >();
+/* =========================
+   CREATE
+========================= */
 
-  const {
-    labelIds = [],
-    ...noteData
-  } = body;
+export async function createData(
+	c: Context,
+) {
+	const body =
+		await c.req.json<
+			NewDNotes & {
+				labelIds?: string[];
+			}
+		>();
 
-  const note = await audit.auditedInsert(
-    c,
-    table1,
-    {
-      ...noteData,
-    },
-  );
+	const {
+		labelIds = [],
+		...noteData
+	} = body;
 
-  if (
-    !note ||
-    !Array.isArray(labelIds) ||
-    labelIds.length === 0
-  ) {
-    return note;
-  }
+	const userId =
+		c.get("userId");
 
-  const noteId = note.id;
+	const data =
+		await repo.create(
+			noteData,
+			Array.isArray(labelIds)
+				? labelIds
+				: [],
+			userId,
+		);
 
-  for (const labelId of labelIds) {
-    await audit.auditedInsert(
-      c,
-      dJNoteLabels,
-      {
-        noteId,
-        labelId,
-      },
-    );
-  }
-
-  return note;
+	return c.json(
+		data,
+		201,
+	);
 }
 
-export async function editData(c: Context) {
-  const id = c.req.param("id");
+/* =========================
+   UPDATE
+========================= */
 
-  if (!id) {
-    return c.json(
-      {
-        message: "ID is required",
-      },
-      400,
-    );
-  }
+export async function editData(
+	c: Context,
+) {
+	const id =
+		c.req.param("id");
 
-  const body = await c.req.json<
-    Partial<NewDNotes> & {
-      labelIds?: string[];
-    }
-  >();
+	if (!id) {
+		return c.json(
+			{
+				message: "ID is required",
+			},
+			400,
+		);
+	}
 
-  const {
-    labelIds,
-    ...noteData
-  } = body;
+	const body =
+		await c.req.json<
+			Partial<NewDNotes> & {
+				labelIds?: string[];
+			}
+		>();
 
-  const result = await audit.auditedUpdate(
-    c,
-    table1,
-    table1.id,
-    id,
-    {
-      ...noteData,
-    },
-  );
+	const {
+		labelIds,
+		...noteData
+	} = body;
 
-  if (Array.isArray(labelIds)) {
-    const oldRelations = await db
-      .select()
-      .from(dJNoteLabels)
-      .where(
-        and(
-          eq(
-            dJNoteLabels.noteId,
-            id,
-          ),
-          isNull(
-            dJNoteLabels.deletedAt,
-          ),
-        ),
-      );
+	const userId =
+		c.get("userId");
 
-    for (const relation of oldRelations) {
-      await audit.auditedDelete(
-        c,
-        dJNoteLabels,
-        dJNoteLabels.id,
-        relation.id,
-      );
-    }
+	const data =
+		await repo.update(
+			id,
+			noteData,
+			labelIds,
+			userId,
+		);
 
-    for (const labelId of labelIds) {
-      await audit.auditedInsert(
-        c,
-        dJNoteLabels,
-        {
-          noteId: id,
-          labelId,
-        },
-      );
-    }
-  }
+	if (!data) {
+		return c.json(
+			{
+				message: "Note not found",
+			},
+			404,
+		);
+	}
 
-  return result;
+	return c.json(data);
 }
 
-export async function togglePinned(c: Context) {
-  const id = c.req.param("id");
+/* =========================
+   TOGGLE PINNED
+========================= */
 
-  if (!id) {
-    return c.json(
-      {
-        message: "ID is required",
-      },
-      400,
-    );
-  }
+export async function togglePinned(
+	c: Context,
+) {
+	const id =
+		c.req.param("id");
 
-  const body = await c.req.json<{
-    isPinned: boolean;
-  }>();
+	if (!id) {
+		return c.json(
+			{
+				message: "ID is required",
+			},
+			400,
+		);
+	}
 
-  return await audit.auditedUpdate(
-    c,
-    table1,
-    table1.id,
-    id,
-    {
-      isPinned: body.isPinned,
-    },
-  );
+	const body =
+		await c.req.json<{
+			isPinned: boolean;
+		}>();
+
+	const userId =
+		c.get("userId");
+
+	const data =
+		await repo.togglePinned(
+			id,
+			body.isPinned,
+			userId,
+		);
+
+	if (!data) {
+		return c.json(
+			{
+				message: "Note not found",
+			},
+			404,
+		);
+	}
+
+	return c.json(data);
 }
 
-export async function toggleArchived(c: Context) {
-  const id = c.req.param("id");
+/* =========================
+   TOGGLE ARCHIVED
+========================= */
 
-  if (!id) {
-    return c.json(
-      {
-        message: "ID is required",
-      },
-      400,
-    );
-  }
+export async function toggleArchived(
+	c: Context,
+) {
+	const id =
+		c.req.param("id");
 
-  const body = await c.req.json<{
-    isArchived: boolean;
-  }>();
+	if (!id) {
+		return c.json(
+			{
+				message: "ID is required",
+			},
+			400,
+		);
+	}
 
-  return await audit.auditedUpdate(
-    c,
-    table1,
-    table1.id,
-    id,
-    {
-      isArchived: body.isArchived,
-    },
-  );
+	const body =
+		await c.req.json<{
+			isArchived: boolean;
+		}>();
+
+	const userId =
+		c.get("userId");
+
+	const data =
+		await repo.toggleArchived(
+			id,
+			body.isArchived,
+			userId,
+		);
+
+	if (!data) {
+		return c.json(
+			{
+				message: "Note not found",
+			},
+			404,
+		);
+	}
+
+	return c.json(data);
 }
 
-export async function deleteData(c: Context) {
-  const id = c.req.param("id");
+/* =========================
+   SOFT DELETE
+========================= */
 
-  if (!id) {
-    return c.json(
-      {
-        message: "ID is required",
-      },
-      400,
-    );
-  }
+export async function deleteData(
+	c: Context,
+) {
+	const id =
+		c.req.param("id");
 
-  return await audit.auditedDelete(
-    c,
-    table1,
-    table1.id,
-    id,
-  );
+	if (!id) {
+		return c.json(
+			{
+				message: "ID is required",
+			},
+			400,
+		);
+	}
+
+	const userId =
+		c.get("userId");
+
+	const data =
+		await repo.remove(
+			id,
+			userId,
+		);
+
+	if (!data) {
+		return c.json(
+			{
+				message: "Note not found",
+			},
+			404,
+		);
+	}
+
+	return c.json(data);
 }
 
-export async function restoreData(c: Context) {
-  const id = c.req.param("id");
+/* =========================
+   RESTORE
+========================= */
 
-  if (!id) {
-    return c.json(
-      {
-        message: "ID is required",
-      },
-      400,
-    );
-  }
+export async function restoreData(
+	c: Context,
+) {
+	const id =
+		c.req.param("id");
 
-  return await audit.auditedRestore(
-    c,
-    table1,
-    table1.id,
-    id,
-  );
+	if (!id) {
+		return c.json(
+			{
+				message: "ID is required",
+			},
+			400,
+		);
+	}
+
+	const userId =
+		c.get("userId");
+
+	const data =
+		await repo.restore(
+			id,
+			userId,
+		);
+
+	if (!data) {
+		return c.json(
+			{
+				message: "Note not found",
+			},
+			404,
+		);
+	}
+
+	return c.json(data);
 }
 
-export async function deleteDataForever(c: Context) {
-  const id = c.req.param("id");
+/* =========================
+   DELETE FOREVER
+========================= */
 
-  if (!id) {
-    return c.json(
-      {
-        message: "ID is required",
-      },
-      400,
-    );
-  }
+export async function deleteDataForever(
+	c: Context,
+) {
+	const id =
+		c.req.param("id");
 
-  return await audit.auditedDeleteForever(
-    c,
-    table1,
-    table1.id,
-    id,
-  );
+	if (!id) {
+		return c.json(
+			{
+				message: "ID is required",
+			},
+			400,
+		);
+	}
+
+	const data =
+		await repo.deleteForever(id);
+
+	return c.json(data);
 }

@@ -5,6 +5,7 @@ import { authMiddleware } from "./middleware/auth";
 import { cors } from "hono/cors";
 import { createProtectedApi } from "./routes";
 import { dirname, resolve } from "node:path";
+import healthRoutes from "./routes/health";
 
 const isDevelopment =
   process.env.APP_ENV === "development";
@@ -59,9 +60,12 @@ app.use(
   cors({
     origin: [
       "http://localhost:2600",
+      "http://localhost:2601",
+      "http://localhost:2602",
       "http://localhost:5173",
       "http://127.0.0.1:2600",
       "http://127.0.0.1:5173",
+      "http://127.0.0.1:2602",
     ],
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
@@ -79,6 +83,8 @@ app.route("/api/auth", auth);
 
 // All routes inside here require login
 app.route("/api", protectedApi);
+
+app.route("/check", healthRoutes);
 
 /*
 |--------------------------------------------------------------------------

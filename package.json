@@ -12,7 +12,7 @@
 		"add:db": "cd packages/db && bun add",
 
 		"dev": "concurrently -k -n FRONT,BACK \"bun run sv:dev\" \"bun run hono:dev\"",
-		"build:server": "bun run react:build && bun run hono:build && bun scripts/build.ts",
+		
 		"sv:dev": "cd apps/svelte && bun run dev",
 		"sv:init": "cd apps/svelte && bun install",
 		"sv:build": "cd apps/svelte && bun run build",
@@ -34,8 +34,10 @@
 		"fast:build": "cd apps/fast && uv run python -m nuitka --onefile --standalone app/main.py",
 		"build:wpf": "cd apps/wpf && dotnet publish -c Release --self-contained true -p:PublishSingleFile=true",
 		"build:desktop": "bun run build:wpf && bun scripts/build_desktop.ts",
+		
+		"build:app": "bun run sv:build && bun run hono:build && bun scripts/build.ts",
 		"deploy": "bun scripts/deploy.ts",
-		"deploy:server": "bun run build:server && bun run deploy"
+		"deploy:app": "bun run build:app && bun run deploy"
 	},
 	"devDependencies": {
 		"@types/bun": "^1.4.0",
