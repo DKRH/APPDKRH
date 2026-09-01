@@ -5,7 +5,7 @@ set -e
 cd "$(dirname "$0")"
 
 echo "==> Local Building..."
-bun run build:server
+bun run build:app
 
 # Load .env
 if [ -f .env ]; then
