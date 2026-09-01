@@ -5,6 +5,7 @@ import { authMiddleware } from "./middleware/auth";
 import { cors } from "hono/cors";
 import { createProtectedApi } from "./routes";
 import { dirname, resolve } from "node:path";
+import healthRoutes from "./routes/health";
 
 const isDevelopment =
   process.env.APP_ENV === "development";
@@ -82,6 +83,8 @@ app.route("/api/auth", auth);
 
 // All routes inside here require login
 app.route("/api", protectedApi);
+
+app.route("/check", healthRoutes);
 
 /*
 |--------------------------------------------------------------------------

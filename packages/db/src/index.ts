@@ -15,7 +15,8 @@ export {
 	isNull,
 	ilike,
 	or,
-	desc
+	desc,
+	sql 
 } from "drizzle-orm";
 
 export type {
