@@ -9,6 +9,23 @@ export {
 export * from "./schema";
 loadEnv();
 
+export {
+	and,
+	eq,
+	isNull,
+	ilike,
+	or,
+} from "drizzle-orm";
+
+export type {
+	AnyColumn,
+} from "drizzle-orm";
+
+export type {
+	PgTable,
+	PgColumn,
+} from "drizzle-orm/pg-core";
+
 console.log("1) execPath:", process.execPath);
 console.log("2) cwd:", process.cwd());
 

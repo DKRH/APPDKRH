@@ -42,7 +42,7 @@ app.onError(
 const protectedApi = new Hono();
 
 // Register middleware FIRST
-protectedApi.use("*", authMiddleware);
+//protectedApi.use("*", authMiddleware);
 
 // Then register all dynamic routes inside it
 const routes = await createProtectedApi();
@@ -59,11 +59,14 @@ app.use(
   cors({
     origin: [
       "http://localhost:2600",
+      "http://localhost:2601",
+      "http://localhost:2602",
       "http://localhost:5173",
       "http://127.0.0.1:2600",
       "http://127.0.0.1:5173",
+      "http://127.0.0.1:2602",
     ],
-    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   }),

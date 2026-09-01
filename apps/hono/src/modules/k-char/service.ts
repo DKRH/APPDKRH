@@ -1,8 +1,4 @@
-import type { Context } from "hono";
-
-import type {
-	NewCTodos,
-} from "@dkrh/types";
+import { type Context } from "hono";
 
 import * as repo from "./repo";
 
@@ -20,11 +16,12 @@ export async function getAll(
 		c.req.query("limit") ?? 50,
 	);
 
-	const data = await repo.getAll(
-		search,
-		offset,
-		limit,
-	);
+	const data =
+		await repo.getAll(
+			search,
+			offset,
+			limit,
+		);
 
 	return c.json(data);
 }
@@ -33,23 +30,28 @@ export async function createData(
 	c: Context,
 ) {
 	const body =
-		await c.req.json<NewCTodos>();
+		await c.req.json();
 
 	const userId =
 		c.get("userId");
 
-	const data = await repo.create(
-		body,
-		userId,
-	);
+	const data =
+		await repo.create(
+			body,
+			userId,
+		);
 
-	return c.json(data, 201);
+	return c.json(
+		data,
+		201,
+	);
 }
 
 export async function editData(
 	c: Context,
 ) {
-	const id = c.req.param("id");
+	const id =
+		c.req.param("id");
 
 	if (!id) {
 		return c.json(
@@ -61,66 +63,23 @@ export async function editData(
 	}
 
 	const body =
-		await c.req.json<
-			Partial<NewCTodos>
-		>();
+		await c.req.json();
 
 	const userId =
 		c.get("userId");
 
-	const data = await repo.update(
-		id,
-		body,
-		userId,
-	);
+	const data =
+		await repo.update(
+			id,
+			body,
+			userId,
+		);
 
 	if (!data) {
 		return c.json(
 			{
-				message: "Todo not found",
-			},
-			404,
-		);
-	}
-
-	return c.json(data);
-}
-
-export async function toggleComplete(
-	c: Context,
-) {
-	const id = c.req.param("id");
-
-	if (!id) {
-		return c.json(
-			{
-				message: "ID is required",
-			},
-			400,
-		);
-	}
-
-	const body =
-		await c.req.json<{
-			isComplete: boolean;
-		}>();
-
-	const userId =
-		c.get("userId");
-
-	const data = await repo.update(
-		id,
-		{
-			isComplete:
-				body.isComplete,
-		},
-		userId,
-	);
-
-	if (!data) {
-		return c.json(
-			{
-				message: "Todo not found",
+				message:
+					"Character not found",
 			},
 			404,
 		);
@@ -132,7 +91,8 @@ export async function toggleComplete(
 export async function deleteData(
 	c: Context,
 ) {
-	const id = c.req.param("id");
+	const id =
+		c.req.param("id");
 
 	if (!id) {
 		return c.json(
@@ -146,15 +106,17 @@ export async function deleteData(
 	const userId =
 		c.get("userId");
 
-	const data = await repo.remove(
-		id,
-		userId,
-	);
+	const data =
+		await repo.remove(
+			id,
+			userId,
+		);
 
 	if (!data) {
 		return c.json(
 			{
-				message: "Todo not found",
+				message:
+					"Character not found",
 			},
 			404,
 		);
@@ -166,7 +128,8 @@ export async function deleteData(
 export async function restoreData(
 	c: Context,
 ) {
-	const id = c.req.param("id");
+	const id =
+		c.req.param("id");
 
 	if (!id) {
 		return c.json(
@@ -180,15 +143,17 @@ export async function restoreData(
 	const userId =
 		c.get("userId");
 
-	const data = await repo.restore(
-		id,
-		userId,
-	);
+	const data =
+		await repo.restore(
+			id,
+			userId,
+		);
 
 	if (!data) {
 		return c.json(
 			{
-				message: "Todo not found",
+				message:
+					"Character not found",
 			},
 			404,
 		);
@@ -200,7 +165,8 @@ export async function restoreData(
 export async function deleteDataForever(
 	c: Context,
 ) {
-	const id = c.req.param("id");
+	const id =
+		c.req.param("id");
 
 	if (!id) {
 		return c.json(

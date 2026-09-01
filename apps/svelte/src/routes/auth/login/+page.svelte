@@ -88,7 +88,7 @@
 	<div>
 		Loading...
 	</div>
-{:else if $sessionState.data}
+{:else if !$sessionState.data}
 	<div
 		class="
 			min-h-screen

@@ -1,107 +1,217 @@
-import { b_passbank } from "@dkrh/db/schema";
-import * as audit from "@/db/audit";
-import { type Context } from "hono";
+import type { Context } from "hono";
+
 import type {
-  BPassbank,
-  NewBPassbank,
-  UpdateBPassbank,
+	NewBPassbank,
 } from "@dkrh/types";
 
-const table1 = b_passbank;
+import * as repo from "./repo";
 
-export async function getAll(c: Context) {
-  return await audit.auditedList({
-    c,
-    table: table1,
-    searchableColumns: [
-			table1.title,
-			table1.username,
-			table1.note,
-    ],
-  });
+export async function getAll(
+	c: Context,
+) {
+	const search =
+		c.req.query("search") ?? "";
+
+	const offset = Number(
+		c.req.query("offset") ?? 0,
+	);
+
+	const limit = Number(
+		c.req.query("limit") ?? 50,
+	);
+
+	const data =
+		await repo.getAll(
+			search,
+			offset,
+			limit,
+		);
+
+	return c.json(data);
 }
 
-export async function createData(c: Context) {
-  const body = await c.req.json<NewBPassbank>();
+export async function createData(
+	c: Context,
+) {
+	const body =
+		await c.req.json<NewBPassbank>();
 
-  return await audit.auditedInsert(c, table1, {
-    ...body,
-  });
+	const userId =
+		c.get("userId");
+
+	const data =
+		await repo.create(
+			body,
+			userId,
+		);
+
+	return c.json(
+		data,
+		201,
+	);
 }
 
-export async function editData(c: Context) {
-  const id = c.req.param("id");
+export async function editData(
+	c: Context,
+) {
+	const id =
+		c.req.param("id");
 
-  if (!id) {
-    return c.json(
-      {
-        message: "ID is required",
-      },
-      400,
-    );
-  }
+	if (!id) {
+		return c.json(
+			{
+				message: "ID is required",
+			},
+			400,
+		);
+	}
 
-  const body = await c.req.json<Partial<NewBPassbank>>();
+	const body =
+		await c.req.json<
+			Partial<NewBPassbank>
+		>();
 
-  return await audit.auditedUpdate(c, table1, table1.id, id, {
-    ...body,
-  });
+	const userId =
+		c.get("userId");
+
+	const data =
+		await repo.update(
+			id,
+			body,
+			userId,
+		);
+
+	if (!data) {
+		return c.json(
+			{
+				message: "Passbank not found",
+			},
+			404,
+		);
+	}
+
+	return c.json(data);
 }
 
-export async function deleteData(c: Context) {
-  const id = c.req.param("id");
+export async function deleteData(
+	c: Context,
+) {
+	const id =
+		c.req.param("id");
 
-  if (!id) {
-    return c.json(
-      {
-        message: "ID is required",
-      },
-      400,
-    );
-  }
+	if (!id) {
+		return c.json(
+			{
+				message: "ID is required",
+			},
+			400,
+		);
+	}
 
-  return await audit.auditedDelete(
-    c,
-    table1,
-    table1.id,
-    id,
-  );
+	const userId =
+		c.get("userId");
+
+	const data =
+		await repo.remove(
+			id,
+			userId,
+		);
+
+	if (!data) {
+		return c.json(
+			{
+				message: "Passbank not found",
+			},
+			404,
+		);
+	}
+
+	return c.json(data);
 }
-export async function restoreData(c: Context) {
-  const id = c.req.param("id");
 
-  if (!id) {
-    return c.json(
-      {
-        message: "ID is required",
-      },
-      400,
-    );
-  }
+export async function restoreData(
+	c: Context,
+) {
+	const id =
+		c.req.param("id");
 
-  return await audit.auditedRestore(
-    c,
-    table1,
-    table1.id,
-    id,
-  );
+	if (!id) {
+		return c.json(
+			{
+				message: "ID is required",
+			},
+			400,
+		);
+	}
+
+	const userId =
+		c.get("userId");
+
+	const data =
+		await repo.restore(
+			id,
+			userId,
+		);
+
+	if (!data) {
+		return c.json(
+			{
+				message: "Passbank not found",
+			},
+			404,
+		);
+	}
+
+	return c.json(data);
 }
-export async function deleteDataForever(c: Context) {
-  const id = c.req.param("id");
 
-  if (!id) {
-    return c.json(
-      {
-        message: "ID is required",
-      },
-      400,
-    );
-  }
+export async function deleteDataForever(
+	c: Context,
+) {
+	const id =
+		c.req.param("id");
 
-  return await audit.auditedDeleteForever(
-    c,
-    table1,
-    table1.id,
-    id,
-  );
+	if (!id) {
+		return c.json(
+			{
+				message: "ID is required",
+			},
+			400,
+		);
+	}
+
+	const data =
+		await repo.deleteForever(id);
+
+	return c.json(data);
+}
+
+export async function getById(
+	c: Context,
+) {
+	const id =
+		c.req.param("id");
+
+	if (!id) {
+		return c.json(
+			{
+				message: "ID is required",
+			},
+			400,
+		);
+	}
+
+	const data =
+		await repo.findById(id);
+
+	if (!data) {
+		return c.json(
+			{
+				message: "Passbank not found",
+			},
+			404,
+		);
+	}
+
+	return c.json(data);
 }
