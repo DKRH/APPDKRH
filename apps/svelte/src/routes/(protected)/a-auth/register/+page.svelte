@@ -78,6 +78,9 @@
 	}
 </script>
 
+<svelte:head>
+	<title>DKRH | Register</title>
+</svelte:head>
 <div
 	class="
 		min-h-screen

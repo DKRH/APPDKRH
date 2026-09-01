@@ -12,5 +12,11 @@ export default defineConfig({
 	server: {
 		port: 2600,
 		strictPort: true,
+		proxy: {
+			"/api": {
+				target: "http://localhost:2601",
+				changeOrigin: true,
+			},
+		},
 	},
 });

@@ -322,6 +322,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>DKRH | Todos</title>
+</svelte:head>
+
 <div class="mx-auto w-full max-w-4xl">
 
 	<!-- Header -->
@@ -340,8 +344,9 @@
 			<h1
 				class="
 					text-2xl
-					font-bold
-					text-zinc-900
+					font-semibold
+					tracking-tight
+					text-white
 				"
 			>
 				Todos
@@ -355,27 +360,23 @@
 				"
 			>
 				{remaining} remaining
-				<span class="mx-1">•</span>
+				<span class="mx-1 text-zinc-700">•</span>
 				{completed} completed
 			</p>
 		</div>
 
-		<div
-			class="
-				flex
-				items-center
-				gap-2
-			"
-		>
+		<div class="flex items-center gap-2">
 			<div
 				class="
 					rounded-full
-					bg-blue-50
+					border
+					border-teal-500/20
+					bg-teal-500/10
 					px-3
 					py-1
 					text-sm
 					font-medium
-					text-blue-600
+					text-teal-400
 				"
 			>
 				{todos.length} total
@@ -390,10 +391,11 @@
 			mb-4
 			rounded-xl
 			border
-			border-zinc-200
-			bg-white
+			border-zinc-800
+			bg-zinc-900/70
 			p-4
-			shadow-sm
+			shadow-lg
+			shadow-black/10
 		"
 	>
 		<div
@@ -415,17 +417,19 @@
 					flex-1
 					rounded-lg
 					border
-					border-zinc-300
-					bg-zinc-50
+					border-zinc-700
+					bg-zinc-950/70
 					px-4
 					py-2.5
 					text-sm
+					text-zinc-100
+					placeholder:text-zinc-600
 					outline-none
 					transition
-					focus:border-blue-500
-					focus:bg-white
+					focus:border-teal-500/60
 					focus:ring-2
-					focus:ring-blue-100
+					focus:ring-teal-500/10
+					disabled:cursor-not-allowed
 					disabled:opacity-50
 				"
 			/>
@@ -439,16 +443,19 @@
 				}
 				class="
 					rounded-lg
-					bg-blue-600
+					bg-teal-500
 					px-5
 					py-2.5
 					text-sm
-					font-medium
-					text-white
-					transition
-					hover:bg-blue-700
+					font-semibold
+					text-zinc-950
+					transition-all
+					hover:bg-teal-400
+					hover:shadow-lg
+					hover:shadow-teal-500/10
+					active:scale-[0.98]
 					disabled:cursor-not-allowed
-					disabled:opacity-50
+					disabled:opacity-40
 				"
 			>
 				{saving
@@ -468,6 +475,7 @@
 		"
 	>
 		<div class="relative flex-1">
+
 			<svg
 				class="
 					pointer-events-none
@@ -478,7 +486,7 @@
 					!w-4
 					-shrink-0
 					-translate-y-1/2
-					text-zinc-400
+					text-zinc-600
 				"
 				fill="none"
 				viewBox="0 0 24 24"
@@ -496,9 +504,7 @@
 				type="text"
 				bind:value={search}
 				onkeydown={(event) => {
-					if (
-						event.key === "Enter"
-					) {
+					if (event.key === "Enter") {
 						handleSearch();
 					}
 				}}
@@ -507,17 +513,19 @@
 					w-full
 					rounded-lg
 					border
-					border-zinc-300
-					bg-white
+					border-zinc-700
+					bg-zinc-900/70
 					py-2.5
 					pl-10
 					pr-4
 					text-sm
+					text-zinc-100
+					placeholder:text-zinc-600
 					outline-none
 					transition
-					focus:border-blue-500
+					focus:border-teal-500/60
 					focus:ring-2
-					focus:ring-blue-100
+					focus:ring-teal-500/10
 				"
 			/>
 		</div>
@@ -528,14 +536,16 @@
 			class="
 				rounded-lg
 				border
-				border-zinc-300
-				bg-white
+				border-zinc-700
+				bg-zinc-900
 				px-4
 				text-sm
 				font-medium
-				text-zinc-700
+				text-zinc-300
 				transition
-				hover:bg-zinc-50
+				hover:border-zinc-600
+				hover:bg-zinc-800
+				hover:text-white
 			"
 		>
 			Search
@@ -548,16 +558,37 @@
 		<div
 			class="
 				mb-4
-				rounded-lg
+				flex
+				items-center
+				gap-3
+				rounded-xl
 				border
-				border-red-200
-				bg-red-50
+				border-red-500/20
+				bg-red-500/10
 				px-4
 				py-3
 				text-sm
-				text-red-700
+				text-red-300
 			"
 		>
+			<div
+				class="
+					flex
+					h-5
+					w-5
+					shrink-0
+					items-center
+					justify-center
+					rounded-full
+					bg-red-500/10
+					text-xs
+					font-bold
+					text-red-400
+				"
+			>
+				!
+			</div>
+
 			{error}
 		</div>
 	{/if}
@@ -574,21 +605,35 @@
 				justify-center
 				rounded-xl
 				border
-				border-zinc-200
-				bg-white
+				border-zinc-800
+				bg-zinc-900/70
 			"
 		>
-			<div
-				class="
-					h-8
-					w-8
-					animate-spin
-					rounded-full
-					border-4
-					border-zinc-200
-					border-t-blue-600
-				"
-			></div>
+			<div class="flex flex-col items-center gap-3">
+
+				<div
+					class="
+						h-8
+						w-8
+						animate-spin
+						rounded-full
+						border-2
+						border-zinc-700
+						border-t-teal-400
+					"
+				></div>
+
+				<span
+					class="
+						text-xs
+						tracking-widest
+						text-zinc-600
+					"
+				>
+					LOADING
+				</span>
+
+			</div>
 		</div>
 
 	{:else if todos.length === 0}
@@ -599,8 +644,8 @@
 				rounded-xl
 				border
 				border-dashed
-				border-zinc-300
-				bg-white
+				border-zinc-800
+				bg-zinc-900/50
 				px-6
 				py-16
 				text-center
@@ -609,15 +654,18 @@
 			<div
 				class="
 					mx-auto
-					mb-3
+					mb-4
 					flex
 					h-12
 					w-12
 					items-center
 					justify-center
 					rounded-full
-					bg-zinc-100
-					text-xl
+					border
+					border-teal-500/20
+					bg-teal-500/10
+					text-lg
+					text-teal-400
 				"
 			>
 				✓
@@ -626,7 +674,7 @@
 			<h2
 				class="
 					font-medium
-					text-zinc-800
+					text-zinc-200
 				"
 			>
 				No todos found
@@ -636,7 +684,7 @@
 				class="
 					mt-1
 					text-sm
-					text-zinc-500
+					text-zinc-600
 				"
 			>
 				Add your first task above.
@@ -651,11 +699,13 @@
 				overflow-hidden
 				rounded-xl
 				border
-				border-zinc-200
-				bg-white
-				shadow-sm
+				border-zinc-800
+				bg-zinc-900/70
+				shadow-lg
+				shadow-black/10
 			"
 		>
+
 			{#each todos as todo, index (todo.id)}
 
 				<div
@@ -665,11 +715,11 @@
 						items-center
 						gap-3
 						border-b
-						border-zinc-100
+						border-zinc-800/70
 						p-4
 						transition
 						last:border-b-0
-						hover:bg-zinc-50
+						hover:bg-zinc-800/40
 					"
 				>
 
@@ -693,24 +743,24 @@
 							justify-center
 							rounded-full
 							border-2
-							transition
+							transition-all
 						"
-						class:border-blue-600={
+						class:border-teal-500={
 							todo.isComplete
 						}
-						class:bg-blue-600={
+						class:bg-teal-500={
 							todo.isComplete
 						}
-						class:border-zinc-300={
+						class:border-zinc-600={
 							!todo.isComplete
 						}
-						class:hover:border-blue-500={
+						class:hover:border-teal-400={
 							!todo.isComplete
 						}
 					>
 						{#if todo.isComplete}
 							<svg
-								class="h-3 w-3 text-white"
+								class="h-3 w-3 text-zinc-950"
 								viewBox="0 0 20 20"
 								fill="currentColor"
 							>
@@ -729,32 +779,20 @@
 
 						{#if editingId === todo.id}
 
-							<div
-								class="
-									flex
-									gap-2
-								"
-							>
+							<div class="flex gap-2">
+
 								<input
 									type="text"
-									bind:value={
-										editingName
-									}
-									onkeydown={(
-										event
-									) => {
+									bind:value={editingName}
+									onkeydown={(event) => {
 										if (
-											event.key ===
-											"Enter"
+											event.key === "Enter"
 										) {
-											saveEdit(
-												todo
-											);
+											saveEdit(todo);
 										}
 
 										if (
-											event.key ===
-											"Escape"
+											event.key === "Escape"
 										) {
 											cancelEdit();
 										}
@@ -763,35 +801,37 @@
 									class="
 										min-w-0
 										flex-1
-										rounded
+										rounded-lg
 										border
-										border-blue-400
-										bg-white
+										border-teal-500/50
+										bg-zinc-950
 										px-2
-										py-1
+										py-1.5
 										text-sm
+										text-zinc-100
 										outline-none
 										ring-2
-										ring-blue-100
+										ring-teal-500/10
 									"
 								/>
 
 								<button
 									type="button"
 									onclick={() =>
-										saveEdit(
-											todo
-										)
+										saveEdit(todo)
 									}
 									disabled={saving}
 									class="
-										rounded
-										bg-blue-600
+										rounded-lg
+										bg-teal-500
 										px-3
 										py-1
 										text-xs
-										text-white
-										hover:bg-blue-700
+										font-medium
+										text-zinc-950
+										transition
+										hover:bg-teal-400
+										disabled:opacity-50
 									"
 								>
 									Save
@@ -799,22 +839,23 @@
 
 								<button
 									type="button"
-									onclick={
-										cancelEdit
-									}
+									onclick={cancelEdit}
 									class="
-										rounded
+										rounded-lg
 										border
-										border-zinc-300
+										border-zinc-700
 										px-3
 										py-1
 										text-xs
-										text-zinc-600
-										hover:bg-zinc-50
+										text-zinc-400
+										transition
+										hover:bg-zinc-800
+										hover:text-white
 									"
 								>
 									Cancel
 								</button>
+
 							</div>
 
 						{:else}
@@ -822,9 +863,7 @@
 							<button
 								type="button"
 								onclick={() =>
-									startEdit(
-										todo
-									)
+									startEdit(todo)
 								}
 								class="
 									max-w-full
@@ -841,10 +880,10 @@
 									class:line-through={
 										todo.isComplete
 									}
-									class:text-zinc-400={
+									class:text-zinc-500={
 										todo.isComplete
 									}
-									class:text-zinc-800={
+									class:text-zinc-200={
 										!todo.isComplete
 									}
 								>
@@ -856,7 +895,7 @@
 										class="
 											mt-1
 											text-xs
-											text-zinc-400
+											text-zinc-600
 										"
 									>
 										{formatDate(
@@ -886,20 +925,20 @@
 								sm:group-hover:opacity-100
 							"
 						>
+
+							<!-- Edit -->
 							<button
 								type="button"
 								onclick={() =>
-									startEdit(
-										todo
-									)
+									startEdit(todo)
 								}
 								class="
-									rounded-md
+									rounded-lg
 									p-2
-									text-zinc-400
+									text-zinc-500
 									transition
-									hover:bg-zinc-100
-									hover:text-zinc-700
+									hover:bg-zinc-800
+									hover:text-teal-400
 								"
 								title="Edit"
 							>
@@ -918,29 +957,29 @@
 								</svg>
 							</button>
 
+
+							<!-- Delete -->
 							<button
 								type="button"
 								onclick={() =>
-									deleteTodo(
-										todo
-									)
+									deleteTodo(todo)
 								}
 								disabled={
-									deleting ===
-									todo.id
+									deleting === todo.id
 								}
 								class="
-									rounded-md
+									rounded-lg
 									p-2
-									text-zinc-400
+									text-zinc-500
 									transition
-									hover:bg-red-50
-									hover:text-red-600
+									hover:bg-red-500/10
+									hover:text-red-400
 									disabled:opacity-50
 								"
 								title="Delete"
 							>
 								{#if deleting === todo.id}
+
 									<div
 										class="
 											h-4
@@ -948,11 +987,13 @@
 											animate-spin
 											rounded-full
 											border-2
-											border-zinc-200
-											border-t-red-600
+											border-zinc-700
+											border-t-red-400
 										"
 									></div>
+
 								{:else}
+
 									<svg
 										class="h-4 w-4"
 										fill="none"
@@ -963,11 +1004,13 @@
 										<path
 											stroke-linecap="round"
 											stroke-linejoin="round"
-											d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0C10.91 2.568 10 3.552 10 4.732v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+											d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.682-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0C10.91 2.568 10 3.552 10 4.732v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
 										/>
 									</svg>
+
 								{/if}
 							</button>
+
 						</div>
 
 					{/if}
@@ -975,8 +1018,10 @@
 				</div>
 
 			{/each}
+
 		</div>
 
 	{/if}
 
 </div>
+

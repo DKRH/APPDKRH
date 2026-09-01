@@ -346,94 +346,166 @@
 	}
 </script>
 
+<svelte:head>
+	<title>DKRH | {title}</title>
+</svelte:head>
+
 <div
 	class="
 		h-full
 		flex
 		flex-col
-		bg-zinc-450
-		text-zinc-900
 		overflow-hidden
+		bg-zinc-950
+		text-zinc-100
 	"
 >
+
+	<!-- Header -->
 	<div
 		class="
+			mb-4
 			flex
+			shrink-0
 			items-center
 			justify-between
-			mb-4
+			gap-4
 		"
 	>
-		<h1
-			class="
-				text-xl
-				font-bold
-			"
-		>
-			{title}
-		</h1>
+		<div class="min-w-0">
+			<h1
+				class="
+					truncate
+					text-xl
+					font-semibold
+					tracking-tight
+					text-white
+				"
+			>
+				{title}
+			</h1>
+
+			<p
+				class="
+					mt-0.5
+					text-xs
+					text-zinc-600
+				"
+			>
+				Manage {title.toLowerCase()} records
+			</p>
+		</div>
 
 		<button
+			type="button"
 			onclick={() =>
 				editing = {}
 			}
 			class="
-				bg-blue-600
-				text-white
-				cursor-pointer
-				hover:bg-blue-500
-				px-2
-				py-1
+				shrink-0
+				rounded-lg
+				bg-teal-500
+				px-4
+				py-2
+				text-sm
+				font-semibold
+				text-zinc-950
+				transition-all
+				hover:bg-teal-400
+				hover:shadow-lg
+				hover:shadow-teal-500/10
+				active:scale-[0.98]
 			"
 		>
-			Add
+			+ Add
 		</button>
 	</div>
 
-	<div class="mb-4">
+
+	<!-- Search -->
+	<div
+		class="
+			mb-4
+			shrink-0
+			relative
+		"
+	>
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			class="
+				pointer-events-none
+				absolute
+				left-3
+				top-1/2
+				h-4
+				w-4
+				-translate-y-1/2
+				text-zinc-600
+			"
+		>
+			<path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				d="m21 21-4.35-4.35m2.35-5.65a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"
+			/>
+		</svg>
+
 		<input
 			type="text"
-
 			placeholder={
-				searchPlaceholder
+				searchPlaceholder ??
+				"Search..."
 			}
-
 			value={search}
-
 			oninput={(event) =>
 				handleSearch(
-					event.currentTarget
-						.value
+					event.currentTarget.value
 				)
 			}
 			class="
 				w-full
-				bg-zinc-100
+				rounded-lg
 				border
 				border-zinc-700
-				p-1
-				text-black
+				bg-zinc-900/70
+				py-2.5
+				pl-10
+				pr-4
+				text-sm
+				text-zinc-100
+				placeholder:text-zinc-600
 				outline-none
-				focus:border-blue-500
-				focus:bg-zinc-200
+				transition
+				focus:border-teal-500/60
+				focus:ring-2
+				focus:ring-teal-500/10
 			"
 		/>
 	</div>
 
+
+	<!-- Table -->
 	<div
 		bind:this={tableElement}
-
 		onscroll={handleScroll}
-
 		class="
+			min-h-0
 			flex-1
 			overflow-auto
+			rounded-xl
 			border
 			border-zinc-800
-			rounded-lg
-			min-h-0
+			bg-zinc-900/60
+			shadow-lg
+			shadow-black/10
+			app-table-scroll
 		"
 	>
+
 		<table
 			class="
 				w-full
@@ -441,21 +513,32 @@
 				text-sm
 			"
 		>
+
+			<!-- Table Header -->
 			<thead
 				class="
 					sticky
 					top-0
 					z-30
-					bg-amber-300
+					border-b
+					border-zinc-800
+					bg-zinc-900
 				"
 			>
 				<tr>
+
 					{#each columns as column}
 
 						<th
 							class="
+								whitespace-nowrap
 								p-3
 								text-left
+								text-xs
+								font-semibold
+								uppercase
+								tracking-wider
+								text-zinc-500
 							"
 						>
 							{column.label}
@@ -463,60 +546,73 @@
 
 					{/each}
 
+					<!-- Actions Header -->
 					<th
 						class="
 							sticky
 							right-0
 							top-0
 							z-40
-							bg-amber-500
-							p-3
-							text-left
 							w-px
 							whitespace-nowrap
+							border-l
+							border-zinc-800
+							bg-zinc-900
+							p-3
+							text-left
+							text-xs
+							font-semibold
+							uppercase
+							tracking-wider
+							text-zinc-500
 						"
 					>
 						Actions
 					</th>
+
 				</tr>
 			</thead>
 
+
+			<!-- Table Body -->
 			<tbody>
 
 				{#each rows as row (row.id)}
 
 					<tr
 						class="
-							border-t
-							border-zinc-800
-							hover:bg-amber-100
+							group
+							border-b
+							border-zinc-800/70
+							transition-colors
+							last:border-b-0
+							hover:bg-zinc-800/40
 						"
 					>
+
 						{#each columns as column}
 
 							<td
 								class="
 									p-3
 									text-left
+									text-zinc-300
 								"
 							>
+
 								{#if column.render}
 
 									{@render column.render(
-										row[
-											column.key
-										],
+										row[column.key],
 										row
 									)}
 
 								{:else}
 
-									{
-										getColumnValue(
-											column,
-											row
-										)
-									}
+									{getColumnValue(
+										column,
+										row
+									)}
 
 								{/if}
 
@@ -524,125 +620,236 @@
 
 						{/each}
 
+
+						<!-- Actions -->
 						<td
 							class="
 								sticky
 								right-0
 								z-20
-								bg-white
+								border-l
+								border-zinc-800
+								bg-zinc-900
 								p-3
+								transition-colors
+								group-hover:bg-zinc-850
 							"
 						>
+
 							<div
 								class="
 									flex
-									gap-2
+									items-center
+									gap-1.5
 								"
 							>
+
+								<!-- View -->
 								<button
+									type="button"
 									onclick={() =>
 										viewing = {
 											...row
 										}
 									}
-
 									class="
-										bg-blue-500
-										hover:bg-blue-400
+										rounded-lg
+										border
+										border-zinc-700
+										bg-zinc-800
 										p-2
-										text-white
-										cursor-pointer
+										text-zinc-500
+										transition-all
+										hover:border-teal-500/30
+										hover:bg-teal-500/10
+										hover:text-teal-400
 									"
 									title="View"
 								>
 									<Eye size={16} />
 								</button>
+
+
+								<!-- Edit -->
 								<button
+									type="button"
 									onclick={() =>
-										editing =
-											{
-												...row
-											}
+										editing = {
+											...row
+										}
 									}
 									class="
-										bg-yellow-600
-										hover:bg-yellow-500
-										px-2
-										py-2
-										text-white
-										cursor-pointer
+										rounded-lg
+										border
+										border-zinc-700
+										bg-zinc-800
+										p-2
+										text-zinc-500
+										transition-all
+										hover:border-amber-500/30
+										hover:bg-amber-500/10
+										hover:text-amber-400
 									"
+									title="Edit"
 								>
 									<Pencil size={16} />
 								</button>
 
+
+								<!-- Delete -->
 								<button
+									type="button"
 									onclick={() =>
-										deleteTarget =
-											row
+										deleteTarget = row
 									}
 									class="
-										bg-red-700
-										hover:bg-red-600
-										px-2
-										py-2
-										text-white
-										cursor-pointer
+										rounded-lg
+										border
+										border-zinc-700
+										bg-zinc-800
+										p-2
+										text-zinc-500
+										transition-all
+										hover:border-red-500/30
+										hover:bg-red-500/10
+										hover:text-red-400
 									"
+									title="Delete"
 								>
 									<Trash2 size={16} />
 								</button>
+
 							</div>
+
 						</td>
+
 					</tr>
 
 				{/each}
 
 			</tbody>
+
 		</table>
 
+
+		<!-- Loading -->
 		{#if loading}
 
 			<div
 				class="
-					text-center
+					flex
+					items-center
+					justify-center
+					gap-3
+					border-t
+					border-zinc-800
 					p-6
-					text-zinc-400
+					text-sm
+					text-zinc-600
 				"
 			>
+				<div
+					class="
+						h-4
+						w-4
+						animate-spin
+						rounded-full
+						border-2
+						border-zinc-700
+						border-t-teal-400
+					"
+				></div>
+
 				Loading...
 			</div>
 
 		{/if}
 
+
+		<!-- Empty -->
 		{#if !loading && rows.length === 0}
 
 			<div
 				class="
+					flex
+					flex-col
+					items-center
+					justify-center
+					border-t
+					border-zinc-800
+					p-12
 					text-center
-					p-6
-					text-zinc-500
 				"
 			>
-				No data found.
+
+				<div
+					class="
+						mb-3
+						flex
+						h-11
+						w-11
+						items-center
+						justify-center
+						rounded-full
+						border
+						border-zinc-800
+						bg-zinc-950
+						text-zinc-600
+					"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.5"
+						class="h-5 w-5"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M20.25 7.5v10.125a2.625 2.625 0 0 1-2.625 2.625H6.375a2.625 2.625 0 0 1-2.625-2.625V7.5m16.5 0-8.25 5.25L3.75 7.5m16.5 0-8.25-5.25L3.75 7.5"
+						/>
+					</svg>
+				</div>
+
+				<p
+					class="
+						text-sm
+						font-medium
+						text-zinc-400
+					"
+				>
+					No data found
+				</p>
+
+				<p
+					class="
+						mt-1
+						text-xs
+						text-zinc-600
+					"
+				>
+					There are no records to display.
+				</p>
+
 			</div>
 
 		{/if}
+
 	</div>
+
 </div>
 
+
+<!-- View Modal -->
 {#if viewing}
 
 	<DkrhCrudModal
-
 		title={title}
-
 		data={viewing}
-
 		apiBase={apiBase}
-
 		fields={fields}
-
 		viewOnly={true}
 		lookups={lookups}
 		onClose={() => {
@@ -652,42 +859,70 @@
 
 {/if}
 
+
+<!-- Add / Edit Modal -->
 {#if editing}
 
 	<DkrhCrudModal
 		{title}
-
 		data={editing}
-
 		apiBase={apiBase}
-
 		{fields}
 		lookups={lookups}
-		onClose={
-			handleModalClose
-		}
+		onClose={handleModalClose}
 	/>
 
 {/if}
 
+
+<!-- Delete Modal -->
 {#if deleteTarget}
 
 	<DkrhDeleteModal
 		title={`Delete ${title}`}
-
 		message={
 			`${deleteTarget[
 				deleteLabelColumn
 			]}?`
 		}
-
 		onCancel={() =>
 			deleteTarget = null
 		}
-
-		onConfirm={
-			confirmDelete
-		}
+		onConfirm={confirmDelete}
 	/>
 
 {/if}
+
+
+<style>
+	.app-table-scroll {
+		scrollbar-width: thin;
+		scrollbar-color: #3f3f46 transparent;
+	}
+
+	.app-table-scroll::-webkit-scrollbar {
+		width: 10px;
+		height: 10px;
+	}
+
+	.app-table-scroll::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.app-table-scroll::-webkit-scrollbar-thumb {
+		background: #3f3f46;
+		border: 3px solid transparent;
+		background-clip: content-box;
+		border-radius: 999px;
+	}
+
+	.app-table-scroll::-webkit-scrollbar-thumb:hover {
+		background: #52525b;
+		border: 3px solid transparent;
+		background-clip: content-box;
+	}
+
+	.app-table-scroll::-webkit-scrollbar-corner {
+		background: transparent;
+	}
+</style>

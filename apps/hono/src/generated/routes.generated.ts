@@ -1,136 +1,93 @@
-import route0 from "../modules/products/route";
-import route1 from "../modules/n-gacha/route";
-import route2 from "../modules/k-universe/route";
-import route3 from "../modules/k-char/route";
-import route4 from "../modules/k-attribute/route";
-import route5 from "../modules/h-entertainment-tracker-type/route";
-import route6 from "../modules/h-entertainment-tracker/route";
-import route7 from "../modules/f-text-storage/route";
-import route8 from "../modules/e-url-shortener/route";
-import route9 from "../modules/d-notes/route";
-import route10 from "../modules/d-labels/route";
-import route11 from "../modules/c-todos/route";
-import route12 from "../modules/b-passbank/route";
-import route13 from "../modules/a1-user-roles/route";
-import route14 from "../modules/a1-system/route";
-import route15 from "../modules/a1-roles/route";
-import route16 from "../modules/a1-role-permissions/route";
-import route17 from "../modules/a1-permissions/route";
+import route0 from "../modules/k-attribute/route";
+import route1 from "../modules/a1-system/route";
+import route2 from "../modules/d-labels/route";
+import route3 from "../modules/products/route";
+import route4 from "../modules/n-gacha/route";
+import route5 from "../modules/b-passbank/route";
+import route6 from "../modules/a1-permissions/route";
+import route7 from "../modules/k-char/route";
+import route8 from "../modules/a1-user-roles/route";
+import route9 from "../modules/c-todos/route";
+import route10 from "../modules/h-entertainment-tracker/route";
+import route11 from "../modules/f-text-storage/route";
+import route12 from "../modules/e-url-shortener/route";
+import route13 from "../modules/h-entertainment-tracker-type/route";
+import route14 from "../modules/a1-roles/route";
+import route15 from "../modules/k-universe/route";
+import route16 from "../modules/d-notes/route";
+import route17 from "../modules/a1-role-permissions/route";
 
 export const routes = [
   {
-    path: "/products",
+    path: "/k-attribute",
     route: route0,
   },
   {
-    path: "/n-gacha",
+    path: "/a1-system",
     route: route1,
   },
   {
-    path: "/k-universe",
+    path: "/d-labels",
     route: route2,
   },
   {
-    path: "/k-char",
+    path: "/products",
     route: route3,
   },
   {
-    path: "/k-attribute",
+    path: "/n-gacha",
     route: route4,
   },
   {
-    path: "/h-entertainment-tracker-type",
+    path: "/b-passbank",
     route: route5,
   },
   {
-<<<<<<< HEAD
-    path: "/k-char",
+    path: "/a1-permissions",
     route: route6,
   },
   {
-    path: "/a1-user-roles",
+    path: "/k-char",
     route: route7,
   },
   {
-    path: "/c-todos",
+    path: "/a1-user-roles",
     route: route8,
   },
   {
-    path: "/h-entertainment-tracker",
+    path: "/c-todos",
     route: route9,
   },
   {
-    path: "/f-text-storage",
+    path: "/h-entertainment-tracker",
     route: route10,
   },
   {
-    path: "/e-url-shortener",
+    path: "/f-text-storage",
     route: route11,
+  },
+  {
+    path: "/e-url-shortener",
+    route: route12,
   },
   {
     path: "/h-entertainment-tracker-type",
-    route: route12,
+    route: route13,
   },
   {
     path: "/a1-roles",
-    route: route13,
+    route: route14,
   },
   {
     path: "/k-universe",
-    route: route14,
-  },
-  {
-    path: "/d-notes",
-=======
-    path: "/h-entertainment-tracker",
-    route: route6,
-  },
-  {
-    path: "/f-text-storage",
-    route: route7,
-  },
-  {
-    path: "/e-url-shortener",
-    route: route8,
-  },
-  {
-    path: "/d-notes",
-    route: route9,
-  },
-  {
-    path: "/d-labels",
-    route: route10,
-  },
-  {
-    path: "/c-todos",
-    route: route11,
-  },
-  {
-    path: "/b-passbank",
-    route: route12,
-  },
-  {
-    path: "/a1-user-roles",
-    route: route13,
-  },
-  {
-    path: "/a1-system",
-    route: route14,
-  },
-  {
-    path: "/a1-roles",
->>>>>>> 7728851f3be99cec4763f71232fd736480105497
     route: route15,
   },
   {
-    path: "/a1-role-permissions",
+    path: "/d-notes",
     route: route16,
   },
-<<<<<<< HEAD
-=======
   {
-    path: "/a1-permissions",
+    path: "/a1-role-permissions",
     route: route17,
   },
->>>>>>> 7728851f3be99cec4763f71232fd736480105497
 ];

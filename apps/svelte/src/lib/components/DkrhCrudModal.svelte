@@ -283,74 +283,101 @@
 		fixed
 		inset-0
 		z-50
-		bg-black/70
 		flex
 		items-center
 		justify-center
+		bg-black/70
 		p-4
+		backdrop-blur-sm
 	"
 >
 	<div
 		class="
-			bg-white
-			border
-			border-zinc-700
-			rounded-lg
 			w-full
 			max-w-lg
 			max-h-[90vh]
 			overflow-auto
+			rounded-2xl
+			border
+			border-zinc-800
+			bg-zinc-900
 			p-6
+			text-zinc-100
+			shadow-2xl
+			shadow-black/50
 		"
 	>
-		<h2
-			class="
-				text-xl
-				font-bold
-				mb-4
-			"
-		>
-			{viewOnly
-				? `View ${title}`
-				: form.id
-					? `Edit ${title}`
-					: `Add ${title}`}
-		</h2>
 
-		<div class="space-y-4">
+		<!-- Header -->
+		<div class="mb-6">
+			<h2
+				class="
+					text-xl
+					font-semibold
+					tracking-tight
+					text-white
+				"
+			>
+				{viewOnly
+					? `View ${title}`
+					: form.id
+						? `Edit ${title}`
+						: `Add ${title}`}
+			</h2>
+
+			<p
+				class="
+					mt-1
+					text-xs
+					text-zinc-600
+				"
+			>
+				{viewOnly
+					? "View the details below."
+					: form.id
+						? "Update the information below."
+						: "Enter the information below."}
+			</p>
+		</div>
+
+
+		<!-- Form -->
+		<div class="space-y-5">
+
 			{#each fields as field}
 
 				<div>
+
 					<label
 						for={field.key}
 						class="
+							mb-1.5
 							block
-							mb-1
-							text-sm
+							text-xs
+							font-medium
+							text-zinc-400
 						"
 					>
 						{field.label}
 					</label>
 
+
 					{#if field.type === "dropdown"}
 
-						<div>
+						<div class="relative">
+
 							<input
 								id={field.key}
 								bind:this={
-									inputRefs[
-										field.key
-									]
+									inputRefs[field.key]
 								}
 								type="text"
 								disabled={viewOnly}
-
 								value={
 									dropdownSearch[
 										field.key
 									] ?? ""
 								}
-
 								onfocus={() => {
 									if (!viewOnly) {
 										openDropdown(
@@ -358,7 +385,6 @@
 										);
 									}
 								}}
-
 								onblur={() => {
 									if (!viewOnly) {
 										selectFirstOption(
@@ -366,7 +392,6 @@
 										);
 									}
 								}}
-
 								oninput={(event) => {
 									dropdownSearch[
 										field.key
@@ -379,36 +404,39 @@
 										field.key
 									);
 								}}
-
 								class="
 									w-full
+									rounded-lg
 									border
 									border-zinc-700
-									p-1
+									px-3
+									py-2.5
+									text-sm
+									outline-none
+									transition
+
 									{viewOnly
-										? 'bg-zinc-400 text-black cursor-default'
-										: 'bg-zinc-100'}
+										? 'cursor-default bg-zinc-800 text-zinc-400'
+										: 'bg-zinc-950/70 text-zinc-100 placeholder:text-zinc-600 focus:border-teal-500/60 focus:ring-2 focus:ring-teal-500/10'}
 								"
 							/>
 
+
 							{#if dropdownOpen[field.key] && !viewOnly}
 
-								<!--
-									IMPORTANT:
-									fixed instead of absolute.
-									This escapes the modal's
-									overflow-auto clipping.
-								-->
+								<!-- Dropdown -->
 								<div
 									class="
 										fixed
 										z-[99999]
 										max-h-48
 										overflow-y-auto
-										bg-white
+										rounded-lg
 										border
-										border-zinc-300
-										shadow-xl
+										border-zinc-700
+										bg-zinc-900
+										shadow-2xl
+										shadow-black/40
 									"
 									style="
 										top: {dropdownPosition[field.key]?.top ?? 0}px;
@@ -416,14 +444,12 @@
 										width: {dropdownPosition[field.key]?.width ?? 0}px;
 									"
 								>
+
 									{#each getFilteredOptions(field) as item}
 
 										<button
 											type="button"
-
-											onmousedown={(
-												event
-											) => {
+											onmousedown={(event) => {
 												event.preventDefault();
 
 												selectOption(
@@ -431,13 +457,16 @@
 													item
 												);
 											}}
-
 											class="
 												w-full
+												px-3
+												py-2.5
 												text-left
-												p-2
-												hover:bg-zinc-100
-												cursor-pointer
+												text-sm
+												text-zinc-300
+												transition
+												hover:bg-zinc-800
+												hover:text-white
 											"
 										>
 											{
@@ -450,52 +479,60 @@
 
 									{/each}
 
+
 									{#if getFilteredOptions(field).length === 0}
+
 										<div
 											class="
-												p-2
+												px-3
+												py-3
 												text-sm
-												text-zinc-500
+												text-zinc-600
 											"
 										>
 											No results
 										</div>
+
 									{/if}
+
 								</div>
 
 							{/if}
+
 						</div>
+
 
 					{:else if field.type === "textarea"}
 
 						<textarea
 							id={field.key}
 							value={
-								form[
-									field.key
-								] ?? ""
+								form[field.key] ?? ""
 							}
 							disabled={viewOnly}
-
 							oninput={(event) =>
-								(form[
-									field.key
-								] =
-									event
-										.currentTarget
-										.value)
+								(form[field.key] =
+									event.currentTarget.value)
 							}
-
 							class="
+								min-h-28
 								w-full
-								{viewOnly
-									? 'bg-zinc-400 text-black cursor-default'
-									: 'bg-zinc-100'}
+								resize-y
+								rounded-lg
 								border
 								border-zinc-700
-								p-1
+								px-3
+								py-2.5
+								text-sm
+								outline-none
+								transition
+
+								{viewOnly
+									? 'cursor-default bg-zinc-800 text-zinc-400'
+									: 'bg-zinc-950/70 text-zinc-100 placeholder:text-zinc-600 focus:border-teal-500/60 focus:ring-2 focus:ring-teal-500/10'}
 							"
 						></textarea>
+
 
 					{:else}
 
@@ -505,57 +542,70 @@
 								field.type ??
 								"text"
 							}
-
 							value={
-								form[
-									field.key
-								] ?? ""
+								form[field.key] ?? ""
 							}
-
 							disabled={viewOnly}
-
 							oninput={(event) =>
-								(form[
-									field.key
-								] =
-									event
-										.currentTarget
-										.value)
+								(form[field.key] =
+									event.currentTarget.value)
 							}
-
 							class="
-								{viewOnly
-									? 'bg-zinc-400 text-black cursor-default'
-									: 'bg-zinc-100'}
 								w-full
+								rounded-lg
 								border
 								border-zinc-700
-								p-1
+								px-3
+								py-2.5
+								text-sm
+								outline-none
+								transition
+
+								{viewOnly
+									? 'cursor-default bg-zinc-800 text-zinc-400'
+									: 'bg-zinc-950/70 text-zinc-100 placeholder:text-zinc-600 focus:border-teal-500/60 focus:ring-2 focus:ring-teal-500/10'}
 							"
 						/>
 
 					{/if}
+
 				</div>
 
 			{/each}
+
 		</div>
 
+
+		<!-- Actions -->
 		<div
 			class="
+				mt-7
 				flex
 				gap-2
-				mt-6
+				border-t
+				border-zinc-800
+				pt-5
 			"
 		>
+
 			<button
+				type="button"
 				onclick={onClose}
 				class="
 					flex-1
-					bg-zinc-700
-					text-white
-					px-2
-					py-1
-					cursor-pointer
+					rounded-lg
+					border
+					border-zinc-700
+					bg-zinc-800
+					px-3
+					py-2.5
+					text-sm
+					font-medium
+					text-zinc-300
+					transition
+					hover:border-zinc-600
+					hover:bg-zinc-700
+					hover:text-white
 				"
 			>
 				{viewOnly
@@ -563,49 +613,113 @@
 					: "Cancel"}
 			</button>
 
+
 			{#if !viewOnly}
 
 				<button
+					type="button"
 					onclick={submit}
 					disabled={saving}
-
 					class="
 						flex-1
-						bg-blue-600
-						text-white
-						px-2
-						py-1
-						cursor-pointer
-						disabled:opacity-50
+						rounded-lg
+						bg-teal-500
+						px-3
+						py-2.5
+						text-sm
+						font-semibold
+						text-zinc-950
+						transition-all
+						hover:bg-teal-400
+						hover:shadow-lg
+						hover:shadow-teal-500/10
+						active:scale-[0.98]
+						disabled:cursor-not-allowed
+						disabled:opacity-40
 					"
 				>
-					{saving
-						? "Saving..."
-						: "Save"}
+					{#if saving}
+
+						<span
+							class="
+								mr-2
+								inline-block
+								h-3.5
+								w-3.5
+								animate-spin
+								rounded-full
+								border-2
+								border-zinc-950/30
+								border-t-zinc-950
+								align-[-2px]
+							"
+						></span>
+
+						Saving...
+
+					{:else}
+
+						Save
+
+					{/if}
 				</button>
 
 			{/if}
+
 		</div>
+
 	</div>
 
+
+	<!-- Error Toast -->
 	{#if error}
+
 		<div
 			class="
 				fixed
-				top-4
 				right-4
+				top-4
 				z-[100]
-				bg-red-600
-				text-white
+				flex
+				max-w-sm
+				items-start
+				gap-3
+				rounded-xl
 				border
-				border-red-700
+				border-red-500/20
+				bg-zinc-900
 				px-4
 				py-3
-				shadow-lg
-				max-w-sm
+				text-sm
+				text-red-300
+				shadow-2xl
+				shadow-black/40
 			"
 		>
-			{error}
+
+			<div
+				class="
+					flex
+					h-5
+					w-5
+					shrink-0
+					items-center
+					justify-center
+					rounded-full
+					bg-red-500/10
+					text-xs
+					font-bold
+					text-red-400
+				"
+			>
+				!
+			</div>
+
+			<span>{error}</span>
+
 		</div>
+
 	{/if}
+
 </div>
+

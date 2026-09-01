@@ -1,47 +1,31 @@
-/*import { hc } from "hono/client";
-import type { AppType } from "@dkrh/hono/types";
-
-export const api = hc<AppType>(
-  "http://localhost:2601/api",
-  {
-    init: {
-      credentials: "include",
-    },
-  },
-);*/
-
 import { createAuthClient } from "better-auth/svelte";
-const API_URL =
-  import.meta.env.VITE_API_URL ??
-  "http://localhost:2601";
+
+const API_URL = "";
 
 export async function apiFetch(
-  path: string,
-  options: RequestInit = {},
+	path: string,
+	options: RequestInit = {},
 ) {
-  const headers = new Headers(options.headers);
+	const headers = new Headers(options.headers);
 
-  if (
-    options.body &&
-    !headers.has("Content-Type") &&
-    !(options.body instanceof FormData)
-  ) {
-    headers.set("Content-Type", "application/json");
-  }
+	if (
+		options.body &&
+		!headers.has("Content-Type") &&
+		!(options.body instanceof FormData)
+	) {
+		headers.set(
+			"Content-Type",
+			"application/json",
+		);
+	}
 
-  /*return fetch(`${API_URL}${path}`, {
-    ...options,
-    headers,
-    credentials: "include",
-  });*/
-
-  const response = await fetch(
+	const response = await fetch(
 		`${API_URL}${path}`,
 		{
 			credentials: "include",
-      headers,
+			headers,
 			...options,
-		}
+		},
 	);
 
 	if (!response.ok) {
@@ -52,23 +36,22 @@ export async function apiFetch(
 
 		throw new Error(
 			data?.message ??
-			"Request failed"
+			"Request failed",
 		);
 	}
 
 	return response;
 }
 
-export function getAPIURL( path: string = "", ) {
+export function getAPIURL(
+	path: string = "",
+) {
 	return `${API_URL}${path}`;
 }
 
 export const authClient =
 	createAuthClient({
-		baseURL: API_URL,
-
 		fetchOptions: {
-			credentials:
-				"include",
+			credentials: "include",
 		},
 	});

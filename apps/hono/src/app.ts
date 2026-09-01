@@ -96,10 +96,39 @@ if (!isDevelopment) {
     resolve(baseDir, "index.html"),
   );
 
+  /*
+  |--------------------------------------------------------------------------
+  | Block sensitive files
+  |--------------------------------------------------------------------------
+  */
+  app.use("*", async (c, next) => {
+    const path = c.req.path;
+
+    if (
+      path.startsWith("/.") ||
+      path === "/server" ||
+      path.startsWith("/server/")
+    ) {
+      return c.html(await indexFile.text(), 404);
+    }
+
+    await next();
+  });
+
+  /*
+  |--------------------------------------------------------------------------
+  | Static Frontend
+  |--------------------------------------------------------------------------
+  */
   app.use("*", serveStatic({
     root: baseDir,
   }));
 
+  /*
+  |--------------------------------------------------------------------------
+  | SPA Fallback
+  |--------------------------------------------------------------------------
+  */
   app.notFound(async (c) => {
     if (c.req.path.startsWith("/api")) {
       return c.text("Not Found", 404);
