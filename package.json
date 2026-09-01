@@ -12,7 +12,8 @@
 		"add:db": "cd packages/db && bun add",
 
 		"dev": "concurrently -k -n FRONT,BACK \"bun run sv:dev\" \"bun run hono:dev\"",
-		"build:server": "bun run react:build && bun run hono:build && bun scripts/build.ts",
+		"build:app": "bun run sv:build && bun run hono:build && bun scripts/build.ts",
+		
 		"sv:dev": "cd apps/svelte && bun run dev",
 		"sv:init": "cd apps/svelte && bun install",
 		"sv:build": "cd apps/svelte && bun run build",

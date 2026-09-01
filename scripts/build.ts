@@ -1,7 +1,7 @@
 import { cpSync } from "node:fs";
 
 cpSync(
-  "apps/react/dist",
+  "apps/svelte/build",
   "dist",
   {
     recursive: true,
