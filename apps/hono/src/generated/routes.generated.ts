@@ -1,22 +1,24 @@
-import route0 from "../modules/k-character/route";
+import route0 from "../modules/k-attribute/route";
 import route1 from "../modules/a1-system/route";
 import route2 from "../modules/d-labels/route";
 import route3 from "../modules/products/route";
 import route4 from "../modules/b-passbank/route";
 import route5 from "../modules/a1-permissions/route";
-import route6 from "../modules/a1-user-roles/route";
-import route7 from "../modules/c-todos/route";
-import route8 from "../modules/h-entertainment-tracker/route";
-import route9 from "../modules/f-text-storage/route";
-import route10 from "../modules/e-url-shortener/route";
-import route11 from "../modules/h-entertainment-tracker-type/route";
-import route12 from "../modules/a1-roles/route";
-import route13 from "../modules/d-notes/route";
-import route14 from "../modules/a1-role-permissions/route";
+import route6 from "../modules/k-char/route";
+import route7 from "../modules/a1-user-roles/route";
+import route8 from "../modules/c-todos/route";
+import route9 from "../modules/h-entertainment-tracker/route";
+import route10 from "../modules/f-text-storage/route";
+import route11 from "../modules/e-url-shortener/route";
+import route12 from "../modules/h-entertainment-tracker-type/route";
+import route13 from "../modules/a1-roles/route";
+import route14 from "../modules/k-universe/route";
+import route15 from "../modules/d-notes/route";
+import route16 from "../modules/a1-role-permissions/route";
 
 export const routes = [
   {
-    path: "/k-character",
+    path: "/k-attribute",
     route: route0,
   },
   {
@@ -40,39 +42,47 @@ export const routes = [
     route: route5,
   },
   {
-    path: "/a1-user-roles",
+    path: "/k-char",
     route: route6,
   },
   {
-    path: "/c-todos",
+    path: "/a1-user-roles",
     route: route7,
   },
   {
-    path: "/h-entertainment-tracker",
+    path: "/c-todos",
     route: route8,
   },
   {
-    path: "/f-text-storage",
+    path: "/h-entertainment-tracker",
     route: route9,
   },
   {
-    path: "/e-url-shortener",
+    path: "/f-text-storage",
     route: route10,
   },
   {
-    path: "/h-entertainment-tracker-type",
+    path: "/e-url-shortener",
     route: route11,
   },
   {
-    path: "/a1-roles",
+    path: "/h-entertainment-tracker-type",
     route: route12,
   },
   {
-    path: "/d-notes",
+    path: "/a1-roles",
     route: route13,
   },
   {
-    path: "/a1-role-permissions",
+    path: "/k-universe",
     route: route14,
+  },
+  {
+    path: "/d-notes",
+    route: route15,
+  },
+  {
+    path: "/a1-role-permissions",
+    route: route16,
   },
 ];

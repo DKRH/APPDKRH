@@ -81,7 +81,7 @@
 <div
 	class="
 		min-h-screen
-		bg-zinc-950
+		bg-zinc-100
 		text-white
 		flex
 		items-center
@@ -92,7 +92,7 @@
 	<div
 		class="
 			w-[250px]
-			bg-zinc-500
+			bg-zinc-400
 			border
 			border-zinc-800
 			p-4

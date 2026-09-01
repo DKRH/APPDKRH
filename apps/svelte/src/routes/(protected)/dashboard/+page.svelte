@@ -41,7 +41,7 @@
 		{
 			name: "Char",
 			icon: KeyRound,
-			to: "/k-char",
+			to: "/k/char",
 		},
 
 	];

@@ -1,8 +1,8 @@
-import { kMCharacters } from "@dkrh/db/schema";
+import { kMAttributes } from "@dkrh/db/schema";
 import * as audit from "@/db/audit";
 import { type Context } from "hono";
 
-const table1 = kMCharacters;
+const table1 = kMAttributes;
 
 export async function getAll(c: Context) {
   return await audit.auditedList({
@@ -10,9 +10,7 @@ export async function getAll(c: Context) {
     table: table1,
     searchableColumns: [
 			table1.name,
-			table1.weaponId,
-			table1.universeId,
-			table1.attributeId,
+			table1.desc,
     ],
   });
 }

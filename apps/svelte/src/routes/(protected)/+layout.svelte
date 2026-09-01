@@ -3,10 +3,11 @@
 	import { authClient } from "$lib/api";
 	import { pageTitle } from "$lib/stores/pageTitle";
 	let profileOpen = $state(false);
+	let loggingOut = $state(false);
 	let { children } = $props();
 	const currentYear = new Date().getFullYear();
 	import { onMount } from "svelte";
-	let profileMenu: HTMLDivElement;
+	let profileMenu = $state<HTMLDivElement>();
 
 	const sessionState = authClient.useSession();
 
@@ -60,20 +61,26 @@
 	});
 
 	async function logout() {
-		await authClient.signOut();
+		loggingOut = true;
 
-		await goto(
-			"/",
-			{
+		try {
+			await authClient.signOut();
+
+			await goto("/", {
 				replaceState: true,
-			}
-		);
+			});
+		} catch (error) {
+			console.error("Logout failed:", error);
+			loggingOut = false;
+		}
 	}
 </script>
-{#if $sessionState.isPending}
+{#if $sessionState.isPending || loggingOut}
 
-	<div>
-		Loading...
+	<div class="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+		<div
+			class="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600"
+		></div>
 	</div>
 
 {:else if $sessionState.data}

@@ -85,14 +85,16 @@
 
 {#if $sessionState.isPending}
 
-	<div>
-		Loading...
+	<div class="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+		<div
+			class="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600"
+		></div>
 	</div>
-{:else if $sessionState.data}
+{:else if !$sessionState.data}
 	<div
 		class="
 			min-h-screen
-			bg-zinc-950
+			bg-zinc-300
 			text-white
 			flex
 			items-center
@@ -103,7 +105,7 @@
 		<div
 			class="
 				w-[250px]
-				bg-zinc-500
+				bg-zinc-400
 				border
 				border-zinc-800
 				p-4

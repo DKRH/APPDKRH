@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { pageTitle } from "$lib/stores/pageTitle";
 	import DkrhCrudPage from "$lib/components/DkrhCrudPage.svelte";
 
+	pageTitle.set("PassBank");
 	const columns = [
 		{
 			key: "title",
@@ -9,10 +11,6 @@
 		{
 			key: "username",
 			label: "Username",
-		},
-		{
-			key: "password",
-			label: "Password",
 		},
 	];
 
