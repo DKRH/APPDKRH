@@ -70,6 +70,7 @@ CREATE TABLE "a_account" (
 	"refresh_token_expires_at" timestamp,
 	"scope" text,
 	"password" text,
+	"issuer" text,
 	"created_at" timestamp NOT NULL,
 	"updated_at" timestamp NOT NULL
 );

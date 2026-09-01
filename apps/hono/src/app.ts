@@ -42,7 +42,7 @@ app.onError(
 const protectedApi = new Hono();
 
 // Register middleware FIRST
-//protectedApi.use("*", authMiddleware);
+protectedApi.use("*", authMiddleware);
 
 // Then register all dynamic routes inside it
 const routes = await createProtectedApi();

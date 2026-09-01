@@ -386,7 +386,55 @@ export const kMUniverses = pgTable("k_m_universes", {
 	...auditColumns,
 	name: text("name").notNull(),
 	desc: text("desc"),
-});/*
+});
+export const nGachaUserHistory = pgTable("n_gacha_user_history", {
+	...auditColumns,
+	userId: uuid("user_id")
+		.notNull()
+		.references(() => a_user.id),
+
+	itemId: uuid("item_id")
+		.notNull()
+		.references(() => nGachaItems.id),
+	name: text("name"),
+	rarity: integer("rarity"),
+	obtainedAt: timestamp("obtained_at").defaultNow().notNull(),
+});
+export const nGachaUserPity = pgTable("n_gacha_user_pity", {
+	...auditColumns,
+	userId: uuid("user_id")
+		.notNull()
+		.references(() => a_user.id),
+	pity5: integer("pity5").default(0),
+	pity4: integer("pity4").default(0),
+	guarantee5: integer("guarantee5").default(0),
+});
+export const nGachaItems = pgTable("n_gacha_items", {
+	...auditColumns,
+	name: text("name"),
+	rarity: integer("rarity"),
+	imageUrl: text("image_url"),
+	videoUrl: text("video_url"),
+});
+export const nGachaBanners = pgTable("n_gacha_banners", {
+	...auditColumns,
+	name: text("name"),
+	softPityStart: integer("soft_pity_start"),
+	hardPityStart: integer("hard_pity_start"),
+	uprate5: integer("uprate5"),
+	uprate4: integer("uprate4"),
+});
+export const nGachaBannerItems = pgTable("n_gacha_banner_items", {
+	...auditColumns,
+	bannerId: uuid("banner_id")
+		.notNull()
+		.references(() => nGachaBanners.id),
+	itemId: uuid("item_id")
+		.notNull()
+		.references(() => nGachaItems.id),
+});
+
+/*
 export const kJCharacterRole = pgTable(
 	"k_j_character_role",
 	{
@@ -733,52 +781,7 @@ export const mTCGCards = sqliteTable("m_tcg_cards", {
 	effect: text("effect"),
 });
 
-export const nGachaUserHistory = sqliteTable("n_gacha_user_history", {
-	...auditColumns,
-	userId: uuid("user_id")
-		.notNull()
-		.references(() => a_user.id),
 
-	itemId: uuid("item_id")
-		.notNull()
-		.references(() => nGachaItems.id),
-	name: text("name"),
-	rarity: integer("rarity"),
-	obtainedAt: timestamp("obtained_at").defaultNow().notNull(),
-});
-export const nGachaUserPity = sqliteTable("n_gacha_user_pity", {
-	...auditColumns,
-	userId: uuid("user_id")
-		.notNull()
-		.references(() => a_user.id),
-	pity5: integer("pity5").default(0),
-	pity4: integer("pity4").default(0),
-	guarantee5: integer("guarantee5").default(0),
-});
-export const nGachaItems = sqliteTable("n_gacha_items", {
-	...auditColumns,
-	name: text("name"),
-	rarity: integer("rarity"),
-	imageUrl: text("image_url"),
-	videoUrl: text("video_url"),
-});
-export const nGachaBanners = sqliteTable("n_gacha_banners", {
-	...auditColumns,
-	name: text("name"),
-	softPityStart: integer("soft_pity_start"),
-	hardPityStart: integer("hard_pity_start"),
-	uprate5: integer("uprate5"),
-	uprate4: integer("uprate4"),
-});
-export const nGachaBannerItems = sqliteTable("n_gacha_banner_items", {
-	...auditColumns,
-	bannerId: uuid("banner_id")
-		.notNull()
-		.references(() => nGachaBanners.id),
-	itemId: uuid("item_id")
-		.notNull()
-		.references(() => nGachaItems.id),
-});
 
 export const oUoms = sqliteTable("o_uoms", {
 	...auditColumns,
