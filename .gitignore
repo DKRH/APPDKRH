@@ -2,6 +2,8 @@
 node_modules/
 dist/
 dist_desktop/
+dist_android/
+dist_win64/
 .env
 .env.development
 .env.production
