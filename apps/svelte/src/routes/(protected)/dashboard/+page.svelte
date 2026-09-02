@@ -43,6 +43,11 @@
 			icon: KeyRound,
 			to: "/k/char",
 		},
+		{
+			name: "Gacha",
+			icon: KeyRound,
+			to: "/n-gacha",
+		},
 	];
 </script>
 
