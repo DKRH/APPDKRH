@@ -129,13 +129,13 @@ if (!isDevelopment) {
   | SPA Fallback
   |--------------------------------------------------------------------------
   */
-  app.notFound(async (c) => {
+  /*app.notFound(async (c) => {
     if (c.req.path.startsWith("/api")) {
       return c.text("Not Found", 404);
     }
 
     return c.html(await indexFile.text());
-  });
+  });*/
 }
 
 export type AppType = typeof protectedApi;

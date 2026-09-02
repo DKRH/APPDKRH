@@ -1,357 +1,807 @@
 import type { Context } from "hono";
 
-import type {
-	NewDNotes,
-} from "@dkrh/types";
-
 import * as repo from "./repo";
 
-/* =========================
-   GET ALL
-========================= */
 
-export async function getAll(
-	c: Context,
-) {
-	const search =
-		c.req.query("search") ?? "";
+function getUserId(c: Context): string {
+	const user = c.get("userId");
 
-	const offset = Number(
-		c.req.query("offset") ?? 0,
-	);
+	if (!user) {
+		throw new Error("Unauthorized");
+	}
 
-	const limit = Number(
-		c.req.query("limit") ?? 50,
-	);
-
-	const data =
-		await repo.getAll(
-			search,
-			offset,
-			limit,
-		);
-
-	return c.json(data);
+	return user;
 }
 
-/* =========================
-   GET BY ID
-========================= */
 
-export async function getById(
-	c: Context,
-) {
-	const id =
-		c.req.param("id");
+function getId(c: Context): string {
+	const id = c.req.param("id");
 
 	if (!id) {
-		return c.json(
-			{
-				message: "ID is required",
-			},
-			400,
-		);
+		throw new Error("Invalid ID");
 	}
 
-	const data =
-		await repo.getById(id);
-
-	if (!data) {
-		return c.json(
-			{
-				message: "Note not found",
-			},
-			404,
-		);
-	}
-
-	return c.json(data);
+	return id;
 }
 
-/* =========================
-   CREATE
-========================= */
 
-export async function createData(
-	c: Context,
-) {
-	const body =
-		await c.req.json<
-			NewDNotes & {
-				labelIds?: string[];
-			}
-		>();
+function errorResponse(error: unknown) {
+	if (
+		error instanceof Error &&
+		error.message === "Unauthorized"
+	) {
+		return {
+			status: 401 as const,
+			message: "Unauthorized",
+		};
+	}
 
-	const {
-		labelIds = [],
-		...noteData
-	} = body;
+	if (
+		error instanceof Error &&
+		error.message === "Invalid ID"
+	) {
+		return {
+			status: 400 as const,
+			message: "Invalid ID",
+		};
+	}
 
-	const userId =
-		c.get("userId");
+	console.error(error);
 
-	const data =
-		await repo.create(
-			noteData,
-			Array.isArray(labelIds)
-				? labelIds
-				: [],
-			userId,
-		);
-
-	return c.json(
-		data,
-		201,
-	);
+	return {
+		status: 500 as const,
+		message: "Internal server error",
+	};
 }
 
-/* =========================
-   UPDATE
-========================= */
 
-export async function editData(
-	c: Context,
-) {
-	const id =
-		c.req.param("id");
+// ============================================================
+// NOTES
+// ============================================================
 
-	if (!id) {
+export async function getAll(c: Context) {
+	try {
+		const userId = getUserId(c);
+
+		const view =
+			(c.req.query("view") ??
+				"notes") as
+				| "notes"
+				| "archive"
+				| "trash";
+
+		const search =
+			c.req.query("search");
+
+		const data =
+			await repo.findAllNotes(
+				userId,
+				{
+					view,
+					search,
+				},
+			);
+
+		return c.json({ data });
+	} catch (error) {
+		const result = errorResponse(error);
+
 		return c.json(
-			{
-				message: "ID is required",
-			},
-			400,
+			{ message: result.message },
+			result.status,
 		);
 	}
-
-	const body =
-		await c.req.json<
-			Partial<NewDNotes> & {
-				labelIds?: string[];
-			}
-		>();
-
-	const {
-		labelIds,
-		...noteData
-	} = body;
-
-	const userId =
-		c.get("userId");
-
-	const data =
-		await repo.update(
-			id,
-			noteData,
-			labelIds,
-			userId,
-		);
-
-	if (!data) {
-		return c.json(
-			{
-				message: "Note not found",
-			},
-			404,
-		);
-	}
-
-	return c.json(data);
 }
 
-/* =========================
-   TOGGLE PINNED
-========================= */
 
-export async function togglePinned(
-	c: Context,
-) {
-	const id =
-		c.req.param("id");
+export async function getOne(c: Context) {
+	try {
+		const userId = getUserId(c);
+		const noteId = getId(c);
 
-	if (!id) {
-		return c.json(
-			{
-				message: "ID is required",
+		const [note] =
+			await repo.findNoteById(
+				userId,
+				noteId,
+			);
+
+		if (!note) {
+			return c.json(
+				{
+					message: "Note not found",
+				},
+				404,
+			);
+		}
+
+		const labels =
+			await repo.findLabelsByNote(
+				userId,
+				noteId,
+			);
+
+		return c.json({
+			data: {
+				...note,
+				labels,
 			},
-			400,
+		});
+	} catch (error) {
+		const result = errorResponse(error);
+
+		return c.json(
+			{ message: result.message },
+			result.status,
 		);
 	}
-
-	const body =
-		await c.req.json<{
-			isPinned: boolean;
-		}>();
-
-	const userId =
-		c.get("userId");
-
-	const data =
-		await repo.togglePinned(
-			id,
-			body.isPinned,
-			userId,
-		);
-
-	if (!data) {
-		return c.json(
-			{
-				message: "Note not found",
-			},
-			404,
-		);
-	}
-
-	return c.json(data);
 }
 
-/* =========================
-   TOGGLE ARCHIVED
-========================= */
 
-export async function toggleArchived(
-	c: Context,
-) {
-	const id =
-		c.req.param("id");
+export async function createData(c: Context) {
+	try {
+		const userId = getUserId(c);
 
-	if (!id) {
+		const body = await c.req.json();
+
+		const title =
+			typeof body.title === "string"
+				? body.title.trim()
+				: "";
+
+		const content =
+			typeof body.content === "string"
+				? body.content.trim()
+				: null;
+
+		const color =
+			typeof body.color === "string"
+				? body.color
+				: "bg-zinc-900";
+
+		if (!title && !content) {
+			return c.json(
+				{
+					message:
+						"Title or content is required",
+				},
+				400,
+			);
+		}
+
+		const note =
+			await repo.createNote(
+				userId,
+				{
+					title,
+					content,
+					color,
+				},
+			);
+
 		return c.json(
 			{
-				message: "ID is required",
+				message: "Note created",
+				data: note,
 			},
-			400,
+			201,
 		);
-	}
+	} catch (error) {
+		const result = errorResponse(error);
 
-	const body =
-		await c.req.json<{
-			isArchived: boolean;
-		}>();
-
-	const userId =
-		c.get("userId");
-
-	const data =
-		await repo.toggleArchived(
-			id,
-			body.isArchived,
-			userId,
-		);
-
-	if (!data) {
 		return c.json(
-			{
-				message: "Note not found",
-			},
-			404,
+			{ message: result.message },
+			result.status,
 		);
 	}
-
-	return c.json(data);
 }
 
-/* =========================
-   SOFT DELETE
-========================= */
 
-export async function deleteData(
-	c: Context,
-) {
-	const id =
-		c.req.param("id");
+export async function editData(c: Context) {
+	try {
+		const userId = getUserId(c);
+		const noteId = getId(c);
 
-	if (!id) {
+		const body = await c.req.json();
+
+		const update: {
+			title?: string;
+			content?: string | null;
+			color?: string;
+		} = {};
+
+		if (typeof body.title === "string") {
+			update.title =
+				body.title.trim();
+		}
+
+		if (typeof body.content === "string") {
+			update.content =
+				body.content.trim();
+		}
+
+		if (body.content === null) {
+			update.content = null;
+		}
+
+		if (typeof body.color === "string") {
+			update.color = body.color;
+		}
+
+		if (!Object.keys(update).length) {
+			return c.json(
+				{
+					message:
+						"Nothing to update",
+				},
+				400,
+			);
+		}
+
+		const note =
+			await repo.updateNote(
+				userId,
+				noteId,
+				update,
+			);
+
+		if (!note) {
+			return c.json(
+				{
+					message:
+						"Note not found",
+				},
+				404,
+			);
+		}
+
+		return c.json({
+			message: "Note updated",
+			data: note,
+		});
+	} catch (error) {
+		const result = errorResponse(error);
+
 		return c.json(
-			{
-				message: "ID is required",
-			},
-			400,
+			{ message: result.message },
+			result.status,
 		);
 	}
-
-	const userId =
-		c.get("userId");
-
-	const data =
-		await repo.remove(
-			id,
-			userId,
-		);
-
-	if (!data) {
-		return c.json(
-			{
-				message: "Note not found",
-			},
-			404,
-		);
-	}
-
-	return c.json(data);
 }
 
-/* =========================
-   RESTORE
-========================= */
 
-export async function restoreData(
-	c: Context,
-) {
-	const id =
-		c.req.param("id");
+export async function togglePin(c: Context) {
+	try {
+		const userId = getUserId(c);
+		const noteId = getId(c);
 
-	if (!id) {
+		const [note] =
+			await repo.findNoteById(
+				userId,
+				noteId,
+			);
+
+		if (!note) {
+			return c.json(
+				{
+					message:
+						"Note not found",
+				},
+				404,
+			);
+		}
+
+		const updated =
+			await repo.setPinned(
+				userId,
+				noteId,
+				!note.isPinned,
+			);
+
+		return c.json({
+			message: updated?.isPinned
+				? "Note pinned"
+				: "Note unpinned",
+			data: updated,
+		});
+	} catch (error) {
+		const result = errorResponse(error);
+
 		return c.json(
-			{
-				message: "ID is required",
-			},
-			400,
+			{ message: result.message },
+			result.status,
 		);
 	}
-
-	const userId =
-		c.get("userId");
-
-	const data =
-		await repo.restore(
-			id,
-			userId,
-		);
-
-	if (!data) {
-		return c.json(
-			{
-				message: "Note not found",
-			},
-			404,
-		);
-	}
-
-	return c.json(data);
 }
 
-/* =========================
-   DELETE FOREVER
-========================= */
 
-export async function deleteDataForever(
-	c: Context,
-) {
-	const id =
-		c.req.param("id");
+export async function toggleArchive(c: Context) {
+	try {
+		const userId = getUserId(c);
+		const noteId = getId(c);
 
-	if (!id) {
+		const [note] =
+			await repo.findNoteById(
+				userId,
+				noteId,
+			);
+
+		if (!note) {
+			return c.json(
+				{
+					message:
+						"Note not found",
+				},
+				404,
+			);
+		}
+
+		const updated =
+			await repo.setArchived(
+				userId,
+				noteId,
+				!note.isArchived,
+			);
+
+		return c.json({
+			message: updated?.isArchived
+				? "Note archived"
+				: "Note unarchived",
+			data: updated,
+		});
+	} catch (error) {
+		const result = errorResponse(error);
+
 		return c.json(
-			{
-				message: "ID is required",
-			},
-			400,
+			{ message: result.message },
+			result.status,
 		);
 	}
+}
 
-	const data =
-		await repo.deleteForever(id);
 
-	return c.json(data);
+export async function restore(c: Context) {
+	try {
+		const userId = getUserId(c);
+		const noteId = getId(c);
+
+		const note =
+			await repo.restoreNote(
+				userId,
+				noteId,
+			);
+
+		if (!note) {
+			return c.json(
+				{
+					message:
+						"Note not found in trash",
+				},
+				404,
+			);
+		}
+
+		return c.json({
+			message: "Note restored",
+			data: note,
+		});
+	} catch (error) {
+		const result = errorResponse(error);
+
+		return c.json(
+			{ message: result.message },
+			result.status,
+		);
+	}
+}
+
+
+export async function deleteData(c: Context) {
+	try {
+		const userId = getUserId(c);
+		const noteId = getId(c);
+
+		const note =
+			await repo.moveNoteToTrash(
+				userId,
+				noteId,
+			);
+
+		if (!note) {
+			return c.json(
+				{
+					message:
+						"Note not found",
+				},
+				404,
+			);
+		}
+
+		return c.json({
+			message:
+				"Note moved to trash",
+			data: note,
+		});
+	} catch (error) {
+		const result = errorResponse(error);
+
+		return c.json(
+			{ message: result.message },
+			result.status,
+		);
+	}
+}
+
+
+export async function deleteForever(c: Context) {
+	try {
+		const userId = getUserId(c);
+		const noteId = getId(c);
+
+		const note =
+			await repo.deleteNoteForever(
+				userId,
+				noteId,
+			);
+
+		if (!note) {
+			return c.json(
+				{
+					message:
+						"Note not found in trash",
+				},
+				404,
+			);
+		}
+
+		return c.json({
+			message:
+				"Note permanently deleted",
+		});
+	} catch (error) {
+		const result = errorResponse(error);
+
+		return c.json(
+			{ message: result.message },
+			result.status,
+		);
+	}
+}
+
+
+// ============================================================
+// LABELS
+// ============================================================
+
+export async function getLabels(c: Context) {
+	try {
+		const userId = getUserId(c);
+
+		const data =
+			await repo.findAllLabels(
+				userId,
+			);
+
+		return c.json({ data });
+	} catch (error) {
+		const result = errorResponse(error);
+
+		return c.json(
+			{ message: result.message },
+			result.status,
+		);
+	}
+}
+
+
+export async function createLabel(c: Context) {
+	try {
+		const userId = getUserId(c);
+
+		const body = await c.req.json();
+
+		const name =
+			typeof body.name === "string"
+				? body.name.trim()
+				: "";
+
+		if (!name) {
+			return c.json(
+				{
+					message:
+						"Label name is required",
+				},
+				400,
+			);
+		}
+
+		const label =
+			await repo.createLabel(
+				userId,
+				name,
+			);
+
+		return c.json(
+			{
+				message: "Label created",
+				data: label,
+			},
+			201,
+		);
+	} catch (error) {
+		const result = errorResponse(error);
+
+		return c.json(
+			{ message: result.message },
+			result.status,
+		);
+	}
+}
+
+
+export async function updateLabel(c: Context) {
+	try {
+		const userId = getUserId(c);
+		const labelId = getId(c);
+
+		const body = await c.req.json();
+
+		const name =
+			typeof body.name === "string"
+				? body.name.trim()
+				: "";
+
+		if (!name) {
+			return c.json(
+				{
+					message:
+						"Label name is required",
+				},
+				400,
+			);
+		}
+
+		const label =
+			await repo.updateLabel(
+				userId,
+				labelId,
+				name,
+			);
+
+		if (!label) {
+			return c.json(
+				{
+					message:
+						"Label not found",
+				},
+				404,
+			);
+		}
+
+		return c.json({
+			message: "Label updated",
+			data: label,
+		});
+	} catch (error) {
+		const result = errorResponse(error);
+
+		return c.json(
+			{ message: result.message },
+			result.status,
+		);
+	}
+}
+
+
+export async function deleteLabel(c: Context) {
+	try {
+		const userId = getUserId(c);
+		const labelId = getId(c);
+
+		const label =
+			await repo.deleteLabel(
+				userId,
+				labelId,
+			);
+
+		if (!label) {
+			return c.json(
+				{
+					message:
+						"Label not found",
+				},
+				404,
+			);
+		}
+
+		return c.json({
+			message:
+				"Label deleted",
+		});
+	} catch (error) {
+		const result = errorResponse(error);
+
+		return c.json(
+			{ message: result.message },
+			result.status,
+		);
+	}
+}
+
+
+// ============================================================
+// NOTE <-> LABEL
+// ============================================================
+
+export async function getNoteLabels(c: Context) {
+	try {
+		const userId = getUserId(c);
+		const noteId = getId(c);
+
+		const [note] =
+			await repo.findNoteById(
+				userId,
+				noteId,
+			);
+
+		if (!note) {
+			return c.json(
+				{
+					message:
+						"Note not found",
+				},
+				404,
+			);
+		}
+
+		const labels =
+			await repo.findLabelsByNote(
+				userId,
+				noteId,
+			);
+
+		return c.json({
+			data: labels,
+		});
+	} catch (error) {
+		const result = errorResponse(error);
+
+		return c.json(
+			{ message: result.message },
+			result.status,
+		);
+	}
+}
+
+
+export async function addLabel(c: Context) {
+	try {
+		const userId = getUserId(c);
+		const noteId = getId(c);
+
+		const body = await c.req.json();
+
+		const labelId =
+			typeof body.labelId === "string"
+				? body.labelId
+				: "";
+
+		if (!labelId) {
+			return c.json(
+				{
+					message:
+						"labelId is required",
+				},
+				400,
+			);
+		}
+
+		// Make sure the note belongs
+		// to the current user.
+		const [note] =
+			await repo.findNoteById(
+				userId,
+				noteId,
+			);
+
+		if (!note) {
+			return c.json(
+				{
+					message:
+						"Note not found",
+				},
+				404,
+			);
+		}
+
+		// Make sure the label belongs
+		// to the current user.
+		const [label] =
+			await repo.findLabelById(
+				userId,
+				labelId,
+			);
+
+		if (!label) {
+			return c.json(
+				{
+					message:
+						"Label not found",
+				},
+				404,
+			);
+		}
+
+		const relation =
+			await repo.addLabelToNote(
+				userId,
+				noteId,
+				labelId,
+			);
+
+		return c.json(
+			{
+				message: relation
+					? "Label added"
+					: "Label already attached",
+				data: relation,
+			},
+			relation ? 201 : 200,
+		);
+	} catch (error) {
+		const result = errorResponse(error);
+
+		return c.json(
+			{ message: result.message },
+			result.status,
+		);
+	}
+}
+
+
+export async function removeLabel(c: Context) {
+	try {
+		const userId = getUserId(c);
+		const noteId = getId(c);
+
+		const labelId =
+			c.req.query("labelId");
+
+		if (!labelId) {
+			return c.json(
+				{
+					message:
+						"labelId is required",
+				},
+				400,
+			);
+		}
+
+		const relation =
+			await repo.removeLabelFromNote(
+				userId,
+				noteId,
+				labelId,
+			);
+
+		if (!relation) {
+			return c.json(
+				{
+					message:
+						"Label is not attached to this note",
+				},
+				404,
+			);
+		}
+
+		return c.json({
+			message: "Label removed",
+		});
+	} catch (error) {
+		const result = errorResponse(error);
+
+		return c.json(
+			{ message: result.message },
+			result.status,
+		);
+	}
 }

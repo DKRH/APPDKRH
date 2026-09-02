@@ -8,6 +8,7 @@ import {
   index,
   uniqueIndex,
   varchar,
+  unique,
 } from "drizzle-orm/pg-core";
 
 const auditColumns = {
@@ -297,22 +298,32 @@ export const dNotes = pgTable("d_notes", {
 	content: text(),
 	isPinned: boolean("is_pinned").notNull().default(false),
 	isArchived: boolean("is_archived").notNull().default(false),
+	color: text("color").notNull().default("bg-zinc-900"),
+	isTrashed: boolean("is_trashed").notNull().default(false),
 });
 export const dLabels = pgTable("d_labels", {
 	...auditColumns,
 	name: text().notNull(),
 });
-export const dJNoteLabels = pgTable("d_j_note_labels", {
-	...auditColumns,
+export const dJNoteLabels = pgTable("d_j_note_labels", 
+	{
+		...auditColumns,
 
-	noteId: uuid("note_id")
-		.notNull()
-		.references(() => dNotes.id),
+		noteId: uuid("note_id")
+			.notNull()
+			.references(() => dNotes.id),
 
-	labelId: uuid("label_id")
-		.notNull()
-		.references(() => dLabels.id),
-});
+		labelId: uuid("label_id")
+			.notNull()
+			.references(() => dLabels.id),
+	},
+	(table) => [
+		unique("d_j_note_labels_note_label_unique").on(
+			table.noteId,
+			table.labelId,
+		),
+	],
+);
 export const eUrlShortener = pgTable("e_url_shortener", {
 	...auditColumns,
 
