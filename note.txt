@@ -1,20 +1,6 @@
-BUN + NODE
-UV
-Go + Air
+# TODO Feature
 
-Hono
-b passbank
-c weapons
-d todos
-e notes
-e labels 
-f urlshortener 
-g textstorage 
-h readingmarker 
-gacha 
-erp 
+1) feature logging
+   lihat yt: https://www.youtube.com/watch?v=aaNIxGGmlKQ
 
-
-Go-Gin
-
-FastAPI
+2) feature audit logging 
