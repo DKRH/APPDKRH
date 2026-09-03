@@ -3,7 +3,8 @@
 	import { authClient } from "$lib/api";
 	import { pageTitle } from "$lib/stores/pageTitle";
 	import { onMount } from "svelte";
-
+	import { page } from '$app/state';
+	
 	let profileOpen = $state(false);
 	let loggingOut = $state(false);
 	let { children } = $props();
@@ -113,40 +114,40 @@
 
 			<!-- Left -->
 			<div class="justify-self-start">
-
-				<button
-					onclick={() => goto("/dashboard")}
-					class="group flex items-center gap-2
-					rounded-lg border border-zinc-700
-					bg-zinc-900 px-3 py-2
-					text-sm font-medium text-zinc-300
-					transition-all
-					hover:border-zinc-600
-					hover:bg-zinc-800
-					hover:text-white
-					active:scale-[0.98]
-					cursor-pointer"
-				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						class="h-4 w-4 text-zinc-500
-						transition-colors
-						group-hover:text-teal-400"
+				{#if page.url.pathname !== '/dashboard'}
+					<button
+						onclick={() => goto("/dashboard")}
+						class="group flex items-center gap-2
+						rounded-lg border border-zinc-700
+						bg-zinc-900 px-3 py-2
+						text-sm font-medium text-zinc-300
+						transition-all
+						hover:border-zinc-600
+						hover:bg-zinc-800
+						hover:text-white
+						active:scale-[0.98]
+						cursor-pointer"
 					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							d="M3 12h18M3 12l6-6M3 12l6 6"
-						/>
-					</svg>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							class="h-4 w-4 text-zinc-500
+							transition-colors
+							group-hover:text-teal-400"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								d="M3 12h18M3 12l6-6M3 12l6 6"
+							/>
+						</svg>
 
-					Menu
-				</button>
-
+						Menu
+					</button>
+				{/if}
 			</div>
 
 			<!-- Page title -->
