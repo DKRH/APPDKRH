@@ -398,6 +398,72 @@ export const kMUniverses = pgTable("k_m_universes", {
 	name: text("name").notNull(),
 	desc: text("desc"),
 });
+
+export const mTCGFamilia = pgTable("m_tcg_familia", {
+	...auditColumns,
+	name: text("name").notNull(),
+	desc: text("desc"),
+});
+
+export const mTCGCardType = pgTable("m_tcg_card_type", {
+	...auditColumns,
+	name: text("name").notNull(),
+	desc: text("desc"),
+});
+
+export const mTCGSupertype = pgTable("m_tcg_supertype", {
+	...auditColumns,
+	name: text("name").notNull(),
+	desc: text("desc"),
+});
+
+export const mTCGElement = pgTable("m_tcg_element", {
+	...auditColumns,
+	code: text("code").notNull(),
+	name: text("name").notNull(),
+	desc: text("desc"),
+});
+
+export const mTCGKeyword = pgTable("m_tcg_keyword", {
+	...auditColumns,
+	code: text("code").notNull(),
+	name: text("name").notNull(),
+	desc: text("desc"),
+});
+
+export const mTCGCards = pgTable("m_tcg_cards", {
+	...auditColumns,
+
+	supertypeId1: uuid("supertype_id_1")
+		.notNull()
+		.references(() => mTCGSupertype.id),
+	supertypeId2: uuid("supertype_id_2")
+		.notNull()
+		.references(() => mTCGSupertype.id),
+	cardTypeId: uuid("card_type_id")
+		.notNull()
+		.references(() => mTCGCardType.id),
+	familiaId1: uuid("familia_id_1")
+		.notNull()
+		.references(() => mTCGFamilia.id),
+	familiaId2: uuid("familia_id_2")
+		.notNull()
+		.references(() => mTCGFamilia.id),
+	familiaId3: uuid("familia_id_3")
+		.notNull()
+		.references(() => mTCGFamilia.id),
+
+	name: text("name").notNull(),
+	imageUrl: text("image_url"),
+
+	power: integer("power"),
+	toughness: integer("toughness"),
+	
+	castCost: text("cast_cost"), //element / sacrifice / etc
+	effect: text("effect"),
+});
+
+
 export const nGachaUserHistory = pgTable("n_gacha_user_history", {
 	...auditColumns,
 	userId: uuid("user_id")
@@ -728,70 +794,6 @@ export const kMLevelingExp = sqliteTable("k_m_leveling_exp", {
 	level: integer("level").notNull(), // 1,2,3...
 	expNeed: integer("exp_need").notNull(),
 });
-
-export const mTCGFamilia = sqliteTable("m_tcg_familia", {
-	...auditColumns,
-	name: text("name").notNull(),
-	desc: text("desc"),
-});
-
-export const mTCGCardType = sqliteTable("m_tcg_card_type", {
-	...auditColumns,
-	name: text("name").notNull(),
-	desc: text("desc"),
-});
-
-export const mTCGSupertype = sqliteTable("m_tcg_supertype", {
-	...auditColumns,
-	name: text("name").notNull(),
-	desc: text("desc"),
-});
-
-export const mTCGElement = sqliteTable("m_tcg_element", {
-	...auditColumns,
-	code: text("code").notNull(),
-	name: text("name").notNull(),
-	desc: text("desc"),
-});
-
-export const mTCGKeyword = sqliteTable("m_tcg_keyword", {
-	...auditColumns,
-	code: text("code").notNull(),
-	name: text("name").notNull(),
-	desc: text("desc"),
-});
-
-export const mTCGCards = sqliteTable("m_tcg_cards", {
-	...auditColumns,
-	name: text("name").notNull(),
-	imageUrl: text("image_url"),
-
-	power: integer("power"),
-	toughness: integer("toughness"),
-
-	supertypeId1: uuid("supertype_id_1")
-		.notNull()
-		.references(() => mTCGSupertype.id),
-	supertypeId2: uuid("supertype_id_2")
-		.notNull()
-		.references(() => mTCGSupertype.id),
-	cardTypeId: uuid("card_type_id")
-		.notNull()
-		.references(() => mTCGCardType.id),
-	familiaId1: uuid("familia_id_1")
-		.notNull()
-		.references(() => mTCGFamilia.id),
-	familiaId2: uuid("familia_id_2")
-		.notNull()
-		.references(() => mTCGFamilia.id),
-	familiaId3: uuid("familia_id_3")
-		.notNull()
-		.references(() => mTCGFamilia.id),
-
-	castCost: text("cast_cost"), //element / sacrifice / etc
-	effect: text("effect"),
-});
-
 
 
 export const oUoms = sqliteTable("o_uoms", {
