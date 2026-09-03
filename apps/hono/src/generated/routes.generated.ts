@@ -15,7 +15,6 @@ import route13 from "../modules/a1-roles/route";
 import route14 from "../modules/k-universe/route";
 import route15 from "../modules/d-notes/route";
 import route16 from "../modules/a1-role-permissions/route";
-import route17 from "../_trash/_d-labels (not use)/route";
 
 export const routes = [
   {
@@ -85,9 +84,5 @@ export const routes = [
   {
     path: "/a1-role-permissions",
     route: route16,
-  },
-  {
-    path: "/_d-labels (not use)",
-    route: route17,
   },
 ];

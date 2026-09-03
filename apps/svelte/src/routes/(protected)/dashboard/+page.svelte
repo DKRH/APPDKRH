@@ -1,52 +1,151 @@
 <script lang="ts">
 	import {
-		Film,
-		KeyRound,
+		Vault,
+		ListChecks,
 		NotebookPen,
-		Link,
+		Link2,
 		FileText,
+		Clapperboard,
+		UserRound,
+		Dices,
+		Gamepad2,
+		Album,
+		Cat,
+		Crosshair,
+		WalletCards,
+		Package,
+		FolderLock,
+		Contact,
+		QrCode,
+		CalendarDays,
 	} from "lucide-svelte";
 
 	export const appPages = [
 		{
 			name: "PassBank",
-			icon: KeyRound,
+			description: "Securely store and manage passwords and sensitive information.",
+			icon: Vault,
 			to: "/b-passbank",
+			dev: false,
 		},
 		{
 			name: "To-Do",
-			icon: NotebookPen,
+			description: "Manage your tasks and daily activities.",
+			icon: ListChecks,
 			to: "/c-todo",
+			dev: false,
 		},
 		{
 			name: "Note",
+			description: "Create and organize your notes.",
 			icon: NotebookPen,
 			to: "/d-note",
+			dev: false,
 		},
 		{
 			name: "URL Shortener",
-			icon: Link,
+			description: "Create, Manage and Share shortened URLs.",
+			icon: Link2,
 			to: "/e-url-shortener",
+			dev: true,
 		},
 		{
 			name: "Text Storage",
+			description: "Store and Share access text snippets.",
 			icon: FileText,
 			to: "/f-text-storage",
+			dev: true,
 		},
 		{
 			name: "Entertainment Tracker",
-			icon: Film,
+			description: "Track movies, shows, and other entertainment.",
+			icon: Clapperboard,
 			to: "/h-entertainment",
+			dev: false,
 		},
 		{
 			name: "Char",
-			icon: KeyRound,
+			description: "Character database throughout all.",
+			icon: UserRound,
 			to: "/k/char",
+			dev: false,
 		},
 		{
 			name: "Gacha",
-			icon: KeyRound,
+			description: "Simulate gacha pulls to fix your addiction.",
+			icon: Dices,
 			to: "/n-gacha",
+			dev: true,
+		},
+		{
+			name: "Game Whitelist",
+			description: "Keep track of games you own, play, or want to whitelist.",
+			icon: Gamepad2,
+			to: "/g-game-whitelist",
+			dev: true,
+		},
+		{
+			name: "TCG Database",
+			description: "Browse and organize your trading card game collection.",
+			icon: Album,
+			to: "/m-tcg-database",
+			dev: true,
+		},
+		{
+			name: "Cat History",
+			description: "Keep a history of cats, sightings, and memorable moments.",
+			icon: Cat,
+			to: "/o-cat-history",
+			dev: true,
+		},
+		{
+			name: "Firearm Database",
+			description: "Catalog and organize firearm reference information.",
+			icon: Crosshair,
+			to: "/p-firearm-database",
+			dev: true,
+		},
+		{
+			name: "Wallet",
+			description: "Track income, expenses, assets, and personal finances.",
+			icon: WalletCards,
+			to: "/q-wallet",
+			dev: true,
+		},
+		{
+			name: "Inventory",
+			description: "Track the things you own, their details, and where they are.",
+			icon: Package,
+			to: "/q-inventory",
+			dev: true,
+		},
+		{
+			name: "File Vault",
+			description: "Store and organize personal documents, PDFs, and images.",
+			icon: FolderLock,
+			to: "/r-file-vault",
+			dev: true,
+		},
+		{
+			name: "Contacts",
+			description: "Keep personal contacts and useful information organized.",
+			icon: Contact,
+			to: "/s-contacts",
+			dev: true,
+		},
+		{
+			name: "QR Generator",
+			description: "Generate QR codes for URLs, text, and other information.",
+			icon: QrCode,
+			to: "/t-qr-generator",
+			dev: true,
+		},
+		{
+			name: "Calendar",
+			description: "Keep track of events, dates, reminders, and important occasions.",
+			icon: CalendarDays,
+			to: "/u-calendar",
+			dev: true,
 		},
 	];
 </script>
@@ -152,6 +251,23 @@
 				"
 			>
 
+				{#if page.dev}
+					<span
+						class="
+							absolute left-3 top-3 z-10
+							rounded-md
+							border border-amber-500/20
+							bg-amber-500/10
+							px-2 py-1
+							text-[9px]
+							font-semibold
+							tracking-wider
+							text-amber-400
+						"
+					>
+						IN DEVELOPMENT
+					</span>
+				{/if}
 				<!-- Hover glow -->
 				<div
 					class="
@@ -211,7 +327,7 @@
 						flex-col
 						items-center
 						justify-center
-						gap-4
+						gap-3
 					"
 				>
 
@@ -242,18 +358,34 @@
 						/>
 					</div>
 
-					<span
-						class="
-							text-center
-							text-sm
-							font-medium
-							text-zinc-300
-							transition-colors
-							group-hover:text-white
-						"
-					>
-						{page.name}
-					</span>
+					<div class="text-center">
+						<span
+							class="
+								block
+								text-sm
+								font-medium
+								text-zinc-300
+								transition-colors
+								group-hover:text-white
+							"
+						>
+							{page.name}
+						</span>
+
+						<p
+							class="
+								mt-1
+								line-clamp-2
+								text-xs
+								leading-relaxed
+								text-zinc-600
+								transition-colors
+								group-hover:text-zinc-500
+							"
+						>
+							{page.description}
+						</p>
+					</div>
 
 				</div>
 
