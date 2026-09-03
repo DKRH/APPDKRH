@@ -30,6 +30,11 @@
 			label: "Password",
 			type: "text",
 		},
+		{
+			key: "note",
+			label: "Note",
+			type: "textarea",
+		},
 	];
 </script>
 
