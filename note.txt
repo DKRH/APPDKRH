@@ -4,3 +4,9 @@
    lihat yt: https://www.youtube.com/watch?v=aaNIxGGmlKQ
 
 2) feature audit logging 
+
+g = gamewhitelist
+m = tcg
+o = cat
+p = weapon
+q = wallet
