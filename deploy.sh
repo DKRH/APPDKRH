@@ -20,7 +20,14 @@ DEPLOY_APP_DIR="${DEPLOY_APP_DIR}"
 
 echo "==> Deploying to ${DEPLOY_NAME} (${DEPLOY_HOST})..."
 
-tar -C dist -czf - . | ssh -p "${DEPLOY_PORT:-22}" "${DEPLOY_USER}@${DEPLOY_HOST}" "
+#tar -C dist -czf - . | ssh -p "${DEPLOY_PORT:-22}" "${DEPLOY_USER}@${DEPLOY_HOST}" "
+tar \
+    -C dist \
+    --exclude='.env' \
+    --exclude='.env.*' \
+    -czf - . |
+ssh -p "${DEPLOY_PORT}" "${DEPLOY_USER}@${DEPLOY_HOST}" "
+
 set -e
 
 mkdir -p '${DEPLOY_APP_DIR}'

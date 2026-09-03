@@ -129,13 +129,23 @@ if (!isDevelopment) {
   | SPA Fallback
   |--------------------------------------------------------------------------
   */
-  /*app.notFound(async (c) => {
-    if (c.req.path.startsWith("/api")) {
-      return c.text("Not Found", 404);
+  app.notFound(async (c) => {
+    if (
+      c.req.path === "/api" ||
+      c.req.path.startsWith("/api/")
+    ) {
+      return c.json(
+        {
+          success: false,
+          message: "Not Found",
+        },
+        404,
+      );
     }
 
+    // Let Svelte handle frontend routing/errors
     return c.html(await indexFile.text());
-  });*/
+  });
 }
 
 export type AppType = typeof protectedApi;

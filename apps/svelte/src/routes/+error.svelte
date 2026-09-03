@@ -3,7 +3,7 @@
 	import { page } from "$app/state";
 
 	const goHome = () => {
-		goto("/");
+		goto("/dashboard");
 	};
 </script>
 
