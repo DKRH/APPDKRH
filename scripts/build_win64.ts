@@ -2,8 +2,7 @@ import { $ } from "bun";
 import { mkdir, readdir, cp } from "node:fs/promises";
 import { join, extname } from "node:path";
 
-const publishDir =
-	"apps/wpf/bin/Release/net8.0-windows/win-x64/publish";
+const publishDir = "./wrappers/win64/bin/Release/net8.0-windows/win-x64/publish";
 
 const distDir = "dist_win64";
 
