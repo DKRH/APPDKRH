@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { c_weapons } from "@dkrh/db/schema";
-import * as audit from "@/db/audit";
+import * as audit from "@dkrh/db/audit";
 
 const app = new Hono();
 

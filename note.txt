@@ -1,12 +1,22 @@
 # TODO Feature
 
-1) feature logging
+1) feature dev debug logging
    lihat yt: https://www.youtube.com/watch?v=aaNIxGGmlKQ
 
-2) feature audit logging 
+2) feature audit logging (v)
+3) Testing (b-passbank, still bugs)
+4) Validation (v, check b-passbank)
 
-g = gamewhitelist
-m = tcg
-o = cat
-p = weapon
-q = wallet
+
+Laravel
+├── Authentication
+├── Authorization
+├── Queue
+├── Mail
+├── Events
+├── Jobs
+├── Cache
+├── Validation
+├── ORM
+├── Migrations
+└── Testing

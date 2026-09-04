@@ -14,6 +14,7 @@ import {
 	isNull,
 	desc,
 } from "@dkrh/db";
+import { getAuditContext } from "@dkrh/db/audit/context";
 
 const banner = nGachaBanners;
 const bannerItem = nGachaBannerItems;
@@ -122,9 +123,8 @@ export async function getBannerItems(
 |--------------------------------------------------------------------------
 */
 
-export async function getUserPity(
-	userId: string,
-) {
+export async function getUserPity() {
+	const context = getAuditContext();
 	const [result] =
 		await db
 			.select()
@@ -133,7 +133,7 @@ export async function getUserPity(
 				and(
 					eq(
 						pity.userId,
-						userId,
+						context.userId,
 					),
 					isNull(
 						pity.deletedAt,
@@ -145,14 +145,13 @@ export async function getUserPity(
 	return result;
 }
 
-export async function createUserPity(
-	userId: string,
-) {
+export async function createUserPity() {
+	const context = getAuditContext();
 	const [result] =
 		await db
 			.insert(pity)
 			.values({
-				userId,
+				userId: context.userId,
 				pity5: 0,
 				pity4: 0,
 				guarantee5: 0,
@@ -162,27 +161,25 @@ export async function createUserPity(
 	return result;
 }
 
-export async function getOrCreateUserPity(
-	userId: string,
-) {
+export async function getOrCreateUserPity() {
 	const existing =
-		await getUserPity(userId);
+		await getUserPity();
 
 	if (existing) {
 		return existing;
 	}
 
-	return createUserPity(userId);
+	return createUserPity();
 }
 
 export async function updatePity(
-	userId: string,
 	data: {
 		pity5: number;
 		pity4: number;
 		guarantee5: number;
 	},
 ) {
+	const context = getAuditContext();
 	const [result] =
 		await db
 			.update(pity)
@@ -198,7 +195,7 @@ export async function updatePity(
 				and(
 					eq(
 						pity.userId,
-						userId,
+						context.userId,
 					),
 					isNull(
 						pity.deletedAt,
@@ -217,7 +214,6 @@ export async function updatePity(
 */
 
 export async function insertHistoryMany(
-	userId: string,
 	results: Array<{
 		itemId: string;
 		name: string | null;
@@ -227,12 +223,13 @@ export async function insertHistoryMany(
 	if (results.length === 0) {
 		return [];
 	}
+	const context = getAuditContext();
 
 	return db
 		.insert(history)
 		.values(
 			results.map((result) => ({
-				userId,
+				userId: context.userId,
 				itemId:
 					result.itemId,
 				name:
@@ -247,10 +244,10 @@ export async function insertHistoryMany(
 }
 
 export async function getUserHistory(
-	userId: string,
 	limit = 50,
 	offset = 0,
 ) {
+	const context = getAuditContext();
 	return db
 		.select()
 		.from(history)
@@ -258,7 +255,7 @@ export async function getUserHistory(
 			and(
 				eq(
 					history.userId,
-					userId,
+					context.userId,
 				),
 				isNull(
 					history.deletedAt,

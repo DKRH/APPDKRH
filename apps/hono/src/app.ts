@@ -6,6 +6,7 @@ import { cors } from "hono/cors";
 import { createProtectedApi } from "./routes";
 import { dirname, resolve } from "node:path";
 import healthRoutes from "./routes/health";
+import { auditContext } from "./middleware/audit-context";
 
 const isDevelopment =
   process.env.APP_ENV === "development";
@@ -44,6 +45,9 @@ const protectedApi = new Hono();
 
 // Register middleware FIRST
 protectedApi.use("*", authMiddleware);
+
+// 2. Audit context reads userId
+protectedApi.use("*", auditContext);
 
 // Then register all dynamic routes inside it
 const routes = await createProtectedApi();

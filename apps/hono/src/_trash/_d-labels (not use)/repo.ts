@@ -1,6 +1,6 @@
 import { dLabels } from "@dkrh/db/schema";
 
-import * as audit from "@/db/audit";
+import * as audit from "@dkrh/db/audit";
 
 import type {
 	NewDLabels,

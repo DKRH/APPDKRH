@@ -1,6 +1,10 @@
 import { Hono } from "hono";
 
 import * as service from "./service";
+import {
+	createPassbankValidator,
+	updatePassbankValidator,
+} from "./validation";
 
 const app = new Hono();
 
@@ -16,11 +20,13 @@ app.get(
 
 app.post(
 	"/",
+	createPassbankValidator,
 	service.createData,
 );
 
 app.put(
 	"/:id",
+	updatePassbankValidator,
 	service.editData,
 );
 

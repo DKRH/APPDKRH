@@ -1,9 +1,7 @@
-import { eq } from "drizzle-orm";
-
-import { db } from "@dkrh/db";
+import { db,eq } from "@dkrh/db";
 import { eUrlShortener } from "@dkrh/db/schema";
 
-import * as audit from "@/db/audit";
+import * as audit from "@dkrh/db/audit";
 
 import type {
 	NewEUrlShortener,
@@ -59,12 +57,10 @@ export async function findByID(
 
 export async function create(
 	data: NewEUrlShortener,
-	userId: string,
 ) {
 	return audit.auditedInsert(
 		table,
 		data,
-		userId,
 	);
 }
 
@@ -75,14 +71,12 @@ export async function create(
 export async function update(
 	id: string,
 	data: Partial<NewEUrlShortener>,
-	userId: string,
 ) {
 	return audit.auditedUpdate(
 		table,
 		table.id,
 		id,
 		data,
-		userId,
 	);
 }
 
@@ -93,7 +87,6 @@ export async function update(
 export async function updateLock(
 	id: string,
 	isLocked: boolean,
-	userId: string,
 ) {
 	const updated =
 		await audit.auditedUpdate(
@@ -103,7 +96,6 @@ export async function updateLock(
 			{
 				isLocked,
 			},
-			userId,
 		);
 
 	return updated;
@@ -115,13 +107,11 @@ export async function updateLock(
 
 export async function remove(
 	id: string,
-	userId: string,
 ) {
 	return audit.auditedDelete(
 		table,
 		table.id,
 		id,
-		userId,
 	);
 }
 
@@ -131,13 +121,11 @@ export async function remove(
 
 export async function restore(
 	id: string,
-	userId: string,
 ) {
 	return audit.auditedRestore(
 		table,
 		table.id,
 		id,
-		userId,
 	);
 }
 

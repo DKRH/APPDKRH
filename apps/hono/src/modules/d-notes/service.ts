@@ -3,17 +3,6 @@ import type { Context } from "hono";
 import * as repo from "./repo";
 
 
-function getUserId(c: Context): string {
-	const user = c.get("userId");
-
-	if (!user) {
-		throw new Error("Unauthorized");
-	}
-
-	return user;
-}
-
-
 function getId(c: Context): string {
 	const id = c.req.param("id");
 
@@ -61,8 +50,6 @@ function errorResponse(error: unknown) {
 
 export async function getAll(c: Context) {
 	try {
-		const userId = getUserId(c);
-
 		const view =
 			(c.req.query("view") ??
 				"notes") as
@@ -75,7 +62,6 @@ export async function getAll(c: Context) {
 
 		const data =
 			await repo.findAllNotes(
-				userId,
 				{
 					view,
 					search,
@@ -96,12 +82,10 @@ export async function getAll(c: Context) {
 
 export async function getOne(c: Context) {
 	try {
-		const userId = getUserId(c);
 		const noteId = getId(c);
 
 		const [note] =
 			await repo.findNoteById(
-				userId,
 				noteId,
 			);
 
@@ -116,7 +100,6 @@ export async function getOne(c: Context) {
 
 		const labels =
 			await repo.findLabelsByNote(
-				userId,
 				noteId,
 			);
 
@@ -139,7 +122,6 @@ export async function getOne(c: Context) {
 
 export async function createData(c: Context) {
 	try {
-		const userId = getUserId(c);
 
 		const body = await c.req.json();
 
@@ -170,7 +152,6 @@ export async function createData(c: Context) {
 
 		const note =
 			await repo.createNote(
-				userId,
 				{
 					title,
 					content,
@@ -198,7 +179,6 @@ export async function createData(c: Context) {
 
 export async function editData(c: Context) {
 	try {
-		const userId = getUserId(c);
 		const noteId = getId(c);
 
 		const body = await c.req.json();
@@ -239,7 +219,6 @@ export async function editData(c: Context) {
 
 		const note =
 			await repo.updateNote(
-				userId,
 				noteId,
 				update,
 			);
@@ -271,12 +250,10 @@ export async function editData(c: Context) {
 
 export async function togglePin(c: Context) {
 	try {
-		const userId = getUserId(c);
 		const noteId = getId(c);
 
 		const [note] =
 			await repo.findNoteById(
-				userId,
 				noteId,
 			);
 
@@ -292,7 +269,6 @@ export async function togglePin(c: Context) {
 
 		const updated =
 			await repo.setPinned(
-				userId,
 				noteId,
 				!note.isPinned,
 			);
@@ -316,12 +292,10 @@ export async function togglePin(c: Context) {
 
 export async function toggleArchive(c: Context) {
 	try {
-		const userId = getUserId(c);
 		const noteId = getId(c);
 
 		const [note] =
 			await repo.findNoteById(
-				userId,
 				noteId,
 			);
 
@@ -337,7 +311,6 @@ export async function toggleArchive(c: Context) {
 
 		const updated =
 			await repo.setArchived(
-				userId,
 				noteId,
 				!note.isArchived,
 			);
@@ -361,12 +334,10 @@ export async function toggleArchive(c: Context) {
 
 export async function restore(c: Context) {
 	try {
-		const userId = getUserId(c);
 		const noteId = getId(c);
 
 		const note =
 			await repo.restoreNote(
-				userId,
 				noteId,
 			);
 
@@ -397,12 +368,10 @@ export async function restore(c: Context) {
 
 export async function deleteData(c: Context) {
 	try {
-		const userId = getUserId(c);
 		const noteId = getId(c);
 
 		const note =
 			await repo.moveNoteToTrash(
-				userId,
 				noteId,
 			);
 
@@ -434,12 +403,10 @@ export async function deleteData(c: Context) {
 
 export async function deleteForever(c: Context) {
 	try {
-		const userId = getUserId(c);
 		const noteId = getId(c);
 
 		const note =
 			await repo.deleteNoteForever(
-				userId,
 				noteId,
 			);
 
@@ -474,12 +441,9 @@ export async function deleteForever(c: Context) {
 
 export async function getLabels(c: Context) {
 	try {
-		const userId = getUserId(c);
 
 		const data =
-			await repo.findAllLabels(
-				userId,
-			);
+			await repo.findAllLabels();
 
 		return c.json({ data });
 	} catch (error) {
@@ -495,8 +459,6 @@ export async function getLabels(c: Context) {
 
 export async function createLabel(c: Context) {
 	try {
-		const userId = getUserId(c);
-
 		const body = await c.req.json();
 
 		const name =
@@ -516,7 +478,6 @@ export async function createLabel(c: Context) {
 
 		const label =
 			await repo.createLabel(
-				userId,
 				name,
 			);
 
@@ -540,7 +501,6 @@ export async function createLabel(c: Context) {
 
 export async function updateLabel(c: Context) {
 	try {
-		const userId = getUserId(c);
 		const labelId = getId(c);
 
 		const body = await c.req.json();
@@ -562,7 +522,6 @@ export async function updateLabel(c: Context) {
 
 		const label =
 			await repo.updateLabel(
-				userId,
 				labelId,
 				name,
 			);
@@ -594,12 +553,10 @@ export async function updateLabel(c: Context) {
 
 export async function deleteLabel(c: Context) {
 	try {
-		const userId = getUserId(c);
 		const labelId = getId(c);
 
 		const label =
 			await repo.deleteLabel(
-				userId,
 				labelId,
 			);
 
@@ -634,12 +591,10 @@ export async function deleteLabel(c: Context) {
 
 export async function getNoteLabels(c: Context) {
 	try {
-		const userId = getUserId(c);
 		const noteId = getId(c);
 
 		const [note] =
 			await repo.findNoteById(
-				userId,
 				noteId,
 			);
 
@@ -655,7 +610,6 @@ export async function getNoteLabels(c: Context) {
 
 		const labels =
 			await repo.findLabelsByNote(
-				userId,
 				noteId,
 			);
 
@@ -675,7 +629,6 @@ export async function getNoteLabels(c: Context) {
 
 export async function addLabel(c: Context) {
 	try {
-		const userId = getUserId(c);
 		const noteId = getId(c);
 
 		const body = await c.req.json();
@@ -699,7 +652,6 @@ export async function addLabel(c: Context) {
 		// to the current user.
 		const [note] =
 			await repo.findNoteById(
-				userId,
 				noteId,
 			);
 
@@ -717,7 +669,6 @@ export async function addLabel(c: Context) {
 		// to the current user.
 		const [label] =
 			await repo.findLabelById(
-				userId,
 				labelId,
 			);
 
@@ -733,7 +684,6 @@ export async function addLabel(c: Context) {
 
 		const relation =
 			await repo.addLabelToNote(
-				userId,
 				noteId,
 				labelId,
 			);
@@ -760,7 +710,6 @@ export async function addLabel(c: Context) {
 
 export async function removeLabel(c: Context) {
 	try {
-		const userId = getUserId(c);
 		const noteId = getId(c);
 
 		const labelId =
@@ -778,7 +727,6 @@ export async function removeLabel(c: Context) {
 
 		const relation =
 			await repo.removeLabelFromNote(
-				userId,
 				noteId,
 				labelId,
 			);

@@ -11,23 +11,24 @@ import {
 	or,
 } from "@dkrh/db";
 
+import { getAuditContext } from "@dkrh/db/audit/context";
 
 // ============================================================
 // NOTES
 // ============================================================
 
 export async function findAllNotes(
-	userId: string,
 	options?: {
 		view?: "notes" | "archive" | "trash";
 		search?: string;
 	},
 ) {
+	const context = getAuditContext();
 	const view = options?.view ?? "notes";
 	const search = options?.search?.trim();
 
 	const conditions = [
-		eq(dNotes.createdBy, userId),
+		eq(dNotes.createdBy, context.userId),
 	];
 
 	if (view === "trash") {
@@ -73,16 +74,16 @@ export async function findAllNotes(
 
 
 export async function findNoteById(
-	userId: string,
 	noteId: string,
 ) {
+	const context = getAuditContext();
 	return db
 		.select()
 		.from(dNotes)
 		.where(
 			and(
 				eq(dNotes.id, noteId),
-				eq(dNotes.createdBy, userId),
+				eq(dNotes.createdBy, context.userId),
 			),
 		)
 		.limit(1);
@@ -90,13 +91,13 @@ export async function findNoteById(
 
 
 export async function createNote(
-	userId: string,
 	data: {
 		title: string;
 		content?: string | null;
 		color?: string;
 	},
 ) {
+	const context = getAuditContext();
 	const [note] = await db
 		.insert(dNotes)
 		.values({
@@ -106,8 +107,8 @@ export async function createNote(
 				data.color ??
 				"bg-zinc-900",
 
-			createdBy: userId,
-			updatedBy: userId,
+			createdBy: context.userId,
+			updatedBy: context.userId,
 		})
 		.returning();
 
@@ -116,7 +117,6 @@ export async function createNote(
 
 
 export async function updateNote(
-	userId: string,
 	noteId: string,
 	data: {
 		title?: string;
@@ -124,17 +124,19 @@ export async function updateNote(
 		color?: string;
 	},
 ) {
+	
+	const context = getAuditContext();
 	const [note] = await db
 		.update(dNotes)
 		.set({
 			...data,
-			updatedBy: userId,
+			updatedBy: context.userId,
 			updatedAt: new Date(),
 		})
 		.where(
 			and(
 				eq(dNotes.id, noteId),
-				eq(dNotes.createdBy, userId),
+				eq(dNotes.createdBy, context.userId),
 			),
 		)
 		.returning();
@@ -144,21 +146,22 @@ export async function updateNote(
 
 
 export async function setPinned(
-	userId: string,
 	noteId: string,
 	isPinned: boolean,
 ) {
+	
+	const context = getAuditContext();
 	const [note] = await db
 		.update(dNotes)
 		.set({
 			isPinned,
-			updatedBy: userId,
+			updatedBy: context.userId,
 			updatedAt: new Date(),
 		})
 		.where(
 			and(
 				eq(dNotes.id, noteId),
-				eq(dNotes.createdBy, userId),
+				eq(dNotes.createdBy, context.userId),
 			),
 		)
 		.returning();
@@ -168,21 +171,22 @@ export async function setPinned(
 
 
 export async function setArchived(
-	userId: string,
 	noteId: string,
 	isArchived: boolean,
 ) {
+	
+	const context = getAuditContext();
 	const [note] = await db
 		.update(dNotes)
 		.set({
 			isArchived,
-			updatedBy: userId,
+			updatedBy: context.userId,
 			updatedAt: new Date(),
 		})
 		.where(
 			and(
 				eq(dNotes.id, noteId),
-				eq(dNotes.createdBy, userId),
+				eq(dNotes.createdBy, context.userId),
 			),
 		)
 		.returning();
@@ -192,9 +196,10 @@ export async function setArchived(
 
 
 export async function moveNoteToTrash(
-	userId: string,
 	noteId: string,
 ) {
+	
+	const context = getAuditContext();
 	const [note] = await db
 		.update(dNotes)
 		.set({
@@ -203,15 +208,15 @@ export async function moveNoteToTrash(
 			isPinned: false,
 
 			deletedAt: new Date(),
-			deletedBy: userId,
+			deletedBy: context.userId,
 
-			updatedBy: userId,
+			updatedBy: context.userId,
 			updatedAt: new Date(),
 		})
 		.where(
 			and(
 				eq(dNotes.id, noteId),
-				eq(dNotes.createdBy, userId),
+				eq(dNotes.createdBy, context.userId),
 				eq(dNotes.isTrashed, false),
 			),
 		)
@@ -222,9 +227,10 @@ export async function moveNoteToTrash(
 
 
 export async function restoreNote(
-	userId: string,
 	noteId: string,
 ) {
+	
+	const context = getAuditContext();
 	const [note] = await db
 		.update(dNotes)
 		.set({
@@ -233,13 +239,13 @@ export async function restoreNote(
 			deletedAt: null,
 			deletedBy: null,
 
-			updatedBy: userId,
+			updatedBy: context.userId,
 			updatedAt: new Date(),
 		})
 		.where(
 			and(
 				eq(dNotes.id, noteId),
-				eq(dNotes.createdBy, userId),
+				eq(dNotes.createdBy, context.userId),
 				eq(dNotes.isTrashed, true),
 			),
 		)
@@ -250,15 +256,16 @@ export async function restoreNote(
 
 
 export async function deleteNoteForever(
-	userId: string,
 	noteId: string,
 ) {
+	
+	const context = getAuditContext();
 	const [note] = await db
 		.delete(dNotes)
 		.where(
 			and(
 				eq(dNotes.id, noteId),
-				eq(dNotes.createdBy, userId),
+				eq(dNotes.createdBy, context.userId),
 				eq(dNotes.isTrashed, true),
 			),
 		)
@@ -272,14 +279,13 @@ export async function deleteNoteForever(
 // LABELS
 // ============================================================
 
-export async function findAllLabels(
-	userId: string,
-) {
+export async function findAllLabels() {
+	const context = getAuditContext();
 	return db
 		.select()
 		.from(dLabels)
 		.where(
-			eq(dLabels.createdBy, userId),
+			eq(dLabels.createdBy, context.userId),
 		)
 		.orderBy(
 			dLabels.name,
@@ -288,16 +294,17 @@ export async function findAllLabels(
 
 
 export async function findLabelById(
-	userId: string,
 	labelId: string,
 ) {
+	
+	const context = getAuditContext();
 	return db
 		.select()
 		.from(dLabels)
 		.where(
 			and(
 				eq(dLabels.id, labelId),
-				eq(dLabels.createdBy, userId),
+				eq(dLabels.createdBy, context.userId),
 			),
 		)
 		.limit(1);
@@ -305,16 +312,17 @@ export async function findLabelById(
 
 
 export async function createLabel(
-	userId: string,
 	name: string,
 ) {
+	
+	const context = getAuditContext();
 	const [label] = await db
 		.insert(dLabels)
 		.values({
 			name,
 
-			createdBy: userId,
-			updatedBy: userId,
+			createdBy: context.userId,
+			updatedBy: context.userId,
 		})
 		.returning();
 
@@ -323,21 +331,22 @@ export async function createLabel(
 
 
 export async function updateLabel(
-	userId: string,
 	labelId: string,
 	name: string,
 ) {
+	
+	const context = getAuditContext();
 	const [label] = await db
 		.update(dLabels)
 		.set({
 			name,
-			updatedBy: userId,
+			updatedBy: context.userId,
 			updatedAt: new Date(),
 		})
 		.where(
 			and(
 				eq(dLabels.id, labelId),
-				eq(dLabels.createdBy, userId),
+				eq(dLabels.createdBy, context.userId),
 			),
 		)
 		.returning();
@@ -347,15 +356,16 @@ export async function updateLabel(
 
 
 export async function deleteLabel(
-	userId: string,
 	labelId: string,
 ) {
+	
+	const context = getAuditContext();
 	const [label] = await db
 		.delete(dLabels)
 		.where(
 			and(
 				eq(dLabels.id, labelId),
-				eq(dLabels.createdBy, userId),
+				eq(dLabels.createdBy, context.userId),
 			),
 		)
 		.returning();
@@ -369,9 +379,10 @@ export async function deleteLabel(
 // ============================================================
 
 export async function findLabelsByNote(
-	userId: string,
 	noteId: string,
 ) {
+	
+	const context = getAuditContext();
 	return db
 		.select({
 			id: dLabels.id,
@@ -390,8 +401,8 @@ export async function findLabelsByNote(
 		.where(
 			and(
 				eq(dJNoteLabels.noteId, noteId),
-				eq(dJNoteLabels.createdBy, userId),
-				eq(dLabels.createdBy, userId),
+				eq(dJNoteLabels.createdBy, context.userId),
+				eq(dLabels.createdBy, context.userId),
 			),
 		)
 		.orderBy(dLabels.name);
@@ -399,9 +410,10 @@ export async function findLabelsByNote(
 
 
 export async function findNotesByLabel(
-	userId: string,
 	labelId: string,
 ) {
+	
+	const context = getAuditContext();
 	return db
 		.select({
 			id: dNotes.id,
@@ -425,8 +437,8 @@ export async function findNotesByLabel(
 		.where(
 			and(
 				eq(dJNoteLabels.labelId, labelId),
-				eq(dJNoteLabels.createdBy, userId),
-				eq(dNotes.createdBy, userId),
+				eq(dJNoteLabels.createdBy, context.userId),
+				eq(dNotes.createdBy, context.userId),
 			),
 		)
 		.orderBy(
@@ -436,18 +448,19 @@ export async function findNotesByLabel(
 
 
 export async function addLabelToNote(
-	userId: string,
 	noteId: string,
 	labelId: string,
 ) {
+	
+	const context = getAuditContext();
 	const [relation] = await db
 		.insert(dJNoteLabels)
 		.values({
 			noteId,
 			labelId,
 
-			createdBy: userId,
-			updatedBy: userId,
+			createdBy: context.userId,
+			updatedBy: context.userId,
 		})
 		.onConflictDoNothing({
 			target: [
@@ -462,17 +475,18 @@ export async function addLabelToNote(
 
 
 export async function removeLabelFromNote(
-	userId: string,
 	noteId: string,
 	labelId: string,
 ) {
+	
+	const context = getAuditContext();
 	const [relation] = await db
 		.delete(dJNoteLabels)
 		.where(
 			and(
 				eq(dJNoteLabels.noteId, noteId),
 				eq(dJNoteLabels.labelId, labelId),
-				eq(dJNoteLabels.createdBy, userId),
+				eq(dJNoteLabels.createdBy, context.userId),
 			),
 		)
 		.returning();

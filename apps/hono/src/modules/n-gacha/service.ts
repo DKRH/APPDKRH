@@ -236,9 +236,6 @@ function rollItem(
 export async function pull(
 	c: Context,
 ) {
-	const userId =
-		c.get("userId");
-
 	const bannerId =
 		c.req.param("id");
 
@@ -304,9 +301,7 @@ export async function pull(
 	}
 
 	const currentPity =
-		await repo.getOrCreateUserPity(
-			userId,
-		);
+		await repo.getOrCreateUserPity();
 
 	let pity5 =
 		currentPity.pity5 ?? 0;
@@ -356,7 +351,6 @@ export async function pull(
 	}
 
 	await repo.updatePity(
-		userId,
 		{
 			pity5,
 			pity4,
@@ -365,7 +359,6 @@ export async function pull(
 	);
 
 	await repo.insertHistoryMany(
-		userId,
 		results.map(
 			(result) => ({
 				itemId: result.id,
@@ -443,13 +436,8 @@ export async function getBanner(
 export async function getPity(
 	c: Context,
 ) {
-	const userId =
-		c.get("userId");
-
 	const pity =
-		await repo.getOrCreateUserPity(
-			userId,
-		);
+		await repo.getOrCreateUserPity();
 
 	return c.json({
 		pity5:
@@ -466,9 +454,6 @@ export async function getPity(
 export async function getHistory(
 	c: Context,
 ) {
-	const userId =
-		c.get("userId");
-
 	const limit = Math.min(
 		Number(
 			c.req.query("limit") ?? 50,
@@ -485,7 +470,6 @@ export async function getHistory(
 
 	const data =
 		await repo.getUserHistory(
-			userId,
 			limit,
 			offset,
 		);

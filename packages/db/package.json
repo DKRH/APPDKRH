@@ -4,12 +4,16 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./schema": "./src/schema.ts"
+    "./schema": "./src/schema.ts",
+    "./validation": "./src/validation/index.ts",
+    "./audit": "./src/audit/index.ts",
+    "./audit/context": "./src/audit/context.ts"
   },
   "dependencies": {
     "@dkrh/types": "workspace:*",
     "dotenv": "^17.4.2",
-    "drizzle-orm": "^0.45.2"
+    "drizzle-orm": "^0.45.2",
+    "drizzle-zod": "^0.8.3"
   },
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",

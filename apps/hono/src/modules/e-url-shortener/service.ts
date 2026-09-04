@@ -73,9 +73,6 @@ export async function createData(
 	const shortCode =
 		generateShortCode();
 
-	const userId =
-		c.get("userId");
-
 	const data =
 		await repo.create(
 			{
@@ -97,7 +94,6 @@ export async function createData(
 
 				isLocked: false,
 			},
-			userId,
 		);
 
 	return c.json(
@@ -133,9 +129,6 @@ export async function editData(
 			isLocked?: boolean;
 		}>();
 
-	const userId =
-		c.get("userId");
-
 	const data =
 		await repo.update(
 			id,
@@ -156,7 +149,6 @@ export async function editData(
 				isLocked:
 					body.isLocked ?? false,
 			},
-			userId,
 		);
 
 	if (!data) {
@@ -207,14 +199,10 @@ export async function changeLock(
 	const newLockedState =
 		!url.isLocked;
 
-	const userId =
-		c.get("userId");
-
 	const updated =
 		await repo.updateLock(
 			id,
 			newLockedState,
-			userId,
 		);
 
 	return c.json({
@@ -245,13 +233,9 @@ export async function deleteData(
 		);
 	}
 
-	const userId =
-		c.get("userId");
-
 	const data =
 		await repo.remove(
 			id,
-			userId,
 		);
 
 	if (!data) {
@@ -286,13 +270,9 @@ export async function restoreData(
 		);
 	}
 
-	const userId =
-		c.get("userId");
-
 	const data =
 		await repo.restore(
 			id,
-			userId,
 		);
 
 	if (!data) {

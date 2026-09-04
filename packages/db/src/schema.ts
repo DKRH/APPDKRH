@@ -9,6 +9,7 @@ import {
   uniqueIndex,
   varchar,
   unique,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
 const auditColumns = {
@@ -32,6 +33,53 @@ const auditColumns = {
 
   deletedBy: text("deleted_by"),
 };
+
+export const auditLogging = pgTable(
+	"a1_audit_logging",
+	{
+		id: uuid("id")
+			.primaryKey()
+			.defaultRandom(),
+
+		action: text("action").notNull(),
+
+		tableName: text("table_name").notNull(),
+
+		recordId: text("record_id"),
+
+		userId: text("user_id"),
+
+		ipAddress: text("ip_address"),
+
+		userAgent: text("user_agent"),
+
+		requestId: text("request_id"),
+
+		method: text("method"),
+
+		path: text("path"),
+
+		oldData: jsonb("old_data"),
+
+		newData: jsonb("new_data"),
+
+		metadata: jsonb("metadata"),
+
+		createdAt: timestamp("created_at")
+			.notNull()
+			.defaultNow(),
+	},
+	(table) => [
+		index("audit_logging_table_record_idx")
+			.on(table.tableName, table.recordId),
+
+		index("audit_logging_user_idx")
+			.on(table.userId),
+
+		index("audit_logging_created_at_idx")
+			.on(table.createdAt),
+	],
+);
 
 // AUTHENTICATION
 export const a_user = pgTable("a_user", {

@@ -7,37 +7,29 @@
 	],
 	"scripts": {
 		"db:init": "cd apps/hono && bun run src/test/initdb.ts",
-		
 		"add:hono": "cd apps/hono && bun add",
 		"add:sv": "cd apps/svelte && bun add",
 		"add:db": "cd packages/db && bun add",
-
 		"dev": "concurrently -k -n FRONT,BACK \"bun run sv:dev\" \"bun run hono:dev\"",
-		
 		"sv:dev": "cd apps/svelte && bun run dev",
 		"sv:init": "cd apps/svelte && bun install",
 		"sv:build": "cd apps/svelte && bun run build",
-		
 		"react:dev": "cd apps/react && bun run dev",
 		"react:init": "cd apps/react && bun install",
 		"react:build": "cd apps/react && bun run build --mode production",
-
 		"hono:dev": "cd apps/hono && APP_ENV=development bun run dev",
 		"hono:init": "cd apps/hono && bun install",
 		"hono:build": "cd apps/hono && bun build src/index.ts --compile --outfile ./dist/server",
 		"hono:generate": "cd packages/db && bun x drizzle-kit generate",
 		"hono:migrate": "cd packages/db && bun x drizzle-kit migrate",
 		"hono:push": "cd packages/db && bun x drizzle-kit push",
-
 		"goapi:dev": "cd apps/goapi && air",
 		"goapi:init": "cd apps/goapi && go mod tidy",
 		"goapi:build": "cd apps/goapi && go build -o dist/server_goapi",
 		"goapi:migrate": "cd apps/goapi && go run cmd/migrate/main.go",
-
 		"fast:dev": "cd apps/fast && uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 2603",
 		"fast:init": "cd apps/fast && uv sync",
 		"fast:build": "cd apps/fast && uv run python -m nuitka --onefile --standalone app/main.py",
-
 		"build:app": "bun run sv:build && bun run hono:build && bun scripts/build.ts",
 		"build:win64": "cd wrappers/win64 && dotnet publish -c Release --self-contained true -p:PublishSingleFile=true && bun ../../scripts/build_win64.ts",
 		"build:android": "cd wrappers/mobile/android && ./gradlew assembleDebug && bun ../../../scripts/build_android.ts"
@@ -45,5 +37,8 @@
 	"devDependencies": {
 		"@types/bun": "^1.4.0",
 		"concurrently": "^10.0.3"
+	},
+	"dependencies": {
+		"@hono/zod-validator": "^0.9.1"
 	}
 }

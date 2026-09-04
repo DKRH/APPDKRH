@@ -35,12 +35,8 @@ export async function createData(
 	const body =
 		await c.req.json<NewCTodos>();
 
-	const userId =
-		c.get("userId");
-
 	const data = await repo.create(
 		body,
-		userId,
 	);
 
 	return c.json(data, 201);
@@ -65,13 +61,9 @@ export async function editData(
 			Partial<NewCTodos>
 		>();
 
-	const userId =
-		c.get("userId");
-
 	const data = await repo.update(
 		id,
 		body,
-		userId,
 	);
 
 	if (!data) {
@@ -105,16 +97,12 @@ export async function toggleComplete(
 			isComplete: boolean;
 		}>();
 
-	const userId =
-		c.get("userId");
-
 	const data = await repo.update(
 		id,
 		{
 			isComplete:
 				body.isComplete,
 		},
-		userId,
 	);
 
 	if (!data) {
@@ -143,12 +131,8 @@ export async function deleteData(
 		);
 	}
 
-	const userId =
-		c.get("userId");
-
 	const data = await repo.remove(
 		id,
-		userId,
 	);
 
 	if (!data) {
@@ -177,12 +161,8 @@ export async function restoreData(
 		);
 	}
 
-	const userId =
-		c.get("userId");
-
 	const data = await repo.restore(
 		id,
-		userId,
 	);
 
 	if (!data) {

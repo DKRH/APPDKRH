@@ -32,13 +32,9 @@ export async function createData(
 	const body =
 		await c.req.json();
 
-	const userId =
-		c.get("userId");
-
 	const data =
 		await repo.create(
 			body,
-			userId,
 		);
 
 	return c.json(
@@ -65,14 +61,10 @@ export async function editData(
 	const body =
 		await c.req.json();
 
-	const userId =
-		c.get("userId");
-
 	const data =
 		await repo.update(
 			id,
 			body,
-			userId,
 		);
 
 	if (!data) {
@@ -103,13 +95,9 @@ export async function deleteData(
 		);
 	}
 
-	const userId =
-		c.get("userId");
-
 	const data =
 		await repo.remove(
 			id,
-			userId,
 		);
 
 	if (!data) {
@@ -140,13 +128,9 @@ export async function restoreData(
 		);
 	}
 
-	const userId =
-		c.get("userId");
-
 	const data =
 		await repo.restore(
 			id,
-			userId,
 		);
 
 	if (!data) {
