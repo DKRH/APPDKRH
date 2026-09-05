@@ -20,3 +20,11 @@ Laravel
 ├── ORM
 ├── Migrations
 └── Testing
+
+
+!) make Authorization (roles on a1_* table running)
+2) svelte a-auth/users only access by admin role 
+3) make all modules return data only that user created (use createdBy)
+4) Finish n-gacha
+5) a-auth/ make for active session list (only read)
+6) a-auth/ roles management (role, user-role, permission) and implement on each modules (permission)
