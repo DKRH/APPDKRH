@@ -20,6 +20,7 @@ export type PullResponse = {
 
 	pity: {
 		pity5: number;
+		pity4: number;
 		guarantee5: number;
 	};
 
@@ -27,4 +28,5 @@ export type PullResponse = {
 		soft: number;
 		hard: number;
 	};
+	item: GachaItem[];
 };

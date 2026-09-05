@@ -55,175 +55,140 @@ function pickItem(
 | Pull one item
 |--------------------------------------------------------------------------
 */
-
 function rollItem(
-	items: GachaItem[],
+	itemAll: GachaItem[],
+	itemInBanner: GachaItem[],
 	pity5: number,
 	pity4: number,
 	guarantee5: number,
 	banner: {
-		softPityStart:
-			number | null;
-		hardPityStart:
-			number | null;
-		uprate5:
-			number | null;
-		uprate4:
-			number | null;
+		softPityStart: number | null;
+		hardPityStart: number | null;
+		uprate5: number | null;
+		uprate4: number | null;
 	},
 ) {
-	const nextPity5 =
-		pity5 + 1;
+	let nextPity5 = pity5 + 1;
+	let nextPity4 = pity4 + 1;
+	let nextGuarantee5 = guarantee5;
 
-	const nextPity4 =
-		pity4 + 1;
+	const hard4 = 10;
+	const hard5 = banner.hardPityStart ?? 90;
+	const soft5 = banner.softPityStart ?? 75;
 
-	const hard =
-		banner.hardPityStart ?? 90;
+	let rarity = 3;
+	let result: GachaItem;
 
-	const soft =
-		banner.softPityStart ?? 75;
+	// ----------------------------------------
+	// 5★ chance
+	// ----------------------------------------
 
-	/*
-	 * Guaranteed 5★
-	 */
-	if (nextPity5 >= hard) {
-		const result =
-			pickItem(items, 5);
+	let chance5 = banner.uprate5 ?? 0.6;
 
-		if (result) {
-			return {
-				item: result,
-				rarity: 5,
-				pity5: 0,
-				pity4: 0,
-				guarantee5: 0,
-			};
+	if (nextPity5 >= soft5) {
+		const extra = (nextPity5 - soft5) * 5;
+		chance5 = Math.min(100, chance5 + extra);
+	}
+
+	const roll5 = Math.random() * 100;
+
+	// ----------------------------------------
+	// 4★ chance
+	// ----------------------------------------
+
+	const chance4 = banner.uprate4 ?? 5;
+	const roll4 = Math.random() * 100;
+
+	// ----------------------------------------
+	// Prevent 4★ and 5★ hard pity overlap
+	//
+	// If both would be guaranteed on this pull,
+	// resolve the 4★ one pull earlier.
+	// ----------------------------------------
+
+	const fiveStarHardPity = nextPity5 >= hard5;
+	const fourStarHardPity = nextPity4 >= hard4;
+
+	const fourStarEarlySafety =
+		nextPity4 === hard4 - 1 &&
+		nextPity5 === hard5;
+
+	const bannerItemIds = new Set(
+		itemInBanner.map((item) => item.id),
+	);
+
+	const itemOffBanner = itemAll.filter(
+		(item) => !bannerItemIds.has(item.id),
+	);
+	let is_featured = "";
+	// ----------------------------------------
+	// 5★
+	// ----------------------------------------
+
+	if (roll5 < chance5 || fiveStarHardPity) {
+		rarity = 5;
+
+		nextPity5 = 0;
+
+		const percentageWinGuarantee5 = Math.random() < 0.5;
+
+		result = pickItem(itemOffBanner, 5);
+
+		// Lose 50/50
+		nextGuarantee5 = 1;
+
+		// Win 50/50 or guaranteed featured
+		if (
+			percentageWinGuarantee5 ||
+			guarantee5 === 1
+		) {
+			result = pickItem(itemInBanner, 5);
+			nextGuarantee5 = 0;
+			is_featured = "FEATURED";
 		}
 	}
 
-	/*
-	 * Soft pity
-	 *
-	 * This example increases
-	 * the chance of 5★ once
-	 * soft pity starts.
-	 */
-	let chance5 = 0.6;
+	// ----------------------------------------
+	// 4★
+	// ----------------------------------------
 
-	if (nextPity5 >= soft) {
-		const extra =
-			(nextPity5 - soft) * 5;
-
-		chance5 =
-			Math.min(
-				100,
-				chance5 + extra,
-			);
-	}
-
-	/*
-	 * Guaranteed featured 5★
-	 */
-	if (guarantee5 === 1) {
-		const result =
-			pickItem(items, 5);
-
-		if (result) {
-			return {
-				item: result,
-				rarity: 5,
-				pity5: 0,
-				pity4: 0,
-				guarantee5: 0,
-			};
-		}
-	}
-
-	const roll =
-		Math.random() * 100;
-
-	/*
-	 * 5★
-	 */
-	if (roll < chance5) {
-		const result =
-			pickItem(items, 5);
-
-		if (result) {
-			/*
-			 * This implementation treats
-			 * all 5★ banner items equally.
-			 */
-			return {
-				item: result,
-				rarity: 5,
-				pity5: 0,
-				pity4: 0,
-				guarantee5: 0,
-			};
-		}
-	}
-
-	/*
-	 * 4★
-	 */
-	const chance4 =
-		banner.uprate4 ?? 5;
-
-	if (
-		roll <
-		chance5 + chance4
+	else if (
+		roll4 < chance4 ||
+		fourStarHardPity ||
+		fourStarEarlySafety
 	) {
-		const result =
-			pickItem(items, 4);
+		rarity = 4;
 
-		if (result) {
-			return {
-				item: result,
-				rarity: 4,
-				pity5: nextPity5,
-				pity4: 0,
-				guarantee5,
-			};
+		nextPity4 = 0;
+
+		const percentageWin4 =
+			Math.random() < 0.75;
+
+		result = pickItem(itemOffBanner, 4);
+
+		if (percentageWin4) {
+			result = pickItem(itemInBanner, 4);
+			is_featured = "FEATURED";
 		}
 	}
 
-	/*
-	 * 3★ fallback
-	 */
-	const result =
-		pickItem(items, 3);
+	// ----------------------------------------
+	// 3★ fallback
+	// ----------------------------------------
 
-	if (!result) {
-		/*
-		 * If the banner has no 3★
-		 * items, use any item.
-		 */
-		const fallback =
-			items[
-				randomInt(
-					0,
-					items.length - 1,
-				)
-			];
+	else {
+		rarity = 3;
 
-		return {
-			item: fallback,
-			rarity:
-				fallback.rarity ?? 3,
-			pity5: nextPity5,
-			pity4: nextPity4,
-			guarantee5,
-		};
+		result = pickItem(itemOffBanner, 3);
 	}
 
 	return {
 		item: result,
-		rarity: 3,
+		rarity,
+		is_featured,
 		pity5: nextPity5,
 		pity4: nextPity4,
-		guarantee5,
+		guarantee5: nextGuarantee5,
 	};
 }
 
@@ -285,12 +250,12 @@ export async function pull(
 		);
 	}
 
-	const items =
-		await repo.getBannerItems(
+	const itemInBanner = await repo.getBannerItems(
 			bannerId,
 		);
+	const itemAll = await repo.getItems();
 
-	if (items.length === 0) {
+	if (itemInBanner.length === 0) {
 		return c.json(
 			{
 				message:
@@ -318,6 +283,7 @@ export async function pull(
 		rarity: number | null;
 		imageUrl: string | null;
 		videoUrl: string | null;
+		is_featured: string | null;
 	}> = [];
 
 	for (
@@ -327,7 +293,8 @@ export async function pull(
 	) {
 		const result =
 			rollItem(
-				items,
+				itemAll,
+				itemInBanner,
 				pity5,
 				pity4,
 				guarantee5,
@@ -345,8 +312,8 @@ export async function pull(
 
 		results.push({
 			...result.item,
-			rarity:
-				result.rarity,
+			rarity: result.rarity,
+			is_featured: result.is_featured,
 		});
 	}
 
@@ -436,18 +403,33 @@ export async function getBanner(
 export async function getPity(
 	c: Context,
 ) {
-	const pity =
-		await repo.getOrCreateUserPity();
+	const bannerId = c.req.param("id");
+
+	if (!bannerId) {
+		return c.json(
+			{
+				message:
+					"Banner ID is required",
+			},
+			400,
+		);
+	}
+
+	const bannerItems = await repo.getBannerItems( bannerId );
+	const banner = await repo.getBanner( bannerId );
+	const pity = await repo.getOrCreateUserPity();
 
 	return c.json({
-		pity5:
-			pity.pity5 ?? 0,
-
-		pity4:
-			pity.pity4 ?? 0,
-
-		guarantee5:
-			pity.guarantee5 ?? 0,
+		pity: {
+			pity5: pity.pity5 ?? 0,
+			pity4: pity.pity4 ?? 0,
+			guarantee5: pity.guarantee5 ?? 0,
+		},
+		banner: {
+			soft: banner.softPityStart,
+			hard: banner.hardPityStart,
+		},
+		item: bannerItems
 	});
 }
 

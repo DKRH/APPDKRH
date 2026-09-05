@@ -10,6 +10,7 @@ import {
   varchar,
   unique,
   jsonb,
+  numeric,
 } from "drizzle-orm/pg-core";
 
 const auditColumns = {
@@ -546,8 +547,8 @@ export const nGachaBanners = pgTable("n_gacha_banners", {
 	name: text("name"),
 	softPityStart: integer("soft_pity_start"),
 	hardPityStart: integer("hard_pity_start"),
-	uprate5: integer("uprate5"),
-	uprate4: integer("uprate4"),
+	uprate5: numeric("uprate5"),
+	uprate4: numeric("uprate4"),
 });
 export const nGachaBannerItems = pgTable("n_gacha_banner_items", {
 	...auditColumns,

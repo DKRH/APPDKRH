@@ -1,13 +1,8 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import BannerCard from "$lib/components/gacha/BannerCard.svelte";
-	import {
-		getGachaBanners,
-	} from "$lib/api/gacha";
-
-	import type {
-		GachaBanner,
-	} from "$lib/components/gacha/gacha.type";
+	import { getGachaBanners } from "$lib/api/gacha";
+	import type { GachaBanner } from "$lib/components/gacha/gacha.type";
 
 	let banners = $state<GachaBanner[]>([]);
 	let loading = $state(true);
@@ -49,10 +44,19 @@
 		</p>
 
 	{:else}
-		<div class="grid">
+		<div class="gacha-grid">
 			{#each banners as banner (banner.id)}
 				<BannerCard {banner} />
 			{/each}
 		</div>
 	{/if}
 </div>
+
+<style>
+.gacha-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+	gap: 18px;
+	padding: 30px;
+}
+</style>

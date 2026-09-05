@@ -21,8 +21,8 @@ CREATE TABLE "n_gacha_banners" (
 	"name" text,
 	"soft_pity_start" integer,
 	"hard_pity_start" integer,
-	"uprate5" integer,
-	"uprate4" integer
+	"uprate5" numeric,
+	"uprate4" numeric
 );
 --> statement-breakpoint
 CREATE TABLE "n_gacha_items" (

@@ -10,17 +10,8 @@ const app = new Hono();
 |--------------------------------------------------------------------------
 */
 
-// GET /api/gacha/banners
-app.get(
-	"/banners",
-	service.getBanners,
-);
-
-// GET /api/gacha/banners/:id
-app.get(
-	"/banners/:id",
-	service.getBanner,
-);
+app.get("/banners",service.getBanners);
+app.get("/banners/:id",service.getBanner);
 
 /*
 |--------------------------------------------------------------------------
@@ -28,11 +19,7 @@ app.get(
 |--------------------------------------------------------------------------
 */
 
-// POST /api/gacha/banners/:id/pull
-app.post(
-	"/banners/:id/pull",
-	service.pull,
-);
+app.post("/banners/:id/pull",service.pull);
 
 /*
 |--------------------------------------------------------------------------
@@ -40,16 +27,7 @@ app.post(
 |--------------------------------------------------------------------------
 */
 
-// GET /api/gacha/pity
-app.get(
-	"/pity",
-	service.getPity,
-);
-
-// GET /api/gacha/history
-app.get(
-	"/history",
-	service.getHistory,
-);
+app.get("/pity/:id",service.getPity);
+app.get("/history",service.getHistory);
 
 export default app;

@@ -42,3 +42,11 @@ export async function doGachaPull(
 
 	return response.json();
 }
+
+export async function getGachaState(
+	bannerId: string,
+): Promise<PullResponse> {
+	const response = await apiFetch(`/api/n-gacha/pity/${bannerId}`);
+
+	return response.json();
+}

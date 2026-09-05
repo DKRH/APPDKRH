@@ -84,6 +84,21 @@ export async function getBanner(
 |--------------------------------------------------------------------------
 */
 
+export async function getItems() {
+	return db
+		.select({
+			id: item.id,
+			name: item.name,
+			rarity: item.rarity,
+			imageUrl: item.imageUrl,
+			videoUrl: item.videoUrl,
+		})
+		.from(item)
+		.where(
+			isNull(item.deletedAt),
+		);
+}
+
 export async function getBannerItems(
 	bannerId: string,
 ) {
@@ -116,7 +131,6 @@ export async function getBannerItems(
 			),
 		);
 }
-
 /*
 |--------------------------------------------------------------------------
 | User Pity
