@@ -9,12 +9,13 @@ import route7 from "../modules/a1-user-roles/route";
 import route8 from "../modules/c-todos/route";
 import route9 from "../modules/h-entertainment-tracker/route";
 import route10 from "../modules/f-text-storage/route";
-import route11 from "../modules/e-url-shortener/route";
-import route12 from "../modules/h-entertainment-tracker-type/route";
-import route13 from "../modules/a1-roles/route";
-import route14 from "../modules/k-universe/route";
-import route15 from "../modules/d-notes/route";
-import route16 from "../modules/a1-role-permissions/route";
+import route11 from "../modules/a1-users/route";
+import route12 from "../modules/e-url-shortener/route";
+import route13 from "../modules/h-entertainment-tracker-type/route";
+import route14 from "../modules/a1-roles/route";
+import route15 from "../modules/k-universe/route";
+import route16 from "../modules/d-notes/route";
+import route17 from "../modules/a1-role-permissions/route";
 
 export const routes = [
   {
@@ -62,27 +63,31 @@ export const routes = [
     route: route10,
   },
   {
-    path: "/e-url-shortener",
+    path: "/a1-users",
     route: route11,
   },
   {
-    path: "/h-entertainment-tracker-type",
+    path: "/e-url-shortener",
     route: route12,
   },
   {
-    path: "/a1-roles",
+    path: "/h-entertainment-tracker-type",
     route: route13,
   },
   {
-    path: "/k-universe",
+    path: "/a1-roles",
     route: route14,
   },
   {
-    path: "/d-notes",
+    path: "/k-universe",
     route: route15,
   },
   {
-    path: "/a1-role-permissions",
+    path: "/d-notes",
     route: route16,
+  },
+  {
+    path: "/a1-role-permissions",
+    route: route17,
   },
 ];

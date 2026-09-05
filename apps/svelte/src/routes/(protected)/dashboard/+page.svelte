@@ -395,4 +395,155 @@
 
 	</div>
 
+		<!-- Divider -->
+	<hr class="my-8 border-zinc-800" />
+
+	<!-- User Management -->
+	<div>
+		<div class="mb-4">
+			<h2 class="text-sm font-medium text-zinc-300">
+				Administration
+			</h2>
+
+			<p class="mt-1 text-xs text-zinc-600">
+				Manage users and account access.
+			</p>
+		</div>
+
+		<a
+			href="/a-auth/users"
+			class="
+				group relative
+				flex
+				min-h-32
+				items-center
+				gap-5
+				overflow-hidden
+				rounded-2xl
+				border border-zinc-800
+				bg-zinc-900/70
+				p-5
+				transition-all duration-200
+
+				hover:-translate-y-1
+				hover:border-teal-500/40
+				hover:bg-zinc-900
+				hover:shadow-xl
+				hover:shadow-black/30
+
+				active:translate-y-0
+			"
+		>
+			<!-- Hover glow -->
+			<div
+				class="
+					pointer-events-none
+					absolute
+					-left-10
+					-top-10
+					h-28
+					w-28
+					rounded-full
+					bg-teal-500/0
+					blur-3xl
+					transition-all
+					duration-300
+					group-hover:bg-teal-500/10
+				"
+			></div>
+
+			<!-- Icon -->
+			<div
+				class="
+					relative
+					flex
+					h-14
+					w-14
+					shrink-0
+					items-center
+					justify-center
+					rounded-xl
+					border
+					border-zinc-800
+					bg-zinc-950
+					text-zinc-500
+					transition-all
+					duration-200
+
+					group-hover:border-teal-500/20
+					group-hover:bg-teal-500/10
+					group-hover:text-teal-400
+					group-hover:scale-105
+				"
+			>
+				<UserRound
+					size={28}
+					strokeWidth={1.7}
+				/>
+			</div>
+
+			<!-- Content -->
+			<div class="relative min-w-0">
+				<span
+					class="
+						block
+						text-sm
+						font-medium
+						text-zinc-300
+						transition-colors
+						group-hover:text-white
+					"
+				>
+					Users
+				</span>
+
+				<p
+					class="
+						mt-1
+						text-xs
+						leading-relaxed
+						text-zinc-600
+						transition-colors
+						group-hover:text-zinc-500
+					"
+				>
+					Manage users, passwords, and account access.
+				</p>
+			</div>
+
+			<!-- Arrow -->
+			<div
+				class="
+					relative
+					ml-auto
+					shrink-0
+					translate-x-1
+					text-zinc-600
+					opacity-0
+					transition-all
+					duration-200
+
+					group-hover:translate-x-0
+					group-hover:text-teal-400
+					group-hover:opacity-100
+				"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					class="h-5 w-5"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M7 17 17 7M7 7h10v10"
+					/>
+				</svg>
+			</div>
+		</a>
+	</div>
+
 </div>
