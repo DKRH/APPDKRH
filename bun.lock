@@ -4,9 +4,6 @@
   "workspaces": {
     "": {
       "name": "dkrh",
-      "dependencies": {
-        "@hono/zod-validator": "^0.9.1",
-      },
       "devDependencies": {
         "@types/bun": "^1.4.0",
         "concurrently": "^10.0.3",
@@ -49,6 +46,7 @@
         "@better-auth/cli": "^1.4.21",
         "@dkrh/db": "workspace:*",
         "@dkrh/types": "workspace:*",
+        "@hono/zod-validator": "^0.9.1",
         "better-auth": "^1.6.16",
         "chokidar": "^5.0.0",
         "dotenv": "^17.4.2",
@@ -68,7 +66,6 @@
         "@dkrh/hono": "workspace:*",
         "@dkrh/types": "workspace:*",
         "better-auth": "^1.7.2",
-        "hono": "^4.13.5",
         "lucide-svelte": "^1.0.1",
       },
       "devDependencies": {

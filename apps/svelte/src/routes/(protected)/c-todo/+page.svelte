@@ -797,7 +797,6 @@
 											cancelEdit();
 										}
 									}}
-									autofocus
 									class="
 										min-w-0
 										flex-1

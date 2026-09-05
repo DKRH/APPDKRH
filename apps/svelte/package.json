@@ -27,7 +27,6 @@
 		"@dkrh/hono": "workspace:*",
 		"@dkrh/types": "workspace:*",
 		"better-auth": "^1.7.2",
-		"hono": "^4.13.5",
 		"lucide-svelte": "^1.0.1"
 	}
 }
