@@ -32,7 +32,7 @@
 		"goapi:migrate": "cd apps/goapi && go run cmd/migrate/main.go",
 		"springkt:dev": "cd apps/springkt && ./dkrhrun",
 		"springkt:init": "cd apps/springkt && ./gradlew build",
-		"springkt:PreBuild": "cd apps/springkt && ./gradlew build && bun run springkt:scriptPostBuild",
+		"springkt:PreBuild": "cd apps/springkt && ./gradlew build",
 		"springkt:PostBuild": "bun scripts/mv_springkt.ts",
 		"springkt:build": "bun run springkt:PreBuild && bun run springkt:PostBuild",
 		"springkt:test": "cd apps/springkt && ./gradlew test",
