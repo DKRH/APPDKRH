@@ -6,7 +6,7 @@ const config: CapacitorConfig = {
   webDir: 'www',
 
 	server: {
-		url: "https://dkrh.dsa.my.id",
+		url: "https://dwanga.com",
 		cleartext: false,
 	},
 };

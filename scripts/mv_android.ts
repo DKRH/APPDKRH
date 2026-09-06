@@ -1,8 +1,8 @@
 import { $ } from "bun";
 import { mkdir, cp } from "node:fs/promises";
 
-const apk = "app/build/outputs/apk/debug/app-debug.apk";
-const distDir = "../../../dist_android";
+const apk = "./wrappers/mobile/android/app/build/outputs/apk/debug/app-debug.apk";
+const distDir = "./dist/wrapper-android";
 
 if (!(await Bun.file(apk).exists())) {
 	throw new Error(

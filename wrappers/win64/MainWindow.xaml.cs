@@ -23,6 +23,6 @@ public partial class MainWindow : Window
         Browser.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
         Browser.CoreWebView2.Settings.AreDevToolsEnabled = false;
 
-        Browser.Source =new Uri("https://dkrh.dsa.my.id");
+        Browser.Source =new Uri("https://dwanga.com");
     }
 }
