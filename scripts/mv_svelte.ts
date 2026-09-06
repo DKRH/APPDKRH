@@ -1,8 +1,8 @@
 import { $ } from "bun";
 import { cpSync, mkdirSync } from "node:fs";
 
-mkdirSync("dist_server", { recursive: true });
+mkdirSync("dist/html", { recursive: true });
 
-cpSync("apps/svelte/build", "dist", {
+cpSync("apps/svelte/build", "dist/html", {
 	recursive: true,
 });

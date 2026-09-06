@@ -1,7 +1,8 @@
-SvelteKit 2600
-Hono 2601 ./dist/serverHono
-Golang 2602 ./dist/serverGO
-SpringKT 2603 java -jar ./dist/serverSpringKT.jar
+SvelteKit 2600 ./dist/html/*
+Hono 2601 ./dist/hono/serverHono
+Golang 2602 ./dist/go/serverGO
+SpringKT 2603 java -jar ./dist/spring/serverSpringKT.jar
+DotNetWebApi 2604 ./dist/dotnet/dotnetwebapi
 
 
 # TODO Feature

@@ -1,0 +1,53 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# .NET
+**/bin/
+**/obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / JetBrains
+.idea/
+*.DotSettings.user
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Test results
+TestResults/
+**/TestResults/
+*.trx
+
+# Coverage
+coverage/
+*.coverage
+*.coveragexml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local build/publish output
+**/dist/
+**/publish/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+
+# ASP.NET generated files
+**/wwwroot/lib/
