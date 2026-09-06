@@ -1,6 +1,7 @@
 # deps
 node_modules/
 dist/
+dist_server/
 dist_desktop/
 dist_android/
 dist_win64/

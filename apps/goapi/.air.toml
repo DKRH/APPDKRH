@@ -2,8 +2,8 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-cmd = "go build -o ./tmp/api.exe ./cmd/main"
-bin = "./tmp/api.exe"
+cmd = "go build -o ./tmp/serverGO ./cmd/main"
+bin = "./tmp/serverGO"
 
 include_ext = ["go"]
 exclude_dir = ["tmp", "vendor"]

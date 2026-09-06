@@ -76,3 +76,5 @@ node_modules/
 # uv
 .venv/
 .python-version
+
+server.*

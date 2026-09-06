@@ -5,7 +5,8 @@ set -e
 cd "$(dirname "$0")"
 
 echo "==> Local Building..."
-bun run build:app
+bun run hono:build
+bun run sv:build
 
 # Load .env
 if [ -f .env ]; then
@@ -20,12 +21,12 @@ DEPLOY_APP_DIR="${DEPLOY_APP_DIR}"
 
 echo "==> Deploying to ${DEPLOY_NAME} (${DEPLOY_HOST})..."
 
-#tar -C dist -czf - . | ssh -p "${DEPLOY_PORT:-22}" "${DEPLOY_USER}@${DEPLOY_HOST}" "
 tar \
-    -C dist \
     --exclude='.env' \
     --exclude='.env.*' \
-    -czf - . |
+    -czf - \
+    -C dist . \
+    -C ../dist_server serverHono |
 ssh -p "${DEPLOY_PORT}" "${DEPLOY_USER}@${DEPLOY_HOST}" "
 
 set -e
@@ -36,7 +37,7 @@ systemctl stop dkrh
 
 tar -xzf - -C '${DEPLOY_APP_DIR}'
 
-chmod +x '${DEPLOY_APP_DIR}/server'
+chmod +x '${DEPLOY_APP_DIR}/serverHono'
 
 systemctl start dkrh
 

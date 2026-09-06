@@ -1,3 +1,6 @@
 spring:
   application:
     name: springkt
+
+server:
+  port: 2603

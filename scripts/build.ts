@@ -1,3 +1,4 @@
+import { $ } from "bun";
 import { cpSync } from "node:fs";
 
 cpSync(
