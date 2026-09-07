@@ -12,8 +12,8 @@ const isDevelopment =
   process.env.APP_ENV === "development";
 
 const baseDir = isDevelopment
-    ? resolve(process.cwd(), "../..") // monorepo root
-    : dirname(process.execPath);      // compiled executable directory
+    ? resolve(process.cwd()) // monorepo root
+    : resolve(dirname(process.execPath), "../html");     // compiled executable directory
 
 const app = new Hono();
 
@@ -63,13 +63,7 @@ app.use(
   "*",
   cors({
     origin: [
-      "http://localhost:2600",
-      "http://localhost:2601",
-      "http://localhost:2602",
-      "http://localhost:5173",
-      "http://127.0.0.1:2600",
-      "http://127.0.0.1:5173",
-      "http://127.0.0.1:2602",
+      process.env.SVELTE_API_URL!,
     ],
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],

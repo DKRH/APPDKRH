@@ -14,8 +14,10 @@ export const auth = betterAuth({
     provider: "pg", // or "mysql", "sqlite", "pg"
     schema,
   }),
+  baseURL: process.env.HONO_API_URL,
   trustedOrigins: [
-    "http://localhost:2600",
+    process.env.HONO_API_URL!,
+    process.env.SVELTE_API_URL!,
   ],
   emailAndPassword: {
     enabled: true,

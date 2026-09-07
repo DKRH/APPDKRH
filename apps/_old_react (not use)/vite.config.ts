@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig } from 'vite'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
@@ -10,8 +10,6 @@ export default defineConfig(({ mode }) => {
   const root = path.resolve(__dirname, "../..");
 
   // Load environment variables from the monorepo root
-  const env = loadEnv(mode, root, "VITE_");
-  console.log("VITE_API_URL =", env.VITE_API_URL);
 
   return {
     envDir: root,

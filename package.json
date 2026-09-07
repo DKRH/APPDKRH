@@ -35,6 +35,7 @@
 		"springkt:build": "bun run springkt:PreBuild && bun run springkt:PostBuild",
 		"springkt:test": "cd apps/springkt && ./gradlew test",
 		"dotnet:dev": "cd apps/dotnetwebapi && dotnet watch run",
+		"dotnet:init": "cd apps/dotnetwebapi && dotnet restore",
 		"dotnet:PreBuild": "cd apps/dotnetwebapi && dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:AssemblyName=serverDotnet -o ../../dist/dotnet",
 		"dotnet:build": "bun run dotnet:PreBuild",
 		"win64:PreBuild": "cd wrappers/win64 && dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o ../../dist/wrapper-win64",

@@ -16,4 +16,3 @@ cpSync(
     recursive: true,
   }
 );
-//cpSync("apps/hono/.env", "dist/.env");

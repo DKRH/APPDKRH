@@ -1,5 +1,5 @@
 import tailwindcss from '@tailwindcss/vite';
-import adapter from '@sveltejs/adapter-auto';
+//import adapter from '@sveltejs/adapter-auto';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
@@ -14,7 +14,7 @@ export default defineConfig({
 		strictPort: true,
 		proxy: {
 			"/api": {
-				target: "http://localhost:2601",
+				target: process.env.HONO_API_URL!,
 				changeOrigin: true,
 			},
 		},

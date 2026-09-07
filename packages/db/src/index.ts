@@ -1,13 +1,11 @@
 import { SQL } from "bun";
 import { drizzle } from "drizzle-orm/bun-sql";
-import { loadEnv } from "./env";
 export {
   type InferInsertModel,
   type InferSelectModel,
 } from "drizzle-orm";
 
 export * from "./schema";
-loadEnv();
 
 export {
 	and,
@@ -34,7 +32,7 @@ console.log("2) cwd:", process.cwd());
 // 1. Grab your environment URL variable
 const appenv = process.env.APP_ENV;
 const databaseUrl = process.env.HONO_DATABASE_URL;
-const apiUrl = process.env.BETTER_AUTH_URL;
+const apiUrl = process.env.HONO_API_URL;
 console.log("3) apiUrl:", apiUrl);
 console.log("4) import.meta.dir:", import.meta.dir);
 console.log("5) ENV:", appenv);
