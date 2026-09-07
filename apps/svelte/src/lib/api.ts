@@ -1,6 +1,6 @@
 import { createAuthClient } from "better-auth/svelte";
 
-const API_URL = "";
+const API_URL = "/api-hono";
 
 export async function apiFetch(
 	path: string,
@@ -51,6 +51,9 @@ export function getAPIURL(
 
 export const authClient =
 	createAuthClient({
+		baseURL: typeof window !== "undefined"
+				? `${window.location.origin}${API_URL}/api/auth`
+				: undefined,
 		fetchOptions: {
 			credentials: "include",
 		},

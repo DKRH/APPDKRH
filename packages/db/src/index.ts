@@ -14,7 +14,8 @@ export {
 	ilike,
 	or,
 	desc,
-	sql 
+	sql,
+	asc 
 } from "drizzle-orm";
 
 export type {

@@ -1,9 +1,4 @@
-import {
-  eq,
-  and,
-} from "drizzle-orm";
-
-import { db } from "@dkrh/db";
+import { db, eq, and, } from "@dkrh/db";
 
 import {
   a1_user_role,

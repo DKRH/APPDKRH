@@ -1,3 +1,4 @@
+import { $ } from "bun";
 import { Hono } from "hono";
 import { serveStatic } from "hono/bun";
 import auth from "./routeAuth/auth";
@@ -8,12 +9,14 @@ import { dirname, resolve } from "node:path";
 import healthRoutes from "./routes/health";
 import { auditContext } from "./middleware/audit-context";
 
-const isDevelopment =
-  process.env.APP_ENV === "development";
+const isDevelopment = process.env.APP_ENV === "development";
 
 const baseDir = isDevelopment
     ? resolve(process.cwd()) // monorepo root
     : resolve(dirname(process.execPath), "../html");     // compiled executable directory
+console.log("1) baseDir :"+baseDir);
+console.log("2) ENV :"+process.env.APP_ENV);
+console.log("3) Svelte Url :"+process.env.SVELTE_API_URL);
 
 const app = new Hono();
 
@@ -84,21 +87,21 @@ app.route("/api", protectedApi);
 
 app.route("/check", healthRoutes);
 
+
+//|--------------------------------------------------------------------------
+//| Static Frontend
+//|--------------------------------------------------------------------------
 /*
-|--------------------------------------------------------------------------
-| Static Frontend
-|--------------------------------------------------------------------------
-*/
 if (!isDevelopment) {
   const indexFile = Bun.file(
     resolve(baseDir, "index.html"),
   );
 
-  /*
-  |--------------------------------------------------------------------------
-  | Block sensitive files
-  |--------------------------------------------------------------------------
-  */
+  
+  //|--------------------------------------------------------------------------
+  //| Block sensitive files
+  //|--------------------------------------------------------------------------
+  
   app.use("*", async (c, next) => {
     const path = c.req.path;
 
@@ -113,20 +116,20 @@ if (!isDevelopment) {
     await next();
   });
 
-  /*
-  |--------------------------------------------------------------------------
-  | Static Frontend
-  |--------------------------------------------------------------------------
-  */
+  
+  //|--------------------------------------------------------------------------
+  //| Static Frontend
+  //|--------------------------------------------------------------------------
+  
   app.use("*", serveStatic({
     root: baseDir,
   }));
 
-  /*
-  |--------------------------------------------------------------------------
-  | SPA Fallback
-  |--------------------------------------------------------------------------
-  */
+  
+  //|--------------------------------------------------------------------------
+  //| SPA Fallback
+  //|--------------------------------------------------------------------------
+  
   app.notFound(async (c) => {
     if (
       c.req.path === "/api" ||
@@ -144,7 +147,7 @@ if (!isDevelopment) {
     // Let Svelte handle frontend routing/errors
     return c.html(await indexFile.text());
   });
-}
+}*/
 
 export type AppType = typeof protectedApi;
 

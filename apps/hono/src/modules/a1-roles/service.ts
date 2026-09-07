@@ -1,6 +1,4 @@
-import { eq, asc } from "drizzle-orm";
-
-import { db } from "@dkrh/db";
+import { db, eq, asc } from "@dkrh/db";
 import { a1_role } from "@dkrh/db/schema";
 
 export async function getRoles() {

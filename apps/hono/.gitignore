@@ -1,4 +1,5 @@
 # deps
+.bun*
 node_modules/
 .env
 dkrh.db

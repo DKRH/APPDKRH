@@ -2,14 +2,10 @@ import {
 	a_user, a_account
 } from "@dkrh/db/schema";
 
-import {
-	and,
+import { db, eq, and,
 	ilike,
 	or,
-	desc,
-} from "drizzle-orm";
-
-import { db, eq } from "@dkrh/db";
+	desc, } from "@dkrh/db";
 
 export async function getAll(
 	search: string,
