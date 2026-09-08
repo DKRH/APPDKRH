@@ -6,7 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	//"github.com/DKRH/goapi/routes"
 	"goapi/database"
-	passwordModule "goapi/modules/password"
+
+	employeeModule "goapi/modules/employee"
 )
 
 func main() {
@@ -15,13 +16,17 @@ func main() {
 
 	r := gin.Default()
 
+	r.GET("/", func(c *gin.Context) {
+		c.String(200, "API Golang")
+	})
+
 	//routes.Register(r)
 	api := r.Group("/api")
 	{
-		passwordModule.RegisterRoutes(api, db)
+		employeeModule.RegisterRoutes(api, db)
 	}
 
-	port := os.Getenv("GOAPI_PORT")
+	port := os.Getenv("GO_API_PORT")
 
 	if port == "" {
 		port = "2602"

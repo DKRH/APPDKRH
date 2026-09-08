@@ -1,5 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
-CREATE TABLE hr_employee (
+CREATE TABLE employees (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     employee_no VARCHAR(50) NOT NULL UNIQUE,

@@ -4,6 +4,12 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
+data class ItemRequest(
+    val no: String,
+    val name: String,
+    val spec: String,
+)
+
 @RestController
 @RequestMapping("/api/item")
 class ItemController(

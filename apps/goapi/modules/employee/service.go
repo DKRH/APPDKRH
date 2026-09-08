@@ -1,84 +1,36 @@
 package employee
 
 import (
-	"context"
+	"database/sql"
 	"errors"
-	"fmt"
-	"strings"
+	"net/http"
+	"strconv"
 
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
-type Service interface {
-	Create(
-		ctx context.Context,
-		req CreateEmployeeRequest,
-	) (*Employee, error)
-
-	GetByID(
-		ctx context.Context,
-		id uuid.UUID,
-	) (*Employee, error)
-
-	List(
-		ctx context.Context,
-		filter ListFilter,
-	) ([]Employee, int, error)
-
-	Update(
-		ctx context.Context,
-		id uuid.UUID,
-		req UpdateEmployeeRequest,
-	) (*Employee, error)
-
-	UpdateStatus(
-		ctx context.Context,
-		id uuid.UUID,
-		status EmployeeStatus,
-	) error
-
-	Delete(
-		ctx context.Context,
-		id uuid.UUID,
-	) error
+type Handler struct {
+	repo *Repository
 }
 
-type service struct {
-	repository Repository
+func NewHandler(repo *Repository) *Handler {
+	return &Handler{repo: repo}
 }
 
-func NewService(repository Repository) Service {
-	return &service{
-		repository: repository,
-	}
-}
+func (h *Handler) Create(c *gin.Context) {
+	var req CreateEmployeeRequest
 
-func (s *service) Create(
-	ctx context.Context,
-	req CreateEmployeeRequest,
-) (*Employee, error) {
-	if err := validateCreateRequest(req); err != nil {
-		return nil, err
-	}
-
-	existing, err := s.repository.FindByEmployeeNo(
-		ctx,
-		req.EmployeeNo,
-	)
-
-	if err != nil && !errors.Is(err, ErrNotFound) {
-		return nil, err
-	}
-
-	if existing != nil {
-		return nil, ErrConflict
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	employee := &Employee{
 		ID:         uuid.New(),
-		EmployeeNo: strings.TrimSpace(req.EmployeeNo),
+		EmployeeNo: req.EmployeeNo,
 
-		FirstName:     strings.TrimSpace(req.FirstName),
+		FirstName:     req.FirstName,
 		MiddleName:    req.MiddleName,
 		LastName:      req.LastName,
 		PreferredName: req.PreferredName,
@@ -100,112 +52,93 @@ func (s *service) Create(
 		EmergencyContactPhone: req.EmergencyContactPhone,
 
 		HireDate: req.HireDate,
-
-		Status: EmployeeStatusActive,
+		Status:   EmployeeStatusActive,
 	}
 
-	if err := s.repository.Create(
-		ctx,
-		employee,
-	); err != nil {
-		return nil, err
+	if err := h.repo.Create(c, employee); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
-	return employee, nil
+	c.JSON(http.StatusCreated, employee)
 }
 
-func validateCreateRequest(
-	req CreateEmployeeRequest,
-) error {
-	if strings.TrimSpace(req.EmployeeNo) == "" {
-		return fmt.Errorf(
-			"employeeNo is required",
-		)
-	}
+func (h *Handler) GetAll(c *gin.Context) {
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
+	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
 
-	if strings.TrimSpace(req.FirstName) == "" {
-		return fmt.Errorf(
-			"firstName is required",
-		)
-	}
-
-	if req.HireDate.IsZero() {
-		return fmt.Errorf(
-			"hireDate is required",
-		)
-	}
-
-	return nil
-}
-
-func (s *service) GetByID(
-	ctx context.Context,
-	id uuid.UUID,
-) (*Employee, error) {
-	if id == uuid.Nil {
-		return nil, fmt.Errorf(
-			"invalid employee id",
-		)
-	}
-
-	return s.repository.FindByID(ctx, id)
-}
-
-func (s *service) List(
-	ctx context.Context,
-	filter ListFilter,
-) ([]Employee, int, error) {
-	if filter.Limit <= 0 {
-		filter.Limit = 20
-	}
-
-	if filter.Limit > 100 {
-		filter.Limit = 100
-	}
-
-	if filter.Offset < 0 {
-		filter.Offset = 0
-	}
-
-	filter.Search = strings.TrimSpace(
-		filter.Search,
+	employees, total, err := h.repo.GetAll(
+		c,
+		c.Query("search"),
+		EmployeeStatus(c.Query("status")),
+		limit,
+		offset,
 	)
 
-	return s.repository.List(
-		ctx,
-		filter,
-	)
-}
-
-func (s *service) Update(
-	ctx context.Context,
-	id uuid.UUID,
-	req UpdateEmployeeRequest,
-) (*Employee, error) {
-	if id == uuid.Nil {
-		return nil, fmt.Errorf(
-			"invalid employee id",
-		)
-	}
-
-	if strings.TrimSpace(req.FirstName) == "" {
-		return nil, fmt.Errorf(
-			"firstName is required",
-		)
-	}
-
-	employee, err := s.repository.FindByID(
-		ctx,
-		id,
-	)
 	if err != nil {
-		return nil, err
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
-	employee.FirstName = strings.TrimSpace(
-		req.FirstName,
-	)
+	c.JSON(http.StatusOK, gin.H{
+		"data": employees,
+		"meta": gin.H{
+			"total":  total,
+			"limit":  limit,
+			"offset": offset,
+		},
+	})
+}
 
+func (h *Handler) GetByID(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid employee id"})
+		return
+	}
+
+	employee, err := h.repo.GetByID(c, id)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "employee not found"})
+		return
+	}
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, employee)
+}
+
+func (h *Handler) Update(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid employee id"})
+		return
+	}
+
+	var req UpdateEmployeeRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	employee, err := h.repo.GetByID(c, id)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "employee not found"})
+		return
+	}
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	employee.FirstName = req.FirstName
 	employee.MiddleName = req.MiddleName
 	employee.LastName = req.LastName
 	employee.PreferredName = req.PreferredName
@@ -223,59 +156,61 @@ func (s *service) Update(
 	employee.PostalCode = req.PostalCode
 	employee.Country = req.Country
 
-	employee.EmergencyContactName =
-		req.EmergencyContactName
-
-	employee.EmergencyContactPhone =
-		req.EmergencyContactPhone
+	employee.EmergencyContactName = req.EmergencyContactName
+	employee.EmergencyContactPhone = req.EmergencyContactPhone
 
 	employee.HireDate = req.HireDate
 
-	if err := s.repository.Update(
-		ctx,
-		employee,
-	); err != nil {
-		return nil, err
+	if err := h.repo.Update(c, employee); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
-	return employee, nil
+	c.JSON(http.StatusOK, employee)
 }
 
-func (s *service) UpdateStatus(
-	ctx context.Context,
-	id uuid.UUID,
-	status EmployeeStatus,
-) error {
-	switch status {
+func (h *Handler) UpdateStatus(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid employee id"})
+		return
+	}
+
+	var req UpdateEmployeeStatusRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	switch req.Status {
 	case EmployeeStatusActive,
 		EmployeeStatusInactive,
 		EmployeeStatusTerminated:
-
 	default:
-		return fmt.Errorf(
-			"invalid employee status",
-		)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid employee status"})
+		return
 	}
 
-	return s.repository.UpdateStatus(
-		ctx,
-		id,
-		status,
-	)
+	if err := h.repo.UpdateStatus(c, id, req.Status); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }
 
-func (s *service) Delete(
-	ctx context.Context,
-	id uuid.UUID,
-) error {
-	if id == uuid.Nil {
-		return errors.New(
-			"invalid employee id",
-		)
+func (h *Handler) Delete(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid employee id"})
+		return
 	}
 
-	return s.repository.Delete(
-		ctx,
-		id,
-	)
+	if err := h.repo.Delete(c, id); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }

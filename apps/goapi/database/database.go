@@ -19,15 +19,7 @@ func Connect() *bun.DB {
 		panic("Error loading .env")
 	}
 
-	dsn := fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?sslmode=%s",
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("GOAPI_DB_NAME"),
-		os.Getenv("DB_SSLMODE"),
-	)
+	dsn := os.Getenv("GO_DATABASE_URL")
 
 	sqldb := sql.OpenDB(
 		pgdriver.NewConnector(
