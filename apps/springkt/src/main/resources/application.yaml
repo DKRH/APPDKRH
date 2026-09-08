@@ -2,5 +2,25 @@ spring:
   application:
     name: springkt
 
+  config:
+    import: optional:file:../../.env[.properties]
+
+  datasource:
+    url: jdbc:postgresql://${SPRING_HOST}:${SPRING_PORT}/${SPRING_DB}
+    username: ${SPRING_USER}
+    password: ${SPRING_PASS}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+
 server:
   port: 2603

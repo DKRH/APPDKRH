@@ -1,8 +1,20 @@
 SvelteKit      2600 => ./dist/html/*
 Hono           2601 => ./dist/hono/serverHono
+   Core
+      Auth
+
 Golang         2602 => ./dist/go/serverGO
+   Operations
+      HRM: Employees, Attendance, Leave, Payroll
+      Project Management
+
 SpringKT       2603 => java -jar ./dist/spring/serverSpringKT.jar
+   ERP
+      Accounting, Inventory, Purchasing, Sales, Asset
+
 DotNetWebApi   2604 => ./dist/dotnet/dotnetwebapi
+   Integrations
+      CRM: Customers, Contacts, Leads, Opportunities
 
 
 # TODO Feature
