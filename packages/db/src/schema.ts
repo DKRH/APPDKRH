@@ -560,6 +560,46 @@ export const nGachaBannerItems = pgTable("n_gacha_banner_items", {
 		.references(() => nGachaItems.id),
 });
 
+export const zApps = pgTable("z_apps", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  name: varchar("name", {
+    length: 100,
+  }).notNull(),
+
+  createdAt: timestamp("created_at", {
+    withTimezone: true,
+  }).defaultNow().notNull(),
+});
+
+export const zAppIps = pgTable(
+  "z_app_ips",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    appId: uuid("app_id")
+      .notNull()
+      .references(() => zApps.id, {
+        onDelete: "cascade",
+      }),
+
+    ipPublic: varchar("ip_public", {
+      length: 45,
+    }).notNull(),
+
+    lastSeenAt: timestamp("last_seen_at", {
+      withTimezone: true,
+    }).defaultNow().notNull(),
+
+    createdAt: timestamp("created_at", {
+      withTimezone: true,
+    }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("z_app_ips_app_id_idx").on(table.appId),
+    index("z_app_ips_ip_public_idx").on(table.ipPublic),
+  ],
+);
 /*
 export const kJCharacterRole = pgTable(
 	"k_j_character_role",

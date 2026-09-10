@@ -4,17 +4,13 @@ import { serveStatic } from "hono/bun";
 import auth from "./routeAuth/auth";
 import { authMiddleware } from "./middleware/auth";
 import { cors } from "hono/cors";
-import { createProtectedApi } from "./routes";
+import { createProtectedApi, createPublicApi } from "./routes";
 import { dirname, resolve } from "node:path";
 import healthRoutes from "./routes/health";
 import { auditContext } from "./middleware/audit-context";
+import { appDir } from "./lib/helper";
 
-const isDevelopment = process.env.APP_ENV === "development";
-
-const baseDir = isDevelopment
-    ? resolve(process.cwd()) // monorepo root
-    : resolve(dirname(process.execPath), "../html");     // compiled executable directory
-console.log("1) baseDir :"+baseDir);
+console.log("1) baseDir :"+appDir);
 console.log("2) ENV :"+process.env.APP_ENV);
 console.log("3) Svelte Url :"+process.env.SVELTE_API_URL);
 
@@ -79,12 +75,19 @@ app.use(
 | Routes
 |--------------------------------------------------------------------------
 */
+app.get('/', (c) => c.text('this Hono Server'))
+
 // Public Better Auth routes
 app.route("/api/auth", auth);
 
 // All routes inside here require login
 app.route("/api", protectedApi);
 
+
+// Then register all dynamic routes inside it
+const publicRoutes = await createPublicApi();
+
+app.route("/apx", publicRoutes);
 app.route("/check", healthRoutes);
 
 
