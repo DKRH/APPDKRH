@@ -25,7 +25,8 @@ sudo apt install -y \
     patchelf \
     nginx \
     certbot \
-    python3-certbot-nginx
+    python3-certbot-nginx \
+    tar
 
 # ============================================================
 # Bun
@@ -78,7 +79,7 @@ echo "Python:"
 uv run --python 3.12 python --version
 
 # ============================================================
-# Go
+# Go & Air for Go hot reload
 # ============================================================
 
 echo "==> Installing Go"
@@ -92,10 +93,6 @@ fi
 
 echo "Go:"
 go version
-
-# ============================================================
-# Air for Go hot reload
-# ============================================================
 
 echo "==> Installing Air"
 
@@ -121,6 +118,68 @@ fi
 
 echo "Java:"
 java -version
+
+# ============================================================
+# .NET
+# ============================================================
+
+echo "==> Installing .NET"
+
+if command -v dotnet >/dev/null 2>&1; then
+    echo ".NET already installed:"
+    dotnet -version
+else
+    sudo add-apt-repository ppa:dotnet/backports
+    sudo apt-get update && sudo apt-get install -y dotnet-sdk-10.0
+fi
+
+echo ".NET:"
+dotnet --version
+
+# ============================================================
+# Rust
+# ============================================================
+
+echo "==> Installing Rust"
+
+if command -v rustc >/dev/null 2>&1; then
+    echo "Rust already installed:"
+    rustc -version
+else
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+fi
+
+echo "Rust:"
+rustc --version
+
+# ============================================================
+# Clang
+# ============================================================
+
+echo "==> Installing Clang"
+
+if command -v clang >/dev/null 2>&1; then
+    echo "Clang already installed:"
+    clang -version
+else
+    sudo apt install -y clang clangd ninja-build cmake bison flex
+    cd ~
+    git clone https://github.com/microsoft/vcpkg.git
+    cd vcpkg
+    ./bootstrap-vcpkg.sh
+    echo 'export VCPKG_ROOT="$HOME/vcpkg"' >> ~/.bashrc
+    echo 'export PATH="$VCPKG_ROOT:$PATH"' >> ~/.bashrc
+    source ~/.bashrc
+fi
+
+echo "Clang:"
+clang++ --version
+echo "CMake:"
+cmake --version
+echo "Ninja:"
+ninja --version
+echo "VCPKG:"
+vcpkg version
 
 # ============================================================
 # Environment

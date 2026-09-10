@@ -1,9 +1,0 @@
-{
-  "name": "dkrh-cpp",
-  "version-string": "1.0.0",
-  "dependencies": [
-    "crow",
-    "libpqxx",
-    "nlohmann-json"
-  ]
-}
