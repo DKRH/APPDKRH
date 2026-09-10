@@ -54,6 +54,8 @@
 		"rust:dev": "cd apps/axumrust && cargo watch -x run",
 		"rust:init": "cd apps/axumrust && cargo fetch",
 		"rust:build": "cd apps/axumrust && cargo build --release --target-dir ../../dist/rust",
+		"cpp:init": "cd apps/crow && vcpkg install",
+		"cpp:build": "cd apps/crow && cmake -B build && cmake --build build --config Release",
 
 		"win64:PreBuild": "mkdir -p dist/wrapper-win64",
 		"win64:PostBuild": "cd wrappers/win64 && dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o ../../dist/wrapper-win64",
