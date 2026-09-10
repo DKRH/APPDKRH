@@ -58,7 +58,7 @@
 		"rust:build": "bun run rust:PreBuild && bun run rust:PostBuild",
 		"elixir:setup": "bash scripts/setup-elixir.sh",
 		"elixir:init": "cd apps/elixirphoenix && mix deps.get",
-		"elixir:dev": "cd apps/elixirphoenix && mix phx.server",
+		"elixir:dev": "set -a && source .env && set +a && cd apps/elixirphoenix && mix phx.server",
 		"elixir:build": "cd apps/elixirphoenix && MIX_ENV=prod mix release",
 		"elixir:clean": "cd apps/elixirphoenix && mix clean",
 

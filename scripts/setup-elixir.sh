@@ -4,29 +4,28 @@ set -e
 
 ERLANG_VERSION="28.1"
 ELIXIR_VERSION="1.19.4-otp-28"
+ASDF_VERSION="0.18.0"
 
 echo "======================================"
 echo " Elixir Development Environment Setup"
 echo "======================================"
 
 echo
-echo "==> Installing system dependencies..."
+echo "==> Updating apt..."
 
 sudo apt -o Acquire::ForceIPv4=true update
 
-sudo apt install -y \
+echo
+echo "==> Installing system dependencies..."
+
+sudo apt -o Acquire::ForceIPv4=true install -y \
     curl \
     git \
     build-essential \
     autoconf \
     m4 \
     libncurses5-dev \
-    libwxgtk3.2-dev \
-    libwxgtk-webview3.2-dev \
-    libwxgtk-gl3.2-dev \
-    libgl1-mesa-dev \
-    libglu1-mesa-dev \
-    libpng-dev \
+    libssl-dev \
     libssh-dev \
     unixodbc-dev \
     xsltproc \
@@ -35,24 +34,36 @@ sudo apt install -y \
     inotify-tools
 
 echo
-echo "==> Installing asdf..."
+echo "==> Installing asdf ${ASDF_VERSION}..."
 
-if [ ! -d "$HOME/.asdf" ]; then
-    git clone https://github.com/asdf-vm/asdf.git "$HOME/.asdf"
+if ! command -v asdf >/dev/null 2>&1; then
+    mkdir -p "$HOME/.asdf/bin"
+
+    curl -L \
+        "https://github.com/asdf-vm/asdf/releases/download/v${ASDF_VERSION}/asdf-v${ASDF_VERSION}-linux-amd64.tar.gz" \
+        -o /tmp/asdf.tar.gz
+
+    tar -xzf /tmp/asdf.tar.gz \
+        -C "$HOME/.asdf/bin"
+
+    rm /tmp/asdf.tar.gz
+
+    if ! grep -q 'HOME/.asdf/bin' "$HOME/.bashrc"; then
+        cat >> "$HOME/.bashrc" <<'EOF'
+
+# asdf
+export PATH="$HOME/.asdf/bin:$HOME/.asdf/shims:$PATH"
+EOF
+    fi
+
+    export PATH="$HOME/.asdf/bin:$HOME/.asdf/shims:$PATH"
 else
     echo "asdf already installed."
 fi
 
-if ! grep -q 'asdf.sh' "$HOME/.bashrc"; then
-    cat >> "$HOME/.bashrc" <<'EOF'
-
-# asdf
-. "$HOME/.asdf/asdf.sh"
-EOF
-fi
-
-# Load asdf into current shell
-. "$HOME/.asdf/asdf.sh"
+echo
+echo "asdf version:"
+asdf version
 
 echo
 echo "==> Installing Erlang plugin..."
@@ -119,6 +130,10 @@ echo
 echo "======================================"
 echo " Verification"
 echo "======================================"
+
+echo
+echo "asdf:"
+asdf version
 
 echo
 echo "Erlang:"
