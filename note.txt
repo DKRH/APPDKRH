@@ -51,3 +51,6 @@ Laravel
 5) a-auth/ make for active session list (only read)
 6) a-auth/ roles management (role, user-role, permission) and implement on each modules (permission)
 7) all infinite scroll donot use offset when use limit => instead use just limit and where create_at < last row
+8) make dotnet into Native AOT (currently is JIT) when compiled
+9) make Spring boot into Native via GraalVM (currently is JIT OpenJDK) when compiled
+10) check Quarkus, that is vs of spring
