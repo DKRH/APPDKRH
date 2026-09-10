@@ -16,6 +16,9 @@ DotNetWebApi   2604 => ./dist/dotnet/dotnetwebapi
    Integrations
       CRM: Customers, Contacts, Leads, Opportunities
 
+Elysia         2605
+RustAxum       2606
+DrogonCPP      2607
 
 # TODO Feature
 

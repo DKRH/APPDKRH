@@ -1,0 +1,17 @@
+Rust
+├── Axum          → HTTP API / routing
+├── SQLx          → PostgreSQL access
+├── Tokio         → async runtime
+├── Serde         → JSON serialization
+├── dotenvy       → .env
+└── tracing       → logging
+
+
+│   └── rust/
+│       ├── Cargo.toml
+│       └── src/
+│           ├── main.rs
+│           ├── db.rs
+│           ├── error.rs
+│           └── routes/
+│               └── users.rs
