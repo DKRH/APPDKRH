@@ -2,7 +2,7 @@
   "name": "elysia",
   "type": "module",
   "scripts": {
-    "dev": "bun run main.ts",
+    "dev": "bun run src/main.ts",
     "typecheck": "tsc"
   },
   "devDependencies": {
