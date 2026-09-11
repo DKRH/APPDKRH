@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -e
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPTS="$ROOT/scripts"
+
+usage() {
+    echo "Usage: ./dkrh <target> <command>"
+    echo
+    echo "Examples:"
+    echo "  ./dkrh hono dev"
+    echo "  ./dkrh hono build"
+    echo "  ./dkrh go build"
+    echo "  ./dkrh dotnet build"
+    echo "  ./dkrh elixir build"
+}
+
+if [ $# -lt 2 ]; then
+    usage
+    exit 1
+fi
+
+TARGET="$1"
+COMMAND="$2"
+
+SCRIPT="$SCRIPTS/dkrh/$TARGET-$COMMAND.sh"
+
+if [ ! -f "$SCRIPT" ]; then
+    echo "Error: script not found:"
+    echo "  $SCRIPT"
+    exit 1
+fi
+
+if [ ! -x "$SCRIPT" ]; then
+    chmod +x "$SCRIPT"
+fi
+
+echo "==> $TARGET $COMMAND"
+
+exec "$SCRIPT"
