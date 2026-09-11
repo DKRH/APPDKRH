@@ -5,11 +5,9 @@ import * as service from "./service";
 const app = new Hono();
 
 app.get("/", async (c) => {
-  const systemId =
-    c.req.query("systemId");
+  const systemId = c.req.query("systemId");
 
-  const permissions =
-    await service.getPermissions(systemId);
+  const permissions = await service.getPermissions(systemId);
 
   return c.json(permissions);
 });
@@ -17,8 +15,7 @@ app.get("/", async (c) => {
 app.post("/", async (c) => {
   const body = await c.req.json();
 
-  const permission =
-    await service.createPermission(body);
+  const permission = await service.createPermission(body);
 
   return c.json(permission, 201);
 });
@@ -26,11 +23,7 @@ app.post("/", async (c) => {
 app.patch("/:id", async (c) => {
   const body = await c.req.json();
 
-  const permission =
-    await service.updatePermission(
-      c.req.param("id"),
-      body,
-    );
+  const permission = await service.updatePermission(c.req.param("id"), body);
 
   if (!permission) {
     return c.json(
@@ -45,10 +38,7 @@ app.patch("/:id", async (c) => {
 });
 
 app.delete("/:id", async (c) => {
-  const permission =
-    await service.deletePermission(
-      c.req.param("id"),
-    );
+  const permission = await service.deletePermission(c.req.param("id"));
 
   if (!permission) {
     return c.json(

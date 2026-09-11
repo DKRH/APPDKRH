@@ -27,9 +27,10 @@
     "hono": "^4.12.25",
     "qrcode": "^1.5.4",
     "zod": "^4.5.4",
-		"@hono/zod-validator": "^0.9.1"
+    "@hono/zod-validator": "^0.9.1"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "prettier": "^3.9.6"
   }
 }

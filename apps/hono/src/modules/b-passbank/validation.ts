@@ -1,4 +1,7 @@
-import { createInsertValidator, createPatchValidator } from "@dkrh/db/validation";
+import {
+  createInsertValidator,
+  createPatchValidator,
+} from "@dkrh/db/validation";
 import { b_passbank } from "@dkrh/db/schema";
 import { zValidator } from "@hono/zod-validator";
 import z from "zod";
@@ -9,12 +12,6 @@ export const createPassbankSchema = createInsertValidator(b_passbank).extend({
 });
 export const updatePassbankSchema = createPatchValidator(b_passbank);
 
-export const createPassbankValidator = zValidator(
-	"json",
-	createPassbankSchema,
-);
+export const createPassbankValidator = zValidator("json", createPassbankSchema);
 
-export const updatePassbankValidator = zValidator(
-	"json",
-	updatePassbankSchema,
-);
+export const updatePassbankValidator = zValidator("json", updatePassbankSchema);

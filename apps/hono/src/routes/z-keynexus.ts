@@ -1,9 +1,5 @@
 import { Hono } from "hono";
-import {
-  db,
-  zApps,
-  zAppIps, eq, desc
-} from "@dkrh/db";
+import { db, zApps, zAppIps, eq, desc } from "@dkrh/db";
 
 const app = new Hono();
 
@@ -11,10 +7,7 @@ const app = new Hono();
  * List applications
  */
 app.get("/", async (c) => {
-  const apps = await db
-    .select()
-    .from(zApps)
-    .orderBy(desc(zApps.createdAt));
+  const apps = await db.select().from(zApps).orderBy(desc(zApps.createdAt));
 
   return c.json(apps);
 });
@@ -32,10 +25,7 @@ app.get("/:id", async (c) => {
     .limit(1);
 
   if (!appData) {
-    return c.json(
-      { message: "App not found" },
-      404,
-    );
+    return c.json({ message: "App not found" }, 404);
   }
 
   const ips = await db
@@ -59,10 +49,7 @@ app.post("/", async (c) => {
   }>();
 
   if (!body.name?.trim()) {
-    return c.json(
-      { message: "Name is required" },
-      400,
-    );
+    return c.json({ message: "Name is required" }, 400);
   }
 
   const [result] = await db
@@ -91,10 +78,7 @@ app.get("/:id/heartbeat", async (c) => {
     .limit(1);
 
   if (!appData) {
-    return c.json(
-      { message: "App not found" },
-      404,
-    );
+    return c.json({ message: "App not found" }, 404);
   }
 
   const ip =
@@ -102,10 +86,7 @@ app.get("/:id/heartbeat", async (c) => {
     c.req.header("x-forwarded-for")?.split(",")[0]?.trim();
 
   if (!ip) {
-    return c.json(
-      { message: "Unable to determine public IP" },
-      400,
-    );
+    return c.json({ message: "Unable to determine public IP" }, 400);
   }
 
   const [result] = await db

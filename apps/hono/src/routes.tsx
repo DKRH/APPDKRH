@@ -3,9 +3,8 @@ import { routes } from "./generated/routes.generated";
 import zKeyNexus from "./routes/z-keynexus";
 
 export function createPublicApi() {
-
   const app = new Hono();
-  app.get('/', (c) => c.text('this APX'))
+  app.get("/", (c) => c.text("this APX"));
   app.route("/z-apps", zKeyNexus);
 
   return app;

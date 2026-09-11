@@ -11,9 +11,7 @@ app.get("/", async (c) => {
 });
 
 app.get("/:id", async (c) => {
-  const system = await service.getSystemById(
-    c.req.param("id"),
-  );
+  const system = await service.getSystemById(c.req.param("id"));
 
   if (!system) {
     return c.json(
@@ -42,10 +40,7 @@ app.post("/", async (c) => {
 app.patch("/:id", async (c) => {
   const body = await c.req.json();
 
-  const system = await service.updateSystem(
-    c.req.param("id"),
-    body,
-  );
+  const system = await service.updateSystem(c.req.param("id"), body);
 
   if (!system) {
     return c.json(
@@ -60,9 +55,7 @@ app.patch("/:id", async (c) => {
 });
 
 app.delete("/:id", async (c) => {
-  const system = await service.deleteSystem(
-    c.req.param("id"),
-  );
+  const system = await service.deleteSystem(c.req.param("id"));
 
   if (!system) {
     return c.json(

@@ -2,17 +2,11 @@ import { db, eq, asc } from "@dkrh/db";
 import { a1_role } from "@dkrh/db/schema";
 
 export async function getRoles() {
-  return db
-    .select()
-    .from(a1_role)
-    .orderBy(asc(a1_role.name));
+  return db.select().from(a1_role).orderBy(asc(a1_role.name));
 }
 
 export async function getRoleById(id: string) {
-  const [role] = await db
-    .select()
-    .from(a1_role)
-    .where(eq(a1_role.id, id));
+  const [role] = await db.select().from(a1_role).where(eq(a1_role.id, id));
 
   return role ?? null;
 }
@@ -53,10 +47,7 @@ export async function updateRole(
 }
 
 export async function deleteRole(id: string) {
-  const [role] = await db
-    .delete(a1_role)
-    .where(eq(a1_role.id, id))
-    .returning();
+  const [role] = await db.delete(a1_role).where(eq(a1_role.id, id)).returning();
 
   return role ?? null;
 }

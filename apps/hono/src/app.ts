@@ -10,9 +10,9 @@ import healthRoutes from "./routes/health";
 import { auditContext } from "./middleware/audit-context";
 import { appDir } from "./lib/helper";
 
-console.log("1) baseDir :"+appDir);
-console.log("2) ENV :"+process.env.APP_ENV);
-console.log("3) Svelte Url :"+process.env.SVELTE_API_URL);
+console.log("1) baseDir :" + appDir);
+console.log("2) ENV :" + process.env.APP_ENV);
+console.log("3) Svelte Url :" + process.env.SVELTE_API_URL);
 
 const app = new Hono();
 
@@ -21,25 +21,18 @@ const app = new Hono();
 | Protected API
 |--------------------------------------------------------------------------
 */
-app.onError(
-	(err, c) => {
+app.onError((err, c) => {
+  console.error(err);
 
-		console.error(err);
+  return c.json(
+    {
+      success: false,
 
-		return c.json(
-			{
-				success: false,
-
-				message:
-					err instanceof Error
-						? err.message
-						: "Internal server error",
-			},
-			500
-		);
-
-	}
-);
+      message: err instanceof Error ? err.message : "Internal server error",
+    },
+    500,
+  );
+});
 const protectedApi = new Hono();
 
 // Register middleware FIRST
@@ -61,9 +54,7 @@ protectedApi.route("/", routes);
 app.use(
   "*",
   cors({
-    origin: [
-      process.env.SVELTE_API_URL!,
-    ],
+    origin: [process.env.SVELTE_API_URL!],
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -75,7 +66,7 @@ app.use(
 | Routes
 |--------------------------------------------------------------------------
 */
-app.get('/', (c) => c.text('this Hono Server'))
+app.get("/", (c) => c.text("this Hono Server"));
 
 // Public Better Auth routes
 app.route("/api/auth", auth);
@@ -83,13 +74,11 @@ app.route("/api/auth", auth);
 // All routes inside here require login
 app.route("/api", protectedApi);
 
-
 // Then register all dynamic routes inside it
 const publicRoutes = await createPublicApi();
 
 app.route("/apx", publicRoutes);
 app.route("/check", healthRoutes);
-
 
 //|--------------------------------------------------------------------------
 //| Static Frontend

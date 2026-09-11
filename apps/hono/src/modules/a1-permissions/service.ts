@@ -1,13 +1,8 @@
-import { db, eq, asc, } from "@dkrh/db";
+import { db, eq, asc } from "@dkrh/db";
 
-import {
-  a1_permission,
-  a1_system,
-} from "@dkrh/db/schema";
+import { a1_permission, a1_system } from "@dkrh/db/schema";
 
-export async function getPermissions(
-  systemId?: string,
-) {
+export async function getPermissions(systemId?: string) {
   return db
     .select({
       id: a1_permission.id,
@@ -20,22 +15,9 @@ export async function getPermissions(
       isActive: a1_permission.isActive,
     })
     .from(a1_permission)
-    .innerJoin(
-      a1_system,
-      eq(
-        a1_permission.systemId,
-        a1_system.id,
-      ),
-    )
-    .where(
-      systemId
-        ? eq(a1_permission.systemId, systemId)
-        : undefined,
-    )
-    .orderBy(
-      asc(a1_system.name),
-      asc(a1_permission.name),
-    );
+    .innerJoin(a1_system, eq(a1_permission.systemId, a1_system.id))
+    .where(systemId ? eq(a1_permission.systemId, systemId) : undefined)
+    .orderBy(asc(a1_system.name), asc(a1_permission.name));
 }
 
 export async function createPermission(data: {
@@ -44,10 +26,7 @@ export async function createPermission(data: {
   name: string;
   description?: string;
 }) {
-  const [permission] = await db
-    .insert(a1_permission)
-    .values(data)
-    .returning();
+  const [permission] = await db.insert(a1_permission).values(data).returning();
 
   return permission;
 }

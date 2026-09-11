@@ -20,22 +20,18 @@ async function generate() {
 
 await generate();
 
-watch(
-  "./src/modules",
-  { recursive: true },
-  async (_, filename) => {
-    if (!filename) return;
+watch("./src/modules", { recursive: true }, async (_, filename) => {
+  if (!filename) return;
 
-    const file = filename.replace(/\\/g, "/");
+  const file = filename.replace(/\\/g, "/");
 
-    if (!/(^|\/)route\.(ts|js)$/.test(file)) {
-      return;
-    }
+  if (!/(^|\/)route\.(ts|js)$/.test(file)) {
+    return;
+  }
 
-    console.log(`Route changed: ${file}`);
+  console.log(`Route changed: ${file}`);
 
-    await generate();
-  },
-);
+  await generate();
+});
 
 console.log("Watching route files...");

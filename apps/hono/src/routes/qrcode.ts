@@ -9,12 +9,11 @@ app.get("/generate", async (c) => {
   const security = c.req.query("security") ?? "WPA";
   const hidden = c.req.query("hidden") === "true";
 
-  const payload =
-    `WIFI:T:${security};S:${escapeWifi(ssid)};P:${escapeWifi(password)};H:${hidden};;`;
+  const payload = `WIFI:T:${security};S:${escapeWifi(ssid)};P:${escapeWifi(password)};H:${hidden};;`;
 
-    const svg = await QRCode.toString(payload, {
+  const svg = await QRCode.toString(payload, {
     type: "svg",
-    });
+  });
 
   c.header("Content-Type", "image/svg+xml");
   return c.body(svg);

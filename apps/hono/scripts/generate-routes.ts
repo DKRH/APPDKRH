@@ -19,10 +19,7 @@ for await (const file of glob.scan({
 })) {
   if (file.endsWith(".d.ts")) continue;
 
-  const routeDir = relative(
-    modulesDir,
-    dirname(file),
-  ).replace(/\\/g, "/");
+  const routeDir = relative(modulesDir, dirname(file)).replace(/\\/g, "/");
 
   const importPath = `../modules/${routeDir}/route`;
   const name = `route${index++}`;

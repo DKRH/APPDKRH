@@ -4,34 +4,16 @@ import * as service from "./service";
 
 const app = new Hono();
 
-app.get(
-	"/",
-	service.getAll,
-);
+app.get("/", service.getAll);
 
-app.post(
-	"/",
-	service.createData,
-);
+app.post("/", service.createData);
 
-app.put(
-	"/:id",
-	service.editData,
-);
+app.put("/:id", service.editData);
 
-app.delete(
-	"/:id",
-	service.deleteData,
-);
+app.delete("/:id", service.deleteData);
 
-app.put(
-	"/:id/restore",
-	service.restoreData,
-);
+app.put("/:id/restore", service.restoreData);
 
-app.delete(
-	"/:id/forever",
-	service.deleteDataForever,
-);
+app.delete("/:id/forever", service.deleteDataForever);
 
 export default app;

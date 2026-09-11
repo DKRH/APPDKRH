@@ -2,10 +2,7 @@ import { db, eq, asc } from "@dkrh/db";
 import { a1_system } from "@dkrh/db/schema";
 
 export async function getSystems() {
-  return db
-    .select()
-    .from(a1_system)
-    .orderBy(asc(a1_system.name));
+  return db.select().from(a1_system).orderBy(asc(a1_system.name));
 }
 
 export async function getSystemById(id: string) {

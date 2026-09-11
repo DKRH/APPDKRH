@@ -5,15 +5,11 @@ import * as service from "./service";
 const app = new Hono();
 
 app.get("/", async (c) => {
-  return c.json(
-    await service.getRoles(),
-  );
+  return c.json(await service.getRoles());
 });
 
 app.get("/:id", async (c) => {
-  const role = await service.getRoleById(
-    c.req.param("id"),
-  );
+  const role = await service.getRoleById(c.req.param("id"));
 
   if (!role) {
     return c.json(
@@ -38,10 +34,7 @@ app.post("/", async (c) => {
 app.patch("/:id", async (c) => {
   const body = await c.req.json();
 
-  const role = await service.updateRole(
-    c.req.param("id"),
-    body,
-  );
+  const role = await service.updateRole(c.req.param("id"), body);
 
   if (!role) {
     return c.json(
@@ -56,9 +49,7 @@ app.patch("/:id", async (c) => {
 });
 
 app.delete("/:id", async (c) => {
-  const role = await service.deleteRole(
-    c.req.param("id"),
-  );
+  const role = await service.deleteRole(c.req.param("id"));
 
   if (!role) {
     return c.json(

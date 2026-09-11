@@ -5,15 +5,12 @@ export async function authMiddleware(c, next) {
     return await next();
   }
   const session = await auth.api.getSession({
-      headers: c.req.raw.headers,
+    headers: c.req.raw.headers,
   });
   c.set("userId", session?.user.id);
 
   if (!session) {
-    return c.json(
-      { error: "Unauthorized" },
-      401
-    );
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   c.set("session", session);

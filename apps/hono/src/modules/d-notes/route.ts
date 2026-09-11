@@ -4,7 +4,6 @@ import * as service from "./service";
 
 const app = new Hono();
 
-
 // ============================================================
 // LABELS
 // ============================================================
@@ -31,25 +30,14 @@ app.patch("/:id/restore", service.restore);
 app.delete("/:id", service.deleteData);
 app.delete("/:id/permanent", service.deleteForever);
 
-
-
 // ============================================================
 // NOTE <-> LABEL
 // ============================================================
 
-app.get(
-	"/:id/labels",
-	service.getNoteLabels,
-);
+app.get("/:id/labels", service.getNoteLabels);
 
-app.post(
-	"/:id/labels",
-	service.addLabel,
-);
+app.post("/:id/labels", service.addLabel);
 
-app.delete(
-	"/:id/labels",
-	service.removeLabel,
-);
+app.delete("/:id/labels", service.removeLabel);
 
 export default app;

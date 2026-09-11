@@ -10,8 +10,8 @@ const app = new Hono();
 |--------------------------------------------------------------------------
 */
 
-app.get("/banners",service.getBanners);
-app.get("/banners/:id",service.getBanner);
+app.get("/banners", service.getBanners);
+app.get("/banners/:id", service.getBanner);
 
 /*
 |--------------------------------------------------------------------------
@@ -19,7 +19,7 @@ app.get("/banners/:id",service.getBanner);
 |--------------------------------------------------------------------------
 */
 
-app.post("/banners/:id/pull",service.pull);
+app.post("/banners/:id/pull", service.pull);
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +27,7 @@ app.post("/banners/:id/pull",service.pull);
 |--------------------------------------------------------------------------
 */
 
-app.get("/pity/:id",service.getPity);
-app.get("/history",service.getHistory);
+app.get("/pity/:id", service.getPity);
+app.get("/history", service.getHistory);
 
 export default app;

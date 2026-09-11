@@ -4,19 +4,10 @@ import * as service from "./service";
 
 const app = new Hono();
 
-app.get(
-	"/",
-	service.getAll,
-);
+app.get("/", service.getAll);
 
-app.post(
-	"/",
-	service.createData,
-);
+app.post("/", service.createData);
 
-app.post(
-	"/:id/reset-password",
-	service.resetPassword,
-);
+app.post("/:id/reset-password", service.resetPassword);
 
 export default app;
