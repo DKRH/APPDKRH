@@ -1,0 +1,43 @@
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { tanstackStartCookies } from "better-auth/tanstack-start";
+import { db } from "@/db"; // your drizzle instance
+import * as schema from "@/db/schema";
+
+import { hashPassword, verifyPassword } from "./password";
+
+export const auth = betterAuth({
+  database: drizzleAdapter(db, {
+    provider: "pg", // or "mysql", "sqlite", "pg"
+    schema,
+  }),
+  baseURL: process.env.HONO_API_URL,
+  trustedOrigins: [process.env.HONO_API_URL!, process.env.SVELTE_API_URL!],
+  emailAndPassword: {
+    enabled: true,
+
+    password: {
+      hash: hashPassword,
+      verify: ({ password, hash }) => verifyPassword(password, hash),
+    },
+
+    revokeSessionsOnPasswordReset: true,
+  },
+  advanced: {
+    database: {
+      generateId: "uuid", // or your own custom function
+    },
+  },
+  user: {
+    modelName: "a_user",
+  },
+  session: {
+    modelName: "a_session",
+  },
+  account: {
+    modelName: "a_account",
+  },
+  verification: {
+    modelName: "a_verification",
+  },
+});

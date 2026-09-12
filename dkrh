@@ -24,12 +24,15 @@ fi
 TARGET="$1"
 COMMAND="$2"
 
-SCRIPT="$SCRIPTS/dkrh/$TARGET-$COMMAND.sh"
+SCRIPT="$SCRIPTS/dkrh/$TARGET.sh"
 
-if [ ! -f "$SCRIPT" ]; then
-    echo "Error: script not found:"
-    echo "  $SCRIPT"
-    exit 1
+if [ -f "$SCRIPT" ]; then
+    if [ ! -x "$SCRIPT" ]; then
+        chmod +x "$SCRIPT"
+    fi
+
+    echo "==> $TARGET $COMMAND"
+    exec "$SCRIPT" "$COMMAND"
 fi
 
 if [ ! -x "$SCRIPT" ]; then

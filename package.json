@@ -8,29 +8,7 @@
 	"scripts": {
 		"db:init": "cd apps/hono && bun run src/test/initdb.ts",
 		"add:db": "cd packages/db && bun add",
-		"dev": "concurrently -k -n FRONT,BACK \"bun run sv:dev\" \"bun run hono:dev\"",
-		"sv:add": "cd apps/svelte && bun add",
-		"sv:dev": "cd apps/svelte && bun run dev",
-		"sv:init": "cd apps/svelte && bun install",
-		"sv:PreBuild": "cd apps/svelte && bun run build",
-		"sv:PostBuild": "bun scripts/mv_svelte.ts",
-		"sv:build": "bun run sv:PreBuild && bun run sv:PostBuild",
-		"hono:add": "cd apps/hono && bun add",
-		"hono:generate": "cd packages/db && bun x drizzle-kit generate",
-		"hono:migrate": "cd packages/db && bun x drizzle-kit migrate",
-		"hono:push": "cd packages/db && bun x drizzle-kit push",
-		"hono:format": "cd apps/hono && bun x prettier --write .",
-		"hono:format:check": "cd apps/hono && bun x prettier --check .",
-		"dotnet:add": "cd apps/dotnetwebapi && dotnet add package",
-		"elysia:add": "cd apps/elysia && bun add",
-		"rust:add": "cd apps/axumrust && cargo add",
-
-		"react:dev": "cd apps/react && bun run dev",
-		"react:init": "cd apps/react && bun install",
-		"react:build": "cd apps/react && bun run build --mode production",
-		"fast:dev": "cd apps/fast && uv run python -m app.dev",
-		"fast:init": "cd apps/fast && uv sync",
-		"fast:build": "cd apps/fast && uv run python -m nuitka --onefile --standalone --output-filename=serverFast app/server.py"
+		"dev": "concurrently -k -n FRONT,BACK \"bun run sv:dev\" \"bun run hono:dev\""
 	},
 	"devDependencies": {
 		"@types/bun": "^1.4.0",

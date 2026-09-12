@@ -1,0 +1,40 @@
+{
+  "name": "@dkrh/hono",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./types": "./src/types.ts"
+  },
+  "scripts": {
+    "dev:routes": "bun run scripts/watch-routes.ts",
+    "dev:server": "bun --hot src/index.ts",
+    "dev": "bun --parallel dev:routes dev:server",
+    "start": "bun src/index.ts",
+    "db:generate": "bun x drizzle-kit generate",
+    "db:migrate": "bun x drizzle-kit migrate",
+    "db:push": "bun x drizzle-kit push",
+    "db:pull": "bun x drizzle-kit pull",
+    "db:studio": "bun x drizzle-kit studio"
+  },
+  "dependencies": {
+    "@better-auth/cli": "^1.4.21",
+    "@dkrh/types": "workspace:*",
+    "better-auth": "^1.6.16",
+    "chokidar": "^5.0.0",
+    "dotenv": "^17.4.2",
+    "easy-keyvalues": "^1.2.8",
+    "hono": "^4.12.25",
+    "qrcode": "^1.5.4",
+    "zod": "^4.5.4",
+    "@hono/zod-validator": "^0.9.1",
+    "drizzle-orm": "^0.45.2",
+    "drizzle-zod": "^0.8.3"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prettier": "^3.9.6",
+    "@faker-js/faker": "^10.6.0",
+    "better-sqlite3": "^12.10.0",
+    "drizzle-kit": "^0.30.6"
+  }
+}
