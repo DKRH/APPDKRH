@@ -172,6 +172,11 @@
 					...data,
 				];
 			}
+
+			if (data.length > 0) {
+				lastCreatedAt =
+					data[data.length - 1].createdAt;
+			}
 			
 			hasMore = data.length === LIMIT;
 		}
