@@ -5,7 +5,7 @@ import { db,and,
     or,
     type AnyColumn,
     type PgTable,
-    desc, } from "@/db";
+    desc,lt } from "@/db";
 
 import { auditLogging } from "../schema";
 import { getAuditContext } from "./context";
@@ -425,7 +425,7 @@ type AuditedListOptions<
 
     searchableRelations?: SearchableRelation[];
 
-    offset?: number;
+    lastCreatedAt?: string | null;
 
     limit?: number;
 };
@@ -441,7 +441,7 @@ export async function auditedList<
     search = "",
     searchableColumns = [],
     searchableRelations = [],
-    offset = 0,
+    lastCreatedAt,
     limit = 50,
 }: AuditedListOptions<TTable>) {
     const searchConditions =
@@ -471,13 +471,18 @@ export async function auditedList<
                 )
             : undefined;
 
-    const whereClause =
-        searchClause
-            ? and(
-                    isNull(table.deletedAt),
-                    searchClause,
-                )
-            : isNull(table.deletedAt);
+    const cursorClause = lastCreatedAt
+        ? lt(
+              table.createdAt,
+              new Date(lastCreatedAt),
+          )
+        : undefined;
+
+    const whereClause = and(
+        isNull(table.deletedAt),
+        searchClause,
+        cursorClause,
+    );
 
     let query: any = db
         .select()
@@ -498,7 +503,6 @@ export async function auditedList<
     const data = await query
         .where(whereClause)
         .orderBy(desc(table.createdAt))
-        .offset(offset)
         .limit(limit);
 
     if (

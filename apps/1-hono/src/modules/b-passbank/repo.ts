@@ -1,11 +1,11 @@
 import { b_passbank } from "@/db/schema";
 import * as audit from "@/db/audit";
 
-import type { NewBPassbank } from "@dkrh/types";
+import type { NewBPassbank } from "@/db/types";
 
 const table = b_passbank;
 
-export async function getAll(search: string, offset: number, limit: number) {
+export async function getAll(search: string, lastCreatedAt: string | null, limit: number) {
   return audit.auditedList({
     table,
 
@@ -13,7 +13,7 @@ export async function getAll(search: string, offset: number, limit: number) {
 
     searchableColumns: [table.title, table.username, table.note],
 
-    offset,
+    lastCreatedAt,
     limit,
   });
 }

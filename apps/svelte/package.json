@@ -24,8 +24,6 @@
 		"vite": "^8.0.16"
 	},
 	"dependencies": {
-		"@dkrh/hono": "workspace:*",
-		"@dkrh/types": "workspace:*",
 		"better-auth": "^1.7.2",
 		"lucide-svelte": "^1.0.1"
 	}

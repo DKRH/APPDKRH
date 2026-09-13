@@ -1,7 +1,7 @@
 import { cTodos } from "@/db/schema";
 import * as audit from "@/db/audit";
 
-import type { NewCTodos } from "@dkrh/types";
+import type { NewCTodos } from "@/db/types";
 
 const table = cTodos;
 

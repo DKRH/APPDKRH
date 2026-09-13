@@ -4,6 +4,7 @@ set -e
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 APP="$ROOT/apps/svelte"
+DIST="$ROOT/dist/html"
 
 usage() {
     echo "Usage: $0 {add|dev|init|build}"
@@ -56,9 +57,9 @@ build() {
 
     echo "==> Moving Svelte build output"
 
-    cd "$ROOT"
+    mkdir -p "$DIST"
 
-    bun scripts/mv_svelte.ts
+    mv "build" "$DIST"
 
     echo "==> Svelte build complete"
 }

@@ -67,8 +67,7 @@
 	let search =
 		$state("");
 
-	let offset =
-		$state(0);
+	let lastCreatedAt = $state<string | null>(null);
 
 	let loading =
 		$state(false);
@@ -141,48 +140,40 @@
 
 		loading = true;
 
-		const currentOffset =
-			reset
-				? 0
-				: offset;
+		const cursor = reset
+			? null
+			: lastCreatedAt;
 
 		try {
-			const response =
-				await apiFetch(
-						`${apiBase}` +
-						`?search=${encodeURIComponent(
-							searchValue
-						)}` +
-						`&offset=${currentOffset}` +
-						`&limit=${LIMIT}`
-				);
+			let url = `${apiBase}` +
+					`?search=${encodeURIComponent(
+						searchValue
+					)}` +
+					`&limit=${LIMIT}`;
+
+			if (cursor) {
+				url +=
+					`&before=${encodeURIComponent(
+						cursor
+					)}`;
+			}
+
+			const response = await apiFetch(url);
 
 			const data =
 				await response.json();
 
 			if (reset) {
 				rows = data;
-
-				offset =
-					data.length;
-
-				hasMore =
-					data.length ===
-					LIMIT;
 			}
 			else {
 				rows = [
 					...rows,
 					...data,
 				];
-
-				offset +=
-					data.length;
-
-				hasMore =
-					data.length ===
-					LIMIT;
 			}
+			
+			hasMore = data.length === LIMIT;
 		}
 		finally {
 			loading = false;
@@ -215,7 +206,7 @@
 	) {
 		search = value;
 
-		offset = 0;
+		lastCreatedAt = null;
 
 		await loadData(
 			value,
@@ -271,7 +262,7 @@
 
 		deleteTarget = null;
 
-		offset = 0;
+		lastCreatedAt = null;
 
 		await loadData(
 			search,
@@ -288,7 +279,7 @@
 	async function handleModalClose() {
 		editing = null;
 
-		offset = 0;
+		lastCreatedAt = null;
 
 		await loadData(
 			search,

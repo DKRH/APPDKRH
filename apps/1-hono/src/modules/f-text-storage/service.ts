@@ -1,6 +1,6 @@
 import { type Context } from "hono";
 
-import type { NewFTextStorage } from "@dkrh/types";
+import type { NewFTextStorage } from "@/db/types";
 
 import * as repo from "./repo";
 

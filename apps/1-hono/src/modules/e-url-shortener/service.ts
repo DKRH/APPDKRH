@@ -1,6 +1,6 @@
 import { type Context } from "hono";
 
-import type { NewEUrlShortener } from "@dkrh/types";
+import type { NewEUrlShortener } from "@/db/types";
 
 import * as repo from "./repo";
 

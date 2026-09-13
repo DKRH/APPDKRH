@@ -3,7 +3,7 @@ import { eUrlShortener } from "@/db/schema";
 
 import * as audit from "@/db/audit";
 
-import type { NewEUrlShortener } from "@dkrh/types";
+import type { NewEUrlShortener } from "@/db/types";
 
 const table = eUrlShortener;
 

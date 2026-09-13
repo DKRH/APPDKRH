@@ -19,6 +19,7 @@ usage() {
     echo "  format              Run Prettier"
     echo "  formatcheck         Run Prettier Only Check"
     echo "  add <packages...>   Add Bun dependencies"
+    echo "  dbinit              Run Drizzle init users"
 }
 
 build() {
@@ -43,7 +44,7 @@ dev() {
 
     echo "==> Starting Hono development server"
 
-    APP_ENV=development bun run dev
+    APP_ENV=development bun --env-file=../../.env  run dev
 }
 
 init() {
@@ -118,6 +119,14 @@ add() {
     bun add "$@"
 }
 
+dbinit() {
+    cd "$APP"
+
+    echo "==> Run Drizzle init users"
+
+    bun run src/test/initdb.ts
+}
+
 case "${1:-}" in
     build)
         build
@@ -146,6 +155,9 @@ case "${1:-}" in
     add)
         shift
         add "$@"
+        ;;
+    dbinit)
+        dbinit
         ;;
     *)
         usage

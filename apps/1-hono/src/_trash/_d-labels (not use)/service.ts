@@ -1,6 +1,6 @@
 import type { Context } from "hono";
 
-import type { NewDLabels } from "@dkrh/types";
+import type { NewDLabels } from "@/db/types";
 
 import * as repo from "./repo";
 

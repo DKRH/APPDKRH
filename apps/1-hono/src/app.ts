@@ -54,7 +54,7 @@ protectedApi.route("/", routes);
 app.use(
   "*",
   cors({
-    origin: [process.env.SVELTE_API_URL!],
+    origin: [process.env.SVELTE_API_URL!, process.env.HONO_API_URL!],
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -66,7 +66,7 @@ app.use(
 | Routes
 |--------------------------------------------------------------------------
 */
-app.get("/", (c) => c.text("this Hono Server"));
+app.get("/", (c) => c.text("DKRH API Hono Server"));
 
 // Public Better Auth routes
 app.route("/api/auth", auth);

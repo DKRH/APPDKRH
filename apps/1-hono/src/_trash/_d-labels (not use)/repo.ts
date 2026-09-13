@@ -2,7 +2,7 @@ import { dLabels } from "@/db/schema";
 
 import * as audit from "@/db/audit";
 
-import type { NewDLabels } from "@dkrh/types";
+import type { NewDLabels } from "@/db/types";
 
 const table = dLabels;
 

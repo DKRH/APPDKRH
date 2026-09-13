@@ -15,7 +15,8 @@ export {
 	or,
 	desc,
 	sql,
-	asc 
+	asc,
+	lt
 } from "drizzle-orm";
 
 export type {

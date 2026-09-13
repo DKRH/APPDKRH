@@ -2,7 +2,7 @@ import { fTextStorage } from "@/db/schema";
 
 import * as audit from "@/db/audit";
 
-import type { NewFTextStorage } from "@dkrh/types";
+import type { NewFTextStorage } from "@/db/types";
 
 const table = fTextStorage;
 

@@ -1,6 +1,10 @@
 import { createAuthClient } from "better-auth/svelte";
 
-const API_URL = "/api-hono";
+let API_URL = "";
+
+if (!import.meta.env.DEV) {
+	API_URL = "/api-hono";
+}
 
 export async function apiFetch(
 	path: string,
