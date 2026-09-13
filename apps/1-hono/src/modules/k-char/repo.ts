@@ -4,7 +4,7 @@ import * as audit from "@/db/audit";
 
 const table = kMCharacters;
 
-export async function getAll(search: string, offset: number, limit: number) {
+export async function getAll(search: string, lastCreatedAt: string | null, limit: number) {
   return audit.auditedList({
     table,
     search,
@@ -23,7 +23,7 @@ export async function getAll(search: string, offset: number, limit: number) {
         searchColumn: kMUniverses.name,
       },
     ],
-    offset,
+    lastCreatedAt,
     limit,
   });
 }

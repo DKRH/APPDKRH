@@ -5,11 +5,11 @@ import * as repo from "./repo";
 export async function getAll(c: Context) {
   const search = c.req.query("search") ?? "";
 
-  const offset = Number(c.req.query("offset") ?? 0);
+  const before = c.req.query("before") ?? null;
 
   const limit = Number(c.req.query("limit") ?? 50);
 
-  const data = await repo.getAll(search, offset, limit);
+  const data = await repo.getAll(search, before, limit);
 
   return c.json(data);
 }

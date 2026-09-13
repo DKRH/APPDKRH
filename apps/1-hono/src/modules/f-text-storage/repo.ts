@@ -6,12 +6,12 @@ import type { NewFTextStorage } from "@/db/types";
 
 const table = fTextStorage;
 
-export async function getAll(search: string, offset: number, limit: number) {
+export async function getAll(search: string, lastCreatedAt: string | null, limit: number) {
   return audit.auditedList({
     table,
     search,
     searchableColumns: [table.url, table.content],
-    offset,
+    lastCreatedAt,
     limit,
   });
 }

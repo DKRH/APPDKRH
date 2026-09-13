@@ -7,7 +7,7 @@ import * as audit from "@/db/audit";
 
 const table = hEntertainmentTracker;
 
-export async function getAll(search: string, offset: number, limit: number) {
+export async function getAll(search: string, lastCreatedAt: string | null, limit: number) {
   return audit.auditedList({
     table,
     search,
@@ -26,7 +26,7 @@ export async function getAll(search: string, offset: number, limit: number) {
         searchColumn: hEntertainmentTrackerType.name,
       },
     ],
-    offset,
+    lastCreatedAt,
     limit,
   });
 }

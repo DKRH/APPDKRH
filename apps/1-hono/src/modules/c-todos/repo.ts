@@ -5,12 +5,12 @@ import type { NewCTodos } from "@/db/types";
 
 const table = cTodos;
 
-export async function getAll(search: string, offset: number, limit: number) {
+export async function getAll(search: string, lastCreatedAt: string | null, limit: number) {
   return audit.auditedList({
     table,
     search,
     searchableColumns: [table.name],
-    offset,
+    lastCreatedAt,
     limit,
   });
 }

@@ -11,7 +11,7 @@ const table = eUrlShortener;
    GET ALL
 ========================= */
 
-export async function getAll(search: string, offset: number, limit: number) {
+export async function getAll(search: string, lastCreatedAt: string | null, limit: number) {
   return audit.auditedList({
     table,
     search,
@@ -22,7 +22,7 @@ export async function getAll(search: string, offset: number, limit: number) {
       table.password,
       table.expireDateUTC,
     ],
-    offset,
+    lastCreatedAt,
     limit,
   });
 }

@@ -4,12 +4,12 @@ import * as audit from "@/db/audit";
 
 const table = kMAttributes;
 
-export async function getAll(search: string, offset: number, limit: number) {
+export async function getAll(search: string, lastCreatedAt: string | null, limit: number) {
   return audit.auditedList({
     table,
     search,
     searchableColumns: [table.name, table.desc],
-    offset,
+    lastCreatedAt,
     limit,
   });
 }
