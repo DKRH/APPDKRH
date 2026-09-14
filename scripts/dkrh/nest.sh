@@ -22,10 +22,15 @@ build() {
 
     cd "$APP"
 
+    echo "==> Installing dependencies"
     bun install
 
+    echo "==> Compiling NestJS"
+    bun run build
+
+    echo "==> Compiling standalone binary"
     bun build \
-        src/index.ts \
+        dist/main.js \
         --compile \
         --target=bun-linux-x64 \
         --outfile="$DIST/serverNest"
