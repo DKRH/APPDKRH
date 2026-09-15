@@ -33,6 +33,7 @@ build() {
         dist/main.js \
         --compile \
         --target=bun-linux-x64 \
+         --packages=external \
         --outfile="$DIST/serverNest"
 
     echo "==> NestJS build complete"
